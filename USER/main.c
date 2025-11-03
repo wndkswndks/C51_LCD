@@ -45,10 +45,25 @@
 #define CART_POINT_END_ADDR       	0x2570
 
 #define CART_VALUE_SATAT_ADDR       0x2590
-#define CART_VALUE_END_ADDR       	0x25B0
+#define CART_VALUE_CART_ID_ADDR       0x2590
+#define CART_VALUE_MANUFAC_YY_ADDR       0x2592
+#define CART_VALUE_MANUFAC_MM_ADDR       0x2594
+#define CART_VALUE_MANUFAC_DD_ADDR       0x2596
+#define CART_VALUE_ISSUED_YY_ADDR       0x2598
+#define CART_VALUE_ISSUED_MM_ADDR       0x259A
+#define CART_VALUE_ISSUED_DD_ADDR       0x259C
+#define CART_VALUE_TRANDU1_ADDR       	0x259E
+#define CART_VALUE_TRANDU2_ADDR       	0x25A0
+#define CART_VALUE_TRANDU3_ADDR      	0x25A2
+#define CART_VALUE_TRANDU4_ADDR      	0x25A4
+#define CART_VALUE_TRANDU5_ADDR      	0x25A6
+#define CART_VALUE_TRANDU6_ADDR      	0x25A8
+#define CART_VALUE_TRANDU7_ADDR      	0x25AA
+#define CART_VALUE_REMIND_SHOT_ADDR      0x25AC
+#define CART_VALUE_STATUS_ADDR      	0x25AE
+#define CART_VALUE_RTC_ADDR      		0x25B0
+#define CART_VALUE_END_ADDR       		0x25B0
 
-#define CART_VALUE_SATAT_ADDR       0x2590
-#define CART_VALUE_END_ADDR       	0x25B0
 
 
 #define TRANDU_FREQ_NUM_ADDR       	0x2600
@@ -124,6 +139,24 @@ typedef enum
 	OK_RF = 2,
 	OK_HP = 3,
 
+	CART_IDX_DUMY = 0,
+	CART_IDX_CART_ID,
+	CART_IDX_MANUFAC_YY,
+	CART_IDX_MANUFAC_MM,
+	CART_IDX_MANUFAC_DD,
+	CART_IDX_ISSUED_YY,
+	CART_IDX_ISSUED_MM,
+	CART_IDX_ISSUED_DD,
+	CART_IDX_TRANDU1_FRQ,
+	CART_IDX_TRANDU2_FRQ,
+	CART_IDX_TRANDU3_FRQ,
+	CART_IDX_TRANDU4_FRQ,
+	CART_IDX_TRANDU5_FRQ,
+	CART_IDX_TRANDU6_FRQ,
+	CART_IDX_TRANDU7_FRQ,
+	CART_IDX_REMIND_SHOT,
+	CART_IDX_STATUS,
+	CART_IDX_RTC,
 
 
 
@@ -204,6 +237,22 @@ typedef enum
 	AUTOCAL_START = 150,
 	AUTOCAL_STOP = 160,
 
+	//CARTRIGE SET
+
+	KEY_CART1_SET = 0x0E,
+	KEY_CART2_SET,
+	KEY_CART3_SET,
+	KEY_CART4_SET,
+	KEY_CART5_SET,
+	KEY_CART6_SET,
+	KEY_CART7_SET,
+	KEY_CART8_SET,
+	KEY_CART9_SET,
+	KEY_CART10_SET,
+	KEY_CART11_SET,
+	KEY_CART12_SET,
+	KEY_CART13_SET,
+
 } BUTTON_E;
 
 
@@ -219,7 +268,7 @@ typedef enum
 	LCD_MODE_PASSWARD =   11,
 	LCD_MODE_TEST =   12,
 	LCD_MODE_AUTOCAL =   13,
-	LCD_MODE_MAIN_POPUP   = 14,
+	LCD_MODE_CART_SETTING    = 14,
 	LCD_MODE_SYS_CHK_POPUP =	15,
 
 
@@ -540,6 +589,8 @@ xdata u32 mainDataBuff[9];
 
 xdata u16 textFrqBuff[8];
 xdata u16 textWattBuff[78];
+xdata u16 textCartrigeBuff[20];
+
 xdata u8 frqIdx = 0;
 xdata u8 wattIdxMain = 0, wattIdxSub = 0;
 xdata u16 iconMove;
@@ -594,6 +645,10 @@ xdata u16 reTxData;
 xdata u32 reTxTimeStamp;
 xdata u16 reTxCnt;
 
+xdata u8 cartTouch;
+xdata u8 cartIdx;
+xdata u32 cartValue;
+xdata u16 cartPrePointAddr;
 
 
 
@@ -814,7 +869,7 @@ void Event_PopUp(u16 eventCmd, u16 eventData)
 	{
 		return;
 	}
-	sys_write_vp(0x1001, (u8*)&iconErrBack,2);//backGround
+	sys_write_vp(ERR_POPUP_ADDR, (u8*)&iconErrBack,2);//backGround
 
 	if(eventCmd == CMD_ERR)iconErrIcon = 1;
 	else if(eventCmd == CMD_ALRAM)iconErrIcon = 2;
@@ -874,13 +929,59 @@ void ReTry_Tx()
 	}
 
 }
-
-void RX_SYS_CHK_Parssing_Config()
+void RX_AUTOCAL_Parssing_Config()
 {
 	u16 add = 0;
 	u16 cmd = 0;
 	u32 value=0;
+	const u16 iconCalEmptyPoint = ICON_CALIB_EMPTY_POINT;
+	if(uartRxFlag)
+	{
+		uartRxFlag = 0;
+		ReTry_Reset();
+		cmd = uartRxBuff[0];
+		value = ((uartRxBuff[1]<<8)|uartRxBuff[2])&0xffff;
 
+//		if(CMD_TRANDU1_WATT10 <= cmd && cmd <=CMD_TRANDU7_WATT005)
+//		{
+//			if(value == AUTOCAL_START)
+//			{
+//				if(autoCalStart==0)
+//				{
+//					autoCalStart = cmd;
+//					cmd = cmd -100;
+//					autoCalAdd = (u16)(START_ICON_AUTOCAL_POINT_SATAT_ADDR + ((cmd-1)*0x02));
+//				}
+//			}
+//			else if(value == AUTOCAL_STOP)
+//			{
+//				if(autoCalStart == cmd)
+//				{
+//					autoCalStart = 0;
+//					sys_write_vp(autoCalAdd, (u8*)&iconCalEmptyPoint,2);
+//				}
+//			}
+//			else
+//			{
+//				cmd  = cmd-100;
+//				textWattBuff[cmd] = value;
+//				autoCalRcvCnt++;
+//			}
+
+//		}
+
+	}
+	ReTry_Tx();
+}
+
+
+void RX_Parssing_Config()
+{
+	u16 add = 0;
+	u16 cmd = 0;
+	u32 value=0;
+	const u16 iconCalEmptyPoint = ICON_CALIB_EMPTY_POINT;
+	const u16 iconStandby = ICON_MAIN_STANDBY, iconTreat = ICON_MAIN_TREAT;
 	if(uartRxFlag)
 	{
 		uartRxFlag = 0;
@@ -897,13 +998,13 @@ void RX_SYS_CHK_Parssing_Config()
 			break;
 
 			case CMD_ALRAM:
-//				Event_PopUp(CMD_ALRAM, value);
+				Event_PopUp(CMD_ALRAM, value);
 				errEventBuff[value] = value;
 				errEventFlag[value] = CMD_ALRAM;
 			break;
 
 			case CMD_INFO:
-//				Event_PopUp(CMD_INFO, value);
+				Event_PopUp(CMD_INFO, value);
 				errEventBuff[value] = value;
 				errEventFlag[value] = CMD_INFO;
 			break;
@@ -914,77 +1015,49 @@ void RX_SYS_CHK_Parssing_Config()
 
 			case CMD_CART_ID:
 				cartId = value;
+				textCartrigeBuff[CART_IDX_CART_ID] = value;
+				sys_write_vp(CART_VALUE_CART_ID_ADDR,(u8*)&value ,2);
 			break;
 
 			case CMD_MANUFAC_YY:
 				manufacYY = value;
+				textCartrigeBuff[CART_IDX_MANUFAC_YY] = value;
+				sys_write_vp(CART_VALUE_MANUFAC_YY_ADDR,(u8*)&value ,2);
 			break;
 
 			case CMD_MANUFAC_MM:
 				manufacMM = value;
+				textCartrigeBuff[CART_IDX_MANUFAC_MM] = value;
+				sys_write_vp(CART_VALUE_MANUFAC_MM_ADDR,(u8*)&value ,2);
 			break;
 
 			case CMD_MANUFAC_DD:
 				manufacDD = value;
+				textCartrigeBuff[CART_IDX_MANUFAC_DD] = value;
+				sys_write_vp(CART_VALUE_MANUFAC_DD_ADDR,(u8*)&value ,2);
 			break;
 
 			case CMD_ISSUED_YY:
 				issuedYY=value;
+				textCartrigeBuff[CART_IDX_ISSUED_YY] = value;
+				sys_write_vp(CART_VALUE_ISSUED_YY_ADDR,(u8*)&value ,2);
 			break;
 			case CMD_ISSUED_MM:
 				issuedMM = value;
+				textCartrigeBuff[CART_IDX_ISSUED_MM] = value;
+				sys_write_vp(CART_VALUE_ISSUED_MM_ADDR,(u8*)&value ,2);
 			break;
 
 			case CMD_ISSUED_DD:
 				issuedDD = value;
+				textCartrigeBuff[CART_IDX_ISSUED_DD] = value;
+				sys_write_vp(CART_VALUE_ISSUED_DD_ADDR,(u8*)&value ,2);
 			break;
 
 			case CMD_RTC:
 				Rtc = value;
-			break;
-
-
-			case CMD_REMIND_SHOT:
-				remindShot = value;
-			break;
-
-			default:
-				if(CMD_TRANDU1_FRQ <= cmd && cmd <=CMD_TRANDU7_FRQ)
-				{
-					cmd  = cmd-90;
-					textFrqBuff[cmd] = value;
-				}
-			break;
-		}
-	}
-	ReTry_Tx();
-}
-
-
-void RX_MODE_MAIN_Parssing_Config()
-{
-	u16 cmd = 0;
-	u32 value=0;
-	const u16 iconStandby = ICON_MAIN_STANDBY, iconTreat = ICON_MAIN_TREAT;
-
-	if(uartRxFlag)
-	{
-		uartRxFlag = 0;
-		ReTry_Reset();
-		cmd = uartRxBuff[0];
-		value = ((uartRxBuff[1]<<8)|uartRxBuff[2])&0xffff;
-		switch (cmd)
-		{
-			case CMD_ERR:
-				Event_PopUp(CMD_ERR, value);
-			break;
-
-			case CMD_ALRAM:
-				Event_PopUp(CMD_ALRAM, value);
-			break;
-
-			case CMD_INFO:
-				Event_PopUp(CMD_INFO, value);
+				textCartrigeBuff[CART_IDX_RTC] = value;
+				sys_write_vp(CART_VALUE_RTC_ADDR,(u8*)&value ,2);
 			break;
 
 			case CMD_ENERGY:
@@ -1026,84 +1099,29 @@ void RX_MODE_MAIN_Parssing_Config()
 
 			case CMD_REMIND_SHOT:
 				remindShot = value;
+				textCartrigeBuff[CART_IDX_REMIND_SHOT] = value;
 				sys_write_vp(REMIND_SHOT_ADDR,(u8*)&remindShot ,2);
+				sys_write_vp(CART_VALUE_REMIND_SHOT_ADDR,(u8*)&value ,2);
+
 			break;
 
 			case CMD_LCD_STATUS:
 				rdyStnbyMode = value;
-				if(rdyStnbyMode == STATUS_STNBY)
+				if(lcdPage == LCD_MODE_MAIN)
 				{
-					sys_write_vp(READY_STANDBY_ICON_ADDR,(u8*)&iconStandby ,2);
+					if(rdyStnbyMode == STATUS_STNBY)
+					{
+						sys_write_vp(READY_STANDBY_ICON_ADDR,(u8*)&iconStandby ,2);
+					}
+					else if(rdyStnbyMode == STATUS_TRET)
+					{
+						sys_write_vp(READY_STANDBY_ICON_ADDR,(u8*)&iconTreat ,2);
+					}
+					else if(rdyStnbyMode == STATUS_PRECOOLING)
+					{
+						iconMove = ICON_MAIN_COOLING1;
+					}
 				}
-				else if(rdyStnbyMode == STATUS_TRET)
-				{
-					sys_write_vp(READY_STANDBY_ICON_ADDR,(u8*)&iconTreat ,2);
-				}
-				else if(rdyStnbyMode == STATUS_PRECOOLING)
-				{
-					iconMove = ICON_MAIN_COOLING1;
-				}
-
-			break;
-			case CMD_LCD_EXP:
-				if(value == LCD_EXP_START) expFlag = 1;
-				else if(value == LCD_EXP_END) expFlag = 0;
-			break;
-
-			default:
-			break;
-		}
-	}
-	ReTry_Tx();
-}
-
-void RX_ENGINIEER_Parssing_Config()
-{
-	u16 add = 0;
-	u16 cmd = 0;
-	u32 value = 0;
-
-	if(uartRxFlag)
-	{
-		uartRxFlag = 0;
-		ReTry_Reset();
-		cmd = uartRxBuff[0];
-		value = ((uartRxBuff[1]<<8)|uartRxBuff[2])&0xffff;
-
-
-//		if(CMD_TRANDU1_FRQ <= cmd && cmd <=CMD_TRANDU7_FRQ)
-//		{
-//			cmd  = cmd-90;
-//			textFrqBuff[cmd] = value;
-//		}
-//		if(CMD_TRANDU1_WATT10 <= cmd && cmd <=CMD_TRANDU7_WATT005)
-//		{
-//			cmd  = cmd-100;
-//			textWattBuff[cmd] = value;
-//			calRcvCnt++;
-//			autoCalRcvCnt++;
-//		}
-
-
-	}
-	ReTry_Tx();
-}
-void RX_CALIBRATION_Parssing_Config()
-{
-	u16 add = 0;
-	u16 cmd = 0;
-	u32 value=0;
-
-	if(uartRxFlag)
-	{
-		uartRxFlag = 0;
-		ReTry_Reset();
-		cmd = uartRxBuff[0];
-		value = ((uartRxBuff[1]<<8)|uartRxBuff[2])&0xffff;
-		switch (cmd)
-		{
-			case CMD_LCD_STATUS:
-				rdyStnbyMode = value;
 			break;
 
 			case CMD_LCD_EXP:
@@ -1113,57 +1131,26 @@ void RX_CALIBRATION_Parssing_Config()
 
 
 			default:
+				if(CMD_TRANDU1_FRQ <= cmd && cmd <=CMD_TRANDU7_FRQ)
+				{
+					cmd  = cmd-90;
+					textFrqBuff[cmd] = value;
+					textCartrigeBuff[6+cmd] = value;
+					add = (u16)(CART_VALUE_TRANDU1_ADDR + (cmd-1)*0x02);
+					sys_write_vp(add,(u8*)&value ,2);
+				}
+
+				if(CMD_TRANDU1_WATT10 <= cmd && cmd <=CMD_TRANDU7_WATT005)
+				{
+					cmd  = cmd-100;
+					textWattBuff[cmd] = value;
+				}
 			break;
 		}
-	}
-	ReTry_Tx();
-}
-void RX_AUTOCAL_Parssing_Config()
-{
-	u16 add = 0;
-	u16 cmd = 0;
-	u32 value=0;
-	const u16 iconCalEmptyPoint = ICON_CALIB_EMPTY_POINT;
-	if(uartRxFlag)
-	{
-		uartRxFlag = 0;
-		ReTry_Reset();
-		cmd = uartRxBuff[0];
-		value = ((uartRxBuff[1]<<8)|uartRxBuff[2])&0xffff;
-
-		if(CMD_TRANDU1_WATT10 <= cmd && cmd <=CMD_TRANDU7_WATT005)
-		{
-			if(value == AUTOCAL_START)
-			{
-				if(autoCalStart==0)
-				{
-					autoCalStart = cmd;
-					cmd = cmd -100;
-					autoCalAdd = (u16)(START_ICON_AUTOCAL_POINT_SATAT_ADDR + ((cmd-1)*0x02));
-				}
-			}
-			else if(value == AUTOCAL_STOP)
-			{
-				if(autoCalStart == cmd)
-				{
-					autoCalStart = 0;
-					sys_write_vp(autoCalAdd, (u8*)&iconCalEmptyPoint,2);
-				}
-			}
-			else
-			{
-				cmd  = cmd-100;
-				textWattBuff[cmd] = value;
-				autoCalRcvCnt++;
-			}
-
-		}
 
 	}
-	ReTry_Tx();
+//	ReTry_Tx();
 }
-
-
 
 idata u16 numTest =0;
 
@@ -1201,6 +1188,21 @@ u8 Test_Config()
 	return LCD_MODE_TEST;
 }
 
+
+void Cartrige_Init()
+{
+	u16 add =0;
+	u32 value =0;
+
+	int i;
+	for(i =1 ;i <18; i++)
+	{
+		add = (u16)(CART_VALUE_SATAT_ADDR + (i-1)*0x02);
+		value = textCartrigeBuff[i];
+		sys_write_vp(add,(u8*)&value,2);
+	}
+
+}
 
 u8 System_Check_Config()
 {
@@ -1287,7 +1289,7 @@ u8 System_Check_Config()
 		timeStamp = delay_tickMy;
 	}
 
-	RX_SYS_CHK_Parssing_Config();
+//	RX_SYS_CHK_Parssing_Config();
 	return returnValue;
 }
 
@@ -1481,7 +1483,7 @@ u8 Main_Config()
 	}
 
 	EXP_FreeCool_Motion();
-	RX_MODE_MAIN_Parssing_Config();
+//	RX_MODE_MAIN_Parssing_Config();
 //	if(errEventFlag)
 //	{
 //		Page_Change(LCD_MODE_MAIN_POPUP);
@@ -1640,7 +1642,7 @@ u8 Calibration_Config()//
 			break;
 
 			case KEY_CAL_WATT_LOAD:
-				//Watt_Load();
+				////==Watt_Load();
 			break;
 
 			case KEY_CAL_WATT_SAVE:
@@ -1706,7 +1708,159 @@ u8 Calibration_Config()//
 	}
 
 
-	RX_CALIBRATION_Parssing_Config();
+//	RX_CALIBRATION_Parssing_Config();
+	return returnValue;
+
+}
+
+void Cartrige_Parts()//
+{
+
+	u16 btnTtext;
+	u16 add = 0, pointAdd = 0;
+	const u16 iconEmptyPoint = ICON_CALIB_EMPTY_POINT,  iconPoint = ICON_CALIB_POINT;
+
+	sys_read_vp(CARTRIGE_TOUCH_ADDR, (u8*)&btnTtext,1);
+	if (btnTtext)
+	{
+		pointAdd = (u16)(CART_POINT_SATAT_ADDR + (btnTtext-1)*0x02);
+
+		if(cartPrePointAddr &&cartPrePointAddr != pointAdd)
+		{
+			sys_write_vp(cartPrePointAddr,(u8*)&iconEmptyPoint,2);
+		}
+		sys_write_vp(pointAdd,(u8*)&iconPoint,2);
+
+
+		cartPrePointAddr = pointAdd;
+
+		cartIdx = btnTtext;
+		cartTouch = 1;
+		cartValue = textCartrigeBuff[cartIdx];
+
+		btnTtext= 0;
+		sys_write_vp(CARTRIGE_TOUCH_ADDR,(u8*)&btnTtext,2);
+	}
+
+
+}
+
+u8 Cartrige_Set_Config()//
+{
+	u8 returnValue = 0;
+	int value = 0;
+	int ccpy = 0;
+	u16 add = 0,addSub = 0;
+	u16 addIcon = 0;
+	int i = 0;
+	const u16 iconReady = ICON_CALIB_READY, iconStandby = ICON_CALIB_STANDBY, iconDis = ICON_CALIB_DISABLE, iconEn = ICON_CALIB_ENABLE;
+	u16 btn;
+	returnValue = LCD_MODE_CART_SETTING;
+	sys_read_vp(CARTRIGE_KEYPAD_ADDR,(u8*)&btn,1);
+	if(btn)
+	{
+		switch (btn)
+		{
+			case KEY_0:
+			case KEY_1:
+			case KEY_2:
+			case KEY_3:
+			case KEY_4:
+			case KEY_5:
+			case KEY_6:
+			case KEY_7:
+			case KEY_8:
+			case KEY_9:
+			case KEY_DEL:
+				if(cartTouch == 0) break;
+
+				if(btn==KEY_0) cartValue = cartValue*10 + 0;
+				else if(btn==KEY_DEL )
+				{
+					if(cartValue !=0) cartValue = cartValue/10;
+				}
+				else cartValue = cartValue*10 + btn;
+
+				if(cartValue < 0) cartValue = 0;
+
+				textCartrigeBuff[cartIdx] = cartValue;
+				add = (u16)(CART_VALUE_SATAT_ADDR + (cartIdx-1)*0x02);
+				sys_write_vp(add,(u8*)&cartValue,2);
+
+
+			break;
+
+			case KEY_CART1_SET:
+				TX_Msg(CMD_CART_ID, textCartrigeBuff[CART_IDX_CART_ID]);
+			break;
+
+			case KEY_CART2_SET:
+				TX_Msg(CMD_MANUFAC_YY, textCartrigeBuff[CART_IDX_MANUFAC_YY]);
+				TX_Msg(CMD_MANUFAC_MM, textCartrigeBuff[CART_IDX_MANUFAC_MM]);
+				TX_Msg(CMD_MANUFAC_DD, textCartrigeBuff[CART_IDX_MANUFAC_DD]);
+			break;
+
+			case KEY_CART3_SET:
+				TX_Msg(CMD_ISSUED_YY, textCartrigeBuff[CART_IDX_ISSUED_YY]);
+				TX_Msg(CMD_ISSUED_MM, textCartrigeBuff[CART_IDX_ISSUED_MM]);
+				TX_Msg(CMD_ISSUED_DD, textCartrigeBuff[CART_IDX_ISSUED_DD]);
+			break;
+
+			case KEY_CART4_SET:
+				TX_Msg(CMD_TRANDU1_FRQ, textCartrigeBuff[CART_IDX_TRANDU1_FRQ]);
+			break;
+
+			case KEY_CART5_SET:
+				TX_Msg(CMD_TRANDU2_FRQ, textCartrigeBuff[CART_IDX_TRANDU2_FRQ]);
+			break;
+
+			case KEY_CART6_SET:
+				TX_Msg(CMD_TRANDU3_FRQ, textCartrigeBuff[CART_IDX_TRANDU3_FRQ]);
+			break;
+
+			case KEY_CART7_SET:
+				TX_Msg(CMD_TRANDU4_FRQ, textCartrigeBuff[CART_IDX_TRANDU4_FRQ]);
+			break;
+
+			case KEY_CART8_SET:
+				TX_Msg(CMD_TRANDU5_FRQ, textCartrigeBuff[CART_IDX_TRANDU5_FRQ]);
+			break;
+
+			case KEY_CART9_SET:
+				TX_Msg(CMD_TRANDU6_FRQ, textCartrigeBuff[CART_IDX_TRANDU6_FRQ]);
+			break;
+
+			case KEY_CART10_SET:
+				TX_Msg(CMD_TRANDU7_FRQ, textCartrigeBuff[CART_IDX_TRANDU7_FRQ]);
+			break;
+
+			case KEY_CART11_SET:
+				TX_Msg(CART_IDX_REMIND_SHOT, textCartrigeBuff[CART_IDX_REMIND_SHOT]);
+			break;
+
+			case KEY_CART12_SET:
+				//Watt_Load();
+			break;
+
+			case KEY_CART13_SET:
+				TX_Msg(CMD_RTC, textCartrigeBuff[CART_IDX_RTC]);
+			break;
+
+
+			case KEY_CAL_BACK_MAIN:
+
+				Page_Change(LCD_MODE_ENGINIEER);
+				returnValue = LCD_MODE_ENGINIEER;
+			break;
+
+
+		}
+		btn= 0;
+		sys_write_vp(CARTRIGE_KEYPAD_ADDR,(u8*)&btn,2);
+	}
+
+	Cartrige_Parts();
+
 	return returnValue;
 
 }
@@ -1782,7 +1936,7 @@ u8 Auto_Calibration_Config()//
 
 	AutoCal_PointToggle();
 
-	RX_AUTOCAL_Parssing_Config();
+//	RX_AUTOCAL_Parssing_Config();
 	return returnValue;
 
 }
@@ -1818,7 +1972,6 @@ u8 Engineer_Config()//
 	u16 btn =0;
 	u16 add =0;
 	u32 value =0;
-	static u32 timeStampQ = 0;
 
 	int i =0;
 
@@ -1835,25 +1988,28 @@ u8 Engineer_Config()//
 			break;
 
 			case BTN_EG_CALIBRATION:
-				calRcvCnt = 0;
+#if 0
+			calRcvCnt = 0;
 
-				for(i =CMD_TRANDU1_FRQ ;i <= CMD_TRANDU7_FRQ; i++)
-				{
-					add = (u16)(TRANDU_FREQ_NUM_ADDR + (i-1)*0x02);
-					value = textFrqBuff[i];
-					sys_write_vp(add,(u8*)&value,2);
-				}
-				for(i =CMD_TRANDU1_WATT10 ;i <= CMD_TRANDU7_WATT005; i++)
-				{
-					TX_RF_DA_Req_Msg(i);
-				}
-				for(i =1 ;i <= 77; i++)
-				{
-					add = (u16)(TRANDU_WATT_NUM_ADDR + (i-1)*0x02);
-					value = textWattBuff[i];
-					sys_write_vp(add,(u8*)&value,2);
-				}
-				timeStampQ = delay_tickMy;
+			for(i =CMD_TRANDU1_FRQ ;i <= CMD_TRANDU7_FRQ; i++)
+			{
+				add = (u16)(TRANDU_FREQ_NUM_ADDR + (i-1)*0x02);
+				value = textFrqBuff[i];
+				sys_write_vp(add,(u8*)&value,2);
+			}
+			for(i =CMD_TRANDU1_WATT10 ;i <= CMD_TRANDU7_WATT005; i++)
+			{
+				TX_RF_DA_Req_Msg(i);
+			}
+			for(i =1 ;i <= 77; i++)
+			{
+				add = (u16)(TRANDU_WATT_NUM_ADDR + (i-1)*0x02);
+				value = textWattBuff[i];
+				sys_write_vp(add,(u8*)&value,2);
+			}
+			timeStampQ = delay_tickMy;
+
+#endif
 			break;
 
 			case BTN_EG_BACKHOME:
@@ -1862,27 +2018,37 @@ u8 Engineer_Config()//
 			break;
 
 			case BTN_EG_AUTOCAL:
-				autoCalRcvCnt = 0;
+#if 0
+			autoCalRcvCnt = 0;
 
-				for(i =CMD_TRANDU1_FRQ ;i <= CMD_TRANDU7_FRQ; i++)
-				{
-					add = (u16)(TRANDU_FREQ_NUM_ADDR + (i-1)*0x02);
-					value = textFrqBuff[i];
-					sys_write_vp(add,(u8*)&value,2);
-				}
-				for(i =CMD_TRANDU1_WATT10 ;i <= CMD_TRANDU7_WATT005; i++)
-				{
-					TX_RF_DA_Req_Msg(i);
-				}
+			for(i =CMD_TRANDU1_FRQ ;i <= CMD_TRANDU7_FRQ; i++)
+			{
+				add = (u16)(TRANDU_FREQ_NUM_ADDR + (i-1)*0x02);
+				value = textFrqBuff[i];
+				sys_write_vp(add,(u8*)&value,2);
+			}
+			for(i =CMD_TRANDU1_WATT10 ;i <= CMD_TRANDU7_WATT005; i++)
+			{
+				TX_RF_DA_Req_Msg(i);
+			}
 
-				for(i =1 ;i <= 77; i++)
-				{
-					add = (u16)(TRANDU_WATT_NUM_ADDR + (i-1)*0x02);
-					value = textWattBuff[i];
-					sys_write_vp(add,(u8*)&value,2);
-				}
-				timeStampQ = delay_tickMy;
+			for(i =1 ;i <= 77; i++)
+			{
+				add = (u16)(TRANDU_WATT_NUM_ADDR + (i-1)*0x02);
+				value = textWattBuff[i];
+				sys_write_vp(add,(u8*)&value,2);
+			}
+			timeStampQ = delay_tickMy;
+#endif
 			break;
+
+			case BTN_EG_CART_SET:
+				Cartrige_Init();
+				Page_Change(LCD_MODE_CART_SETTING);
+				returnValue = LCD_MODE_CART_SETTING;
+			break;
+
+
 		}
 		btn= 0;
 		sys_write_vp(ENGINEER_BUTTON_ADDR,(u8*)&btn,2);
@@ -1890,7 +2056,7 @@ u8 Engineer_Config()//
 	}
 
 
-	RX_ENGINIEER_Parssing_Config();
+//	RX_ENGINIEER_Parssing_Config();
 
 
 	return returnValue;
@@ -1969,9 +2135,9 @@ void Debug_PrintConfig()
 		int indData1 = 0,indData2 = 0,indData3 = 0;
 
 
-		indData1 = rdyStnbyMode;
-		indData2 = (int)iconMove;
-		indData3 = (int)autoCalAdd;
+		indData1 = uartRxBuff[0];
+		indData2 = uartRxBuff[1];
+		indData3 = uartRxBuff[2];
 
 		printf("debug %d %d %d \r\n",indData1, indData2, indData3);
 		timeStamp = delay_tickMy;
@@ -2023,6 +2189,11 @@ void Mode_Config()//
 			lcdPage = Auto_Calibration_Config();
 		break;
 
+		case LCD_MODE_CART_SETTING:
+			lcdPage = Cartrige_Set_Config();
+		break;
+
+
 //		case LCD_MODE_MAIN_POPUP:
 //			lcdPage = Pop_Main_Config();
 //		break;
@@ -2033,6 +2204,7 @@ void Mode_Config()//
 
 	}
 	Debug_PrintConfig();
+	RX_Parssing_Config();
 
 }
 
@@ -2091,6 +2263,11 @@ void Lcd_Init()//
 	reTxTimeStamp = 0;
 	reTxCnt = 0;
 
+	cartTouch = 0;
+	cartIdx = 0;
+	cartValue = 0;
+	cartPrePointAddr = 0;
+
 
 	Flash_Read();
 
@@ -2119,6 +2296,13 @@ void Lcd_Init()//
 	{
 		chkOkBuff[i] = 0;
 	}
+
+	for(i =1 ;i <18; i++)
+	{
+		textCartrigeBuff[i] = 0;
+	}
+
+
 
 
 
