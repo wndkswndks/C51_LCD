@@ -10,7 +10,8 @@ xdata u8  uartRxBuff[20];
 xdata u8  uartRxFlag;
 xdata u8  uartRxStartFlag;
 xdata u8  uartRxStep;
-xdata u16  uartRxTestCnt;
+xdata u8  uartCmdTemp;
+xdata u16  uartValueTemp;
 
 
 //串口2中断服务程序
@@ -122,6 +123,59 @@ void uart2_Rx_Passing(u8 rxData)
 				uartRxStep = STEP0;
 			}
 
+		break;
+
+
+	}
+}
+void uart2_Rx_Passing_new(u8 rxData)
+{
+	switch (uartRxStep)
+	{
+		case STEP0:
+			if(rxData == '[')
+			{
+				uartCmdTemp = 0;
+				uartValueTemp  = 0;
+				uartRxStep = STEP1;
+			}
+
+		break;
+
+		case STEP1:
+			if('0' <= rxData && rxData <= '9')
+			{
+				rxData = rxData -'0';
+				uartCmdTemp *= 10;
+				uartCmdTemp += rxData;
+			}
+			else if(rxData == ',')
+			{
+				uartRxStep = STEP2;
+			}
+			else
+			{
+				uartRxStep = STEP0;
+			}
+
+		break;
+
+		case STEP2:
+			if('0' <= rxData && rxData <= '9')
+			{
+				rxData = rxData -'0';
+				uartValueTemp *= 10;
+				uartValueTemp += rxData;
+			}
+			else if(rxData == ']')
+			{
+				uartRxStep = STEP0;
+				uartRxFlag = 1;
+			}
+			else
+			{
+				uartRxStep = STEP0;
+			}
 		break;
 
 
