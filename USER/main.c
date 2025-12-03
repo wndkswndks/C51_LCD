@@ -174,6 +174,7 @@ typedef enum
 	CART_IDX_STATUS,
 	CART_IDX_RTC,
 
+	LIVE_ALL_DETH = 0,
 	LIVE_HP_DIE_RF = 10,
 	LIVE_RF_DIE_HP = 1,
 	LIVE_HP_RF = 11,
@@ -682,6 +683,8 @@ idata u8 toggle = 1;
 xdata u16 pwCnt;
 //xdata u16 pageNum;
 idata u8 lcdPage;
+xdata u8 lcdPageForceFlag;
+
 xdata u16 iconCircle;
 xdata u16 iconSystemCircle;
 
@@ -829,8 +832,8 @@ void TX_Rx_Msg(u16 txCmd, u16 txData , u16* rxValue, u16 wateTime)
 		if(uartRxFlag)
 		{
 			uartRxFlag = 0;
-			rxCmd = uartRxBuff[0];
-			value = ((uartRxBuff[1]<<8)|uartRxBuff[2])&0xffff;
+			rxCmd = uartCmdTemp;
+			value =uartValueTemp;
 			if(txCmd == rxCmd)
 			{
 				*rxValue = value;
@@ -866,8 +869,8 @@ void TX_RF_DA_Req_Msg(u16 txCmd)
 		if(uartRxFlag)
 		{
 			uartRxFlag = 0;
-			rxCmd = uartRxBuff[0];
-			rxData = ((uartRxBuff[1]<<8)|uartRxBuff[2])&0xffff;
+			rxCmd = uartCmdTemp;
+			rxData = uartValueTemp;
 
 			if(rxCmd == txCmd)
 			{
@@ -1223,8 +1226,8 @@ void RX_AUTOCAL_Parssing_Config()
 	{
 		uartRxFlag = 0;
 		ReTry_Reset();
-		cmd = uartRxBuff[0];
-		value = ((uartRxBuff[1]<<8)|uartRxBuff[2])&0xffff;
+		cmd = uartCmdTemp;
+		value = uartValueTemp;
 
 //		if(CMD_TRANDU1_WATT10 <= cmd && cmd <=CMD_TRANDU7_WATT005)
 //		{
@@ -1272,8 +1275,8 @@ void RX_Parssing_Config()
 	{
 		uartRxFlag = 0;
 		ReTry_Reset();
-		cmd = uartRxBuff[0];
-		value = ((uartRxBuff[1]<<8)|uartRxBuff[2])&0xffff;
+		cmd = uartCmdTemp;
+		value = uartValueTemp;
 		switch (cmd)
 		{
 
@@ -1438,6 +1441,7 @@ void RX_Parssing_Config()
 			case CMD_TEST_FORCE_PAGE_CHANGE:
 				lcdPage = value;
 				Page_Change(value);
+				lcdPageForceFlag = 1;
 			break;
 
 			default:
@@ -1492,6 +1496,7 @@ u8 Get_All_Catrige()
 					systemErr = 2;
 				break;
 
+				case LIVE_ALL_DETH:
 				case ALL_DIE:
 					systemNorsvCnt++;
 					if(systemNorsvCnt >= 3)
@@ -1505,6 +1510,8 @@ u8 Get_All_Catrige()
 					}
 				break;
 
+
+				break;
 				case LIVE_HP_RF:
 					TX_Msg(CMD_GET_ALL_CART, 0);
 					systemTimeStemp = delay_tickMy;
@@ -1834,6 +1841,8 @@ u8 PassWard_Config()
 	return returnValue;
 
 }
+
+
 
 u8 Main_Config()
 {
@@ -2582,7 +2591,7 @@ u8 Pop_System_Chk_Config()//
 
 void Debug_PrintConfig()
 {
-#if 1
+#if 0
 	static u32 timeStamp;
 	if(delay_tickMy-timeStamp >= 2000)
 	{
@@ -2591,7 +2600,7 @@ void Debug_PrintConfig()
 
 		indData1 = uartCmdTemp;
 		indData2 = uartValueTemp;
-		indData3 = 0;
+		indData3 = lcdPage;
 
 		printf("debug %d %d %d \r\n",indData1, indData2, indData3);
 		timeStamp = delay_tickMy;
@@ -2737,6 +2746,7 @@ void Lcd_Init()//
 	chkOk = 0;
 	temperature = 0;
 	peltierDuty = 0;
+	lcdPageForceFlag = 0;
 	Flash_Read();
 
 

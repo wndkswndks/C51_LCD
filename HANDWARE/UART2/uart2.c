@@ -72,7 +72,7 @@ typedef enum
 	STEP8,
 } STEP_E;
 
-void uart2_Rx_Passing(u8 rxData)
+void uart2_Rx_Passing_org(u8 rxData)
 {
 	switch (uartRxStep)
 	{
@@ -128,7 +128,7 @@ void uart2_Rx_Passing(u8 rxData)
 
 	}
 }
-void uart2_Rx_Passing_new(u8 rxData)
+void uart2_Rx_Passing(u8 rxData)
 {
 	switch (uartRxStep)
 	{
