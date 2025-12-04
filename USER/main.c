@@ -107,8 +107,41 @@
 #define DEBUG_MSG1_ADDR		 	 0x6210
 #define DEBUG_MSG2_ADDR		 	 0x6310
 
+#define MAIN_P_START_ADDR			   0x2860
+#define MAIN_P1_WATT_ADDR			   0x2860
+#define MAIN_P1_DURATION_TIME_ADDR	0x2862
+#define MAIN_P1_INTERVAL_TIME_ADDR	 0x2864
 
+#define MAIN_P2_WATT_ADDR			   0x2866
+#define MAIN_P2_DURATION_TIME_ADDR	0x2868
+#define MAIN_P2_INTERVAL_TIME_ADDR	 0x286A
 
+#define MAIN_P3_WATT_ADDR			   0x286C
+#define MAIN_P3_DURATION_TIME_ADDR	0x286E
+#define MAIN_P3_INTERVAL_TIME_ADDR	 0x2870
+
+#define MAIN_P4_WATT_ADDR			   0x2872
+#define MAIN_P4_DURATION_TIME_ADDR	0x2874
+#define MAIN_POSTCO0L_TIME_ADDR		   0x2876
+#define MAIN_P_END_ADDR				       0x2876
+
+#define MAIN_P_START_POINT_ADDR			   0x2880
+#define MAIN_P1_WATT_POINT_ADDR			   0x2880
+#define MAIN_P1_DURATION_TIME_POINT_ADDR   0x2882
+#define MAIN_P1_INTERVAL_TIME_POINT_ADDR   0x2884
+
+#define MAIN_P2_WATT_POINT_ADDR			    0x2886
+#define MAIN_P2_DURATION_TIME_POINT_ADDR	0x2888
+#define MAIN_P2_INTERVAL_TIME_POINT_ADDR	 0x288A
+
+#define MAIN_P3_WATT_POINT_ADDR			   0x288C
+#define MAIN_P3_DURATION_TIME_POINT_ADDR   0x288E
+#define MAIN_P3_INTERVAL_TIME_POINT_ADDR   0x2890
+
+#define MAIN_P4_WATT_POINT_ADDR			   0x2892
+#define MAIN_P4_DURATION_TIME_POINT_ADDR   0x2894
+#define MAIN_POSTCO0L_TIME_POINT_ADDR	   0x2896
+#define MAIN_P_END_POINT_ADDR				0x2896
 
 
 typedef enum
@@ -207,6 +240,28 @@ typedef enum
 	BTN_MAIN_TEST_3_PULSE = 17,
 	BTN_MAIN_TEST_4_PULSE = 18,
 	BTN_MAIN_TEST_5_PULSE = 19,
+
+	BTN_MAIN_P1_WATT = 1,
+	BTN_MAIN_P1_DURATION_TIME ,
+	BTN_MAIN_P1_INTERVAL_TIME ,
+	BTN_MAIN_P2_WATT = 4,
+	BTN_MAIN_P2_DURATION_TIME ,
+	BTN_MAIN_P2_INTERVAL_TIME ,
+	BTN_MAIN_P3_WATT = 7,
+	BTN_MAIN_P3_DURATION_TIME ,
+	BTN_MAIN_P3_INTERVAL_TIME ,
+	BTN_MAIN_P4_WATT = 10,
+	BTN_MAIN_P4_DURATION_TIME ,
+	BTN_MAIN_POSTCO0L_TIME,
+
+	BTN_MAIN_RDY_STNBY_N = 13,
+	BTN_MAIN_CURRENT_SHOT_RST_N = 14,
+	BTN_MAIN_TOTAL_JOULE_RST_N = 15,
+	BTN_MAIN_ENGINIER_N = 16,
+	BTN_MAIN_UP = 17,
+	BTN_MAIN_DN = 18,
+	BTN_MAIN_SETTING_N = 19,
+
 
 	//SYSTEM MODE
 	BTN_SYSTEM_ERROK = 1,
@@ -334,6 +389,11 @@ typedef enum
 	CMD_WATT_CH4,
 	CMD_WATT_CH5,
 	CMD_WATT_CH6	= 23,
+
+	CMD_PLUSE_NUM	= 24,
+	CMD_PLUSE_EN	= 25,
+	CMD_PLUSE_BTN_UP_DN	= 26,
+	CMD_PLUSE_VALUE 	= 27,
 
 	CMD_CAIV_DURATION = 30,
 
@@ -794,6 +854,10 @@ xdata u8 systemErr;
 
 xdata u32 systemTimeStemp;
 xdata u8 systemNorsvCnt;
+xdata u16 pulseStrAddr;
+xdata u16 pulsePointAddr;
+
+xdata u16 pulseAddr;
 
 
 void Light_Change(u16 light);
@@ -1269,6 +1333,9 @@ void RX_Parssing_Config()
 	u16 cmd = 0;
 	u32 value=0;
 	u16 errData = 0;
+	u16 pluseNum = 0;
+	u32 pluseValue = 0;
+	u16 pluseAddr = 0;
 	const u16 iconCalEmptyPoint = ICON_CALIB_EMPTY_POINT;
 	const u16 iconStandby = ICON_MAIN_STANDBY, iconTreat = ICON_MAIN_TREAT;
 	if(uartRxFlag)
@@ -1443,6 +1510,14 @@ void RX_Parssing_Config()
 				Page_Change(value);
 				lcdPageForceFlag = 1;
 			break;
+
+			case CMD_PLUSE_VALUE:
+				pluseNum = value/100;
+				pluseValue = value%100;
+				pluseAddr =  MAIN_P_START_ADDR + (pluseNum-1)*2;
+				sys_write_vp(pluseAddr, (u8*)&pluseValue ,2);
+			break;
+
 
 			default:
 				if(CMD_TRANDU1_FRQ <= cmd && cmd <=CMD_TRANDU7_FRQ)
@@ -1622,6 +1697,25 @@ u8 System_Err_Check()
 	return returnValue;
 
 }
+
+
+void Touch_Pluse(u16 num)
+{
+	const u16 iconEmptyPoint = ICON_CALIB_EMPTY_POINT,  iconPoint = ICON_CALIB_POINT;
+	pulseAddr = num;
+
+	pulseStrAddr = MAIN_P_START_ADDR +(num-1)*2;
+	TX_Msg(CMD_PLUSE_NUM, num);
+
+	if(pulsePointAddr)
+	{
+		sys_write_vp(pulsePointAddr,(u8*)&iconEmptyPoint,2);
+	}
+	pulsePointAddr = MAIN_P_START_POINT_ADDR +(num-1)*2;
+	sys_write_vp(pulsePointAddr,(u8*)&iconPoint,2);
+
+}
+
 
 u8 Test_Config()
 {
@@ -1842,9 +1936,7 @@ u8 PassWard_Config()
 
 }
 
-
-
-u8 Main_Config()
+u8 Main_Config_old()
 {
 	u8 returnValue = 0;
 	int i =0;
@@ -1949,6 +2041,89 @@ u8 Main_Config()
 //		returnValue = LCD_MODE_MAIN_POPUP;
 //	}
 
+
+	return returnValue;
+
+}
+
+
+
+u8 Main_Config()
+{
+	u8 returnValue = 0;
+
+	returnValue = LCD_MODE_MAIN;
+
+
+	sys_read_vp(MAIN_BUTTON_ADDR,(u8*)&btnMain,1);
+	if(btnMain)
+	{
+		switch (btnMain)
+		{
+			case BTN_MAIN_P1_WATT:
+			case BTN_MAIN_P1_DURATION_TIME :
+			case BTN_MAIN_P1_INTERVAL_TIME :
+			case BTN_MAIN_P2_WATT:
+			case BTN_MAIN_P2_DURATION_TIME :
+			case BTN_MAIN_P2_INTERVAL_TIME :
+			case BTN_MAIN_P3_WATT:
+			case BTN_MAIN_P3_DURATION_TIME :
+			case BTN_MAIN_P3_INTERVAL_TIME :
+			case BTN_MAIN_P4_WATT:
+			case BTN_MAIN_P4_DURATION_TIME :
+			case BTN_MAIN_POSTCO0L_TIME:
+				Touch_Pluse(btnMain);
+			break;
+
+			case BTN_MAIN_UP:
+				TX_Msg(CMD_PLUSE_BTN_UP_DN, BUTTON_UP);
+			break;
+
+			case BTN_MAIN_DN:
+				TX_Msg(CMD_PLUSE_BTN_UP_DN, BUTTON_DN);
+			break;
+
+			case BTN_MAIN_RDY_STNBY_N:
+				if(rdyStnbyMode == STATUS_STNBY)
+				{TX_Msg(CMD_LCD_STATUS, STATUS_PRECOOLING);}//
+				else
+				{TX_Msg(CMD_LCD_STATUS, STATUS_STNBY);}//
+			break;
+			case BTN_MAIN_CURRENT_SHOT_RST_N:
+				TX_Msg(CMD_CURRENT_SHOT, 0);
+			break;
+			case BTN_MAIN_TOTAL_JOULE_RST_N:
+				TX_Msg(CMD_TOTAL_JOULE, 0);//
+			break;
+
+			case BTN_MAIN_ENGINIER_N:
+				if(engineerKey)
+				{
+					egCnt++;
+					if(egCnt==1)
+					{
+						egCnt = 0;
+						Page_Change(LCD_MODE_ENGINIEER);
+						returnValue = LCD_MODE_ENGINIEER;
+					}
+				}
+			case BTN_MAIN_SETTING_N:
+				Page_Change(LCD_MODE_SETTING);
+				returnValue = LCD_MODE_SETTING;
+			break;
+
+
+			break;
+
+
+
+		}
+
+		btnMain= 0;
+		sys_write_vp(MAIN_BUTTON_ADDR,(u8*)&btnMain,2);
+	}
+
+	EXP_FreeCool_Motion();
 
 	return returnValue;
 
@@ -2747,6 +2922,9 @@ void Lcd_Init()//
 	temperature = 0;
 	peltierDuty = 0;
 	lcdPageForceFlag = 0;
+	pulseStrAddr = 0;
+	pulsePointAddr = 0;
+	pulseAddr = 0;
 	Flash_Read();
 
 
@@ -2798,7 +2976,7 @@ void Lcd_Init()//
 
 
 
-#if 1
+#if 0
 	lcdPage = LCD_MODE_INIT;
 
 #else //  시간단축 하이패스
