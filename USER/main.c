@@ -143,6 +143,35 @@
 #define MAIN_POSTCO0L_TIME_POINT_ADDR	   0x2896
 #define MAIN_P_END_POINT_ADDR				0x2896
 
+#define MAIN_P_ENABLE_START_ADDR 	0x28A0
+#define MAIN_P1_ENABLE_ADDR 		0x28A0
+#define MAIN_P2_ENABLE_ADDR 		0x28A2
+#define MAIN_P3_ENABLE_ADDR 		0x28A4
+#define MAIN_P4_ENABLE_ADDR 		0x28A6
+
+#define MAIN_P_EN_START_BOX_ADDR 	0x28A8
+#define MAIN_P1_EN_BOX_ADDR 		0x28A8
+#define MAIN_P2_EN_BOX_ADDR 		0x28AA
+#define MAIN_P3_EN_BOX_ADDR 		0x28AC
+#define MAIN_P4_EN_BOX_ADDR 		0x28AE
+
+
+#define MAIN_P_EN_START_BLOCK_ADDR 		0x28B0
+#define MAIN_P1_EN_W_BLOCK_ADDR 		0x28B0
+#define MAIN_P1_EN_H_BLOCK_ADDR 		0x28B2
+#define MAIN_P1_EN_L_BLOCK_ADDR 		0x28B4
+
+#define MAIN_P2_EN_W_BLOCK_ADDR 		0x28B6
+#define MAIN_P2_EN_H_BLOCK_ADDR 		0x28B8
+#define MAIN_P2_EN_L_BLOCK_ADDR 		0x28BA
+
+#define MAIN_P3_EN_W_BLOCK_ADDR 		0x28BC
+#define MAIN_P3_EN_H_BLOCK_ADDR 		0x28BE
+#define MAIN_P3_EN_L_BLOCK_ADDR 		0x28C0
+
+#define MAIN_P4_EN_W_BLOCK_ADDR 		0x28C2
+#define MAIN_P4_EN_H_BLOCK_ADDR 		0x28C4
+#define MAIN_P4_EN_L_BLOCK_ADDR 		0x28C6
 
 typedef enum
 {
@@ -261,6 +290,10 @@ typedef enum
 	BTN_MAIN_UP = 17,
 	BTN_MAIN_DN = 18,
 	BTN_MAIN_SETTING_N = 19,
+	BTN_MAIN_P1_ENDIS = 20,
+	BTN_MAIN_P2_ENDIS = 21,
+	BTN_MAIN_P3_ENDIS = 22,
+	BTN_MAIN_P4_ENDIS = 23,
 
 
 	//SYSTEM MODE
@@ -666,6 +699,12 @@ typedef enum
 
 	ICON_MAIN_EMPTY_POP = 46,
 	ICON_MAIN_POP = 47,
+
+	ICON_PULSE_BOX_ENABLE = 48,
+	ICON_PULSE_BOX_DISABLE,
+
+	ICON_PULSE_BLOCK_ENABLE = 50,
+	ICON_PULSE_BLOCK_DISABLE,
 
 
 } ICON_E;
@@ -1162,6 +1201,47 @@ void EXP_FreeCool_Motion()
 	}
 
 }
+void Pulse_En_Dis(u8 enDisValue)
+{
+	const u16 iconDis = ICON_CALIB_DISABLE, iconEn = ICON_CALIB_ENABLE;
+	const u16 iconBoxDis = ICON_PULSE_BOX_DISABLE, iconBoxEn = ICON_PULSE_BOX_ENABLE;
+	const u16 iconBlockDis = ICON_PULSE_BLOCK_DISABLE, iconBlockEn = ICON_PULSE_BLOCK_ENABLE;
+
+	u16 add, addBox, addBlockW, addBlockH, addBlockL;
+	u8 enDis;
+	u8 num;
+
+	num = enDisValue/10;
+	enDis = enDisValue%10;
+
+	if(num>4)return;
+
+	add = MAIN_P_ENABLE_START_ADDR + (num -1)*2;
+	addBox = MAIN_P_EN_START_BOX_ADDR + (num -1)*2;
+
+	addBlockW = MAIN_P_EN_START_BLOCK_ADDR + (num -1)*6;
+	addBlockH = addBlockW +0x02;
+	addBlockL = addBlockW +0x04;
+
+	if (enDis)
+	{
+		sys_write_vp(add, (u8*)&iconEn,2);
+		sys_write_vp(addBox, (u8*)&iconBoxEn,2);
+
+		sys_write_vp(addBlockW, (u8*)&iconBlockEn,2);
+		sys_write_vp(addBlockH, (u8*)&iconBlockEn,2);
+		sys_write_vp(addBlockL, (u8*)&iconBlockEn,2);
+	}
+	else
+	{
+		sys_write_vp(add, (u8*)&iconDis,2);
+		sys_write_vp(addBox, (u8*)&iconBoxDis,2);
+
+		sys_write_vp(addBlockW, (u8*)&iconBlockDis,2);
+		sys_write_vp(addBlockH, (u8*)&iconBlockDis,2);
+		sys_write_vp(addBlockL, (u8*)&iconBlockDis,2);
+	}
+}
 
 void Event_PopUp_org(u16 eventData)
 {
@@ -1518,6 +1598,10 @@ void RX_Parssing_Config()
 				sys_write_vp(pluseAddr, (u8*)&pluseValue ,2);
 			break;
 
+			case CMD_PLUSE_EN:
+				Pulse_En_Dis(value);
+			break;
+
 
 			default:
 				if(CMD_TRANDU1_FRQ <= cmd && cmd <=CMD_TRANDU7_FRQ)
@@ -1715,6 +1799,7 @@ void Touch_Pluse(u16 num)
 	sys_write_vp(pulsePointAddr,(u8*)&iconPoint,2);
 
 }
+
 
 
 u8 Test_Config()
@@ -2055,6 +2140,7 @@ u8 Main_Config()
 	returnValue = LCD_MODE_MAIN;
 
 
+
 	sys_read_vp(MAIN_BUTTON_ADDR,(u8*)&btnMain,1);
 	if(btnMain)
 	{
@@ -2112,10 +2198,18 @@ u8 Main_Config()
 				returnValue = LCD_MODE_SETTING;
 			break;
 
-
+			case BTN_MAIN_P1_ENDIS:
+				TX_Msg(CMD_PLUSE_EN, 1);
 			break;
-
-
+			case BTN_MAIN_P2_ENDIS:
+				TX_Msg(CMD_PLUSE_EN, 2);
+			break;
+			case BTN_MAIN_P3_ENDIS:
+				TX_Msg(CMD_PLUSE_EN, 3);
+			break;
+			case BTN_MAIN_P4_ENDIS:
+				TX_Msg(CMD_PLUSE_EN, 4);
+			break;
 
 		}
 
@@ -2998,9 +3092,6 @@ void main(void)
 	uart2_init(115200);//³õÊ¼»¯´®¿Ú2
 	Lcd_Init();
 	sys_delay_ms(1000);
-
-
-
 
 	while(1)
 	{
