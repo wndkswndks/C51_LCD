@@ -3070,7 +3070,7 @@ void Lcd_Init()//
 
 
 
-#if 0
+#if 1
 	lcdPage = LCD_MODE_INIT;
 
 #else //  시간단축 하이패스
