@@ -83,7 +83,6 @@
 #define PULSE_DURATION_ADDR 	0x2880
 #define POST_COOLING_ADDR 		0x28A0
 #define INTERVAL_ADDR 			0x28C0
-#define CURRENT_SHOT_ADDR 		0x28C4
 #define TOTAL_JOULE_ADDR 		0x28C8
 #define REMIND_SHOT_ADDR 		0x28CC
 #define ENERGY_MINI_ADDR		0x28D0
@@ -91,6 +90,7 @@
 #define INTERVAL_MINI_ADDR	 	0x28D8
 #define COOLING_MINI_ADDR		0x28DC
 #define CALIV_PULSETIME_ADDR	0x28E0
+#define CURRENT_SHOT_ADDR 		0x28E2
 
 #define START_ENDIS1_ADDR		0x2900
 #define START_ENDIS2_ADDR		0x2920
@@ -702,8 +702,9 @@ typedef enum
 
 	ICON_PULSE_BOX_ENABLE = 48,
 	ICON_PULSE_BOX_DISABLE,
+	ICON_PULSE_4_BOX_DISABLE,
 
-	ICON_PULSE_BLOCK_ENABLE = 50,
+	ICON_PULSE_BLOCK_ENABLE = 51,
 	ICON_PULSE_BLOCK_DISABLE,
 
 
@@ -1204,7 +1205,7 @@ void EXP_FreeCool_Motion()
 void Pulse_En_Dis(u8 enDisValue)
 {
 	const u16 iconDis = ICON_CALIB_DISABLE, iconEn = ICON_CALIB_ENABLE;
-	const u16 iconBoxDis = ICON_PULSE_BOX_DISABLE, iconBoxEn = ICON_PULSE_BOX_ENABLE;
+	const u16 iconBoxDis = ICON_PULSE_BOX_DISABLE,  iconBox4Dis = ICON_PULSE_4_BOX_DISABLE, iconBoxEn = ICON_PULSE_BOX_ENABLE;
 	const u16 iconBlockDis = ICON_PULSE_BLOCK_DISABLE, iconBlockEn = ICON_PULSE_BLOCK_ENABLE;
 
 	u16 add, addBox, addBlockW, addBlockH, addBlockL;
@@ -1235,7 +1236,9 @@ void Pulse_En_Dis(u8 enDisValue)
 	else
 	{
 		sys_write_vp(add, (u8*)&iconDis,2);
-		sys_write_vp(addBox, (u8*)&iconBoxDis,2);
+		if(num==4) sys_write_vp(addBox, (u8*)&iconBox4Dis,2);
+		else sys_write_vp(addBox, (u8*)&iconBoxDis,2);
+
 
 		sys_write_vp(addBlockW, (u8*)&iconBlockDis,2);
 		sys_write_vp(addBlockH, (u8*)&iconBlockDis,2);
@@ -2162,11 +2165,11 @@ u8 Main_Config()
 			break;
 
 			case BTN_MAIN_UP:
-				TX_Msg(CMD_PLUSE_BTN_UP_DN, BUTTON_UP);
+				if(pulseAddr) TX_Msg(CMD_PLUSE_BTN_UP_DN, BUTTON_UP);
 			break;
 
 			case BTN_MAIN_DN:
-				TX_Msg(CMD_PLUSE_BTN_UP_DN, BUTTON_DN);
+				if(pulseAddr) TX_Msg(CMD_PLUSE_BTN_UP_DN, BUTTON_DN);
 			break;
 
 			case BTN_MAIN_RDY_STNBY_N:
@@ -2199,7 +2202,7 @@ u8 Main_Config()
 			break;
 
 			case BTN_MAIN_P1_ENDIS:
-				TX_Msg(CMD_PLUSE_EN, 1);
+//				TX_Msg(CMD_PLUSE_EN, 1);
 			break;
 			case BTN_MAIN_P2_ENDIS:
 				TX_Msg(CMD_PLUSE_EN, 2);
