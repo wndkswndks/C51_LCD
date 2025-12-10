@@ -84,6 +84,8 @@
 #define POST_COOLING_ADDR 		0x28A0
 #define INTERVAL_ADDR 			0x28C0
 #define TOTAL_JOULE_ADDR 		0x28C8
+#define CURRENT_JOULE_ADDR 		0x28CA
+
 #define REMIND_SHOT_ADDR 		0x28CC
 #define ENERGY_MINI_ADDR		0x28D0
 #define PULSE_MINI_ADDR	 		0x28D4
@@ -427,6 +429,7 @@ typedef enum
 	CMD_PLUSE_EN	= 25,
 	CMD_PLUSE_BTN_UP_DN	= 26,
 	CMD_PLUSE_VALUE 	= 27,
+	CMD_CURRENT_JOULE = 28,
 
 	CMD_CAIV_DURATION = 30,
 
@@ -796,6 +799,8 @@ idata u32 postCooling=0;
 idata u32 interval=0;
 idata u32 currentShot=0;
 idata u32 totalJoule=0;
+idata u32 currentJoule=0;
+
 idata u8 rdyStnbyMode=0;
 idata u32 remindShot=0;
 idata u32 temperature=0;
@@ -1112,6 +1117,17 @@ void Light_Change(u16 light)
 }
 
 void Volume_Change(u8       id, u16 volume)
+{
+	u8 buf[4];
+
+	buf[0] = id;//id
+	buf[1] = 0x01;
+	buf[2] = volume;
+	buf[3] = 0x02;
+ 	sys_write_vp(0x00a0,buf,2);
+}
+
+void NumColor_Change(u8       id, u16 volume)
 {
 	u8 buf[4];
 
@@ -1525,6 +1541,11 @@ void RX_Parssing_Config()
 				sys_write_vp(TOTAL_JOULE_ADDR,(u8*)&totalJoule ,2);
 			break;
 
+			case CMD_CURRENT_JOULE:
+				currentJoule = value;
+				sys_write_vp(CURRENT_JOULE_ADDR,(u8*)&currentJoule ,2);
+			break;
+
 			case CMD_REMIND_SHOT:
 				remindShot = value;
 				textCartrigeBuff[CART_IDX_REMIND_SHOT] = value;
@@ -1712,7 +1733,7 @@ u8 System_Err_Check()
 	static u32 timeStamp = 0;
 	returnValue = LCD_MODE_SYS_CHK;
 
-	if(delay_tickMy-timeStamp >= 2000)
+	if(delay_tickMy-timeStamp >= 500)
 	{
 		sys_write_vp(SYSTEM_ICON_ADDR, (u8*)&iconSystemCircle,2);
 		if(sysChkFlag) iconSystemCircle++;
@@ -2968,6 +2989,8 @@ void Lcd_Init()//
 	interval=0;
 	currentShot=0;
 	totalJoule=0;
+	currentJoule=0;
+
 	rdyStnbyMode=0;
 	egCnt= 0;
 	onTimeCalv=0;
