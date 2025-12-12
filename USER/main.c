@@ -480,7 +480,7 @@ typedef enum
 
 	CMD_LCD_STATUS = 60,
 	CMD_SYS_CHK = 61,
-	CMD_TRET_READY_OK = 62,
+	CMD_CAL_TRET_READY_OK = 62,
 
 	CMD_DO_ALL_LIVE = 70,
 	CMD_GET_ALL_CART = 71,
@@ -913,10 +913,7 @@ xdata u8 errCartEvent;
 xdata u16 chkOkBuff[3];
 xdata u8 chkOk;
 
-xdata u16 reTxCmd;
-xdata u16 reTxData;
 xdata u32 reTxTimeStamp;
-xdata u16 reTxCnt;
 
 xdata u8 cartTouch;
 xdata u8 cartIdx;
@@ -956,8 +953,6 @@ void TX_Msg(u16 txCmd, u16 txData)
 
 	printf("[%u,%u]\r\n",txCmd, txData);
 
-	reTxCmd = txCmd;
-	reTxData = txData;
 	reTxTimeStamp = delay_tickMy;
 
 }
@@ -991,60 +986,6 @@ void TX_Rx_Msg(u16 txCmd, u16 txData , u16* rxValue, u16 wateTime)
 		//err
 		errCartEvent = 1;
 	}
-
-}
-
-void TX_RF_DA_Req_Msg(u16 txCmd)
-{
-	u16 rxCmd = 0;
-	u32 rxData =0;
-	u32 timeStamp = 0;
-	u8 txCnt = 0;
-	const u8 maxCnt = 10;
-	u16 add = 0;
-	u16 cmd = 0;
-	u32 value = 0;
-
-	printf("[%u,%u]\r\n",txCmd, REQ_DATA);
-
-	timeStamp = delay_tickMy;
-
-	while (1)
-	{
-		if(uartRxFlag)
-		{
-			uartRxFlag = 0;
-			rxCmd = uartCmdTemp;
-			rxData = uartValueTemp;
-
-			if(rxCmd == txCmd)
-			{
-				if(CMD_TRANDU1_WATT10 <= rxCmd && rxCmd <=CMD_TRANDU7_WATT005)
-				{
-					rxCmd = rxCmd -100;
-					textWattBuff[rxCmd] = rxData;
-				}
-				break;
-			}
-			else
-			{
-//				printf("rfERR\r\n");
-			}
-
-		}
-		if(delay_tickMy-timeStamp >= 500)
-		{
-			printf("[%u,%u]\r\n",txCmd, REQ_DATA);
-			txCnt++;
-			if(txCnt>maxCnt)
-			{
-//				printf("req timeOut\r\n");
-				break;
-			}
-			timeStamp = delay_tickMy;
-		}
-	}
-
 
 }
 
@@ -1101,7 +1042,7 @@ void Calv_Tx_Msg()
 
 
 	sys_delay_ms(1000);
-	TX_Msg(CMD_TRET_READY_OK, 1);//
+	TX_Msg(CMD_CAL_TRET_READY_OK, 1);//
 }
 
 
@@ -1391,74 +1332,6 @@ void SYS_CHK_OK(u16 device)
 }
 
 
-void ReTry_Reset()
-{
-	reTxCmd = 0;
-	reTxData = 0;
-//	reTxTimeStamp = 0;
-	reTxCnt = 0;
-}
-
-void ReTry_Tx()
-{
-
-	if(reTxCmd)
-	{
-		if(delay_tickMy-reTxTimeStamp >= 500)
-		{
-
-			printf("[%u,%u]\r\n",reTxCmd, reTxData);
-			reTxTimeStamp = delay_tickMy;
-			reTxCnt++;
-			if(reTxCnt>=5) ReTry_Reset();
-		}
-	}
-
-}
-void RX_AUTOCAL_Parssing_Config()
-{
-	u16 add = 0;
-	u16 cmd = 0;
-	u32 value=0;
-	const u16 iconCalEmptyPoint = ICON_CALIB_EMPTY_POINT;
-	if(uartRxFlag)
-	{
-		uartRxFlag = 0;
-		ReTry_Reset();
-		cmd = uartCmdTemp;
-		value = uartValueTemp;
-
-//		if(CMD_TRANDU1_WATT10 <= cmd && cmd <=CMD_TRANDU7_WATT005)
-//		{
-//			if(value == AUTOCAL_START)
-//			{
-//				if(autoCalStart==0)
-//				{
-//					autoCalStart = cmd;
-//					cmd = cmd -100;
-//					autoCalAdd = (u16)(START_ICON_AUTOCAL_POINT_SATAT_ADDR + ((cmd-1)*0x02));
-//				}
-//			}
-//			else if(value == AUTOCAL_STOP)
-//			{
-//				if(autoCalStart == cmd)
-//				{
-//					autoCalStart = 0;
-//					sys_write_vp(autoCalAdd, (u8*)&iconCalEmptyPoint,2);
-//				}
-//			}
-//			else
-//			{
-//				cmd  = cmd-100;
-//				textWattBuff[cmd] = value;
-//				autoCalRcvCnt++;
-//			}
-
-//		}
-
-	}
-	ReTry_Tx();
-}
 
 
 
@@ -1476,7 +1349,6 @@ void RX_Parssing_Config()
 	if(uartRxFlag)
 	{
 		uartRxFlag = 0;
-		ReTry_Reset();
 		cmd = uartCmdTemp;
 		value = uartValueTemp;
 		switch (cmd)
@@ -2475,7 +2347,7 @@ u8 Calibration_Config()//
 			if(bntED==ED_RDY_SBY)
 			{
 				sys_write_vp(add, (u8*)&iconStandby,2);
-				TX_Msg(CMD_TRET_READY_OK, 0);//
+				TX_Msg(CMD_CAL_TRET_READY_OK, 0);//
 			}
 			else sys_write_vp(add, (u8*)&iconDis,2);
 
@@ -3052,11 +2924,7 @@ void Lcd_Init()//
 	issuedDD = 0;
 	sysChkFlag = 1;
 	Rtc = 0;
-	reTxCmd = 0;
-	reTxData = 0;
 	reTxTimeStamp = 0;
-	reTxCnt = 0;
-
 	cartTouch = 0;
 	cartIdx = 0;
 	cartValue = 0;

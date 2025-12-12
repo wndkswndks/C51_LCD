@@ -71,63 +71,6 @@ typedef enum
 	STEP7,
 	STEP8,
 } STEP_E;
-
-void uart2_Rx_Passing_org(u8 rxData)
-{
-	switch (uartRxStep)
-	{
-		case STEP0:
-			if(rxData == START_CHAR)
-			{
-				memset(uartRxBuff, 0, 20);
-				uartRxStep = STEP1;
-			}
-
-		break;
-
-		case STEP1:
-			uartRxBuff[0] = rxData;
-			uartRxStep = STEP2;
-		break;
-
-		case STEP2:
-			if(rxData == ',') uartRxStep = STEP3;
-			else uartRxStep = STEP0;
-		break;
-
-		case STEP3:
-			uartRxBuff[1] = rxData;
-			uartRxStep = STEP4;
-		break;
-
-		case STEP4:
-			if(rxData == ',') uartRxStep = STEP5;
-			else uartRxStep = STEP0;
-		break;
-
-		case STEP5:
-			uartRxBuff[2] = rxData;
-			uartRxStep = STEP6;
-		break;
-
-		case STEP6:
-			if(rxData == END_CHAR)
-			{
-				uartRxStartFlag = 0;
-				uartRxFlag= 1;
-				uartRxStep = STEP0;
-			}
-			else
-			{
-				uartRxStartFlag = 0;
-				uartRxStep = STEP0;
-			}
-
-		break;
-
-
-	}
-}
 void uart2_Rx_Passing(u8 rxData)
 {
 	switch (uartRxStep)
