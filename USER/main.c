@@ -26,28 +26,24 @@
 #define SYSTEM_BUTTON_ADDR		0x1150
 
 
-#define PW_ICON_ADDR				0x1600
-#define SYSTEM_ICON_ADDR			0x1620
-#define SYSTEM_CHECK_CTRL_ICON_ADDR	0x1640
-#define SYSTEM_CHECK_GEN_ICON_ADDR	0x1660
-#define SYSTEM_CHECK_HP_ICON_ADDR	0x1680
-#define READY_STANDBY_ICON_ADDR 0x1980
+#define PW_ICON_ADDR				0x1200
+#define SYSTEM_ICON_ADDR			0x1202
+#define SYSTEM_CHECK_CTRL_ICON_ADDR	0x1204
+#define SYSTEM_CHECK_GEN_ICON_ADDR	0x1206
+#define SYSTEM_CHECK_HP_ICON_ADDR	0x1208
+#define READY_STANDBY_ICON_ADDR 	0x120A
 
 #define EN_ICON_ADDR 0x2200
-#define TRANDU_FREQ_POINT_ADDR 		0x22C2
 #define TRANDU_WATT_POINT_ADDR 		0x22D0
 
-#define START_ICON_AUTOCAL_POINT_SATAT_ADDR	0x2400
-#define START_ICON_AUTOCAL_POINT_END_ADDR	0x24A6
 
-#define START_ICON_AUTOCAL_NUM_START_ADDR		0x24A8
-#define START_ICON_AUTOCAL_NUM_END_ADDR			0x254E
 
+//==================================================
 #define CART_POINT_SATAT_ADDR       0x2550
 #define CART_POINT_END_ADDR       	0x2570
 
-#define CART_VALUE_SATAT_ADDR       0x2590
-#define CART_VALUE_CART_ID_ADDR       0x2590
+#define CART_VALUE_SATAT_ADDR       	0x2590
+#define CART_VALUE_CART_ID_ADDR       	0x2590
 #define CART_VALUE_MANUFAC_YY_ADDR       0x2592
 #define CART_VALUE_MANUFAC_MM_ADDR       0x2594
 #define CART_VALUE_MANUFAC_DD_ADDR       0x2596
@@ -65,49 +61,64 @@
 #define CART_VALUE_STATUS_ADDR      	0x25AE
 #define CART_VALUE_RTC_ADDR      		0x25B0
 #define CART_VALUE_END_ADDR       		0x25B0
+//==================================================
+
+
+#define TRANDU_FREQ_NUM_START_ADDR       	0x2600
+#define TRANDU_FREQ_NUM_1_ADDR       		0x2600
+#define TRANDU_FREQ_NUM_2_ADDR       		0x2602
+#define TRANDU_FREQ_NUM_3_ADDR       		0x2604
+#define TRANDU_FREQ_NUM_4_ADDR       		0x2606
+#define TRANDU_FREQ_NUM_5_ADDR       		0x2608
+#define TRANDU_FREQ_NUM_6_ADDR       		0x260A
+#define TRANDU_FREQ_NUM_7_ADDR       		0x260C
+#define TRANDU_FREQ_NUM_END_ADDR      	 	0x260C
+
+#define TRANDU_WATT_START_NUM_ADDR       	0x2610
+#define TRANDU_WATT_1_START_NUM_ADDR       	0x2610
+#define TRANDU_WATT_1_END_NUM_ADDR       	0x2624
+#define TRANDU_WATT_2_START_NUM_ADDR       	0x2626
+#define TRANDU_WATT_2_END_NUM_ADDR       	0x263A
+#define TRANDU_WATT_3_START_NUM_ADDR       	0x263C
+#define TRANDU_WATT_3_END_NUM_ADDR       	0x2650
+#define TRANDU_WATT_4_START_NUM_ADDR       	0x2652
+#define TRANDU_WATT_4_END_NUM_ADDR       	0x2666
+#define TRANDU_WATT_5_START_NUM_ADDR       	0x2668
+#define TRANDU_WATT_5_END_NUM_ADDR       	0x267C
+#define TRANDU_WATT_6_START_NUM_ADDR       	0x267E
+#define TRANDU_WATT_6_END_NUM_ADDR       	0x2692
+#define TRANDU_WATT_7_START_NUM_ADDR       	0x2694
+#define TRANDU_WATT_7_END_NUM_ADDR       	0x26A8
+#define TRANDU_WATT_END_NUM_ADDR       		0x26A8
+
+#define ERR_POPUP_BOX_ICON_ADDR      0x2700
+#define ERR_POPUP_LEVEL_ICON_ADDR    0x2702
+#define ERR_POPUP_CODE_ICON_ADDR     0x2704
+#define ERR_POPUP_MSG_ICON_ADDR      0x2706
+
+#define ENERGY_NUM_ADDR 			0x2710
+#define PULSE_DURATION_NUM_ADDR 	0x2712
+#define POST_COOLING_NUM_ADDR 		0x2714
+#define INTERVAL_NUM_ADDR 			0x2716
+#define TOTAL_JOULE_NUM_ADDR 		0x2718
+#define CURRENT_JOULE_NUM_ADDR 		0x271A
+#define REMIND_SHOT_NUM_ADDR 		0x271C
+#define CURRENT_SHOT_NUM_ADDR 		0x271E
+
+#define ENERGY_MINI_NUM_ADDR		0x2720
+#define PULSE_MINI_NUM_ADDR	 		0x2722
+#define INTERVAL_MINI_NUM_ADDR	 	0x2724
+#define COOLING_MINI_NUM_ADDR		0x2726
+#define CALIV_PULSETIME_NUM_NUM_ADDR	0x2728
+
+#define TEMP_DEBUG_NUM_ADDR			0x2840
+#define DUTY_DEBUG_NUM_ADDR			0x2842
 
 
 
-#define TRANDU_FREQ_NUM_ADDR       	0x2600
-#define TRANDU_WATT_NUM_ADDR       	0x2610
 
-#define ERR_POPUP_BOX_ADDR      0x2700
-#define ERR_POPUP_LEVEL_ADDR    0x2702
-#define ERR_POPUP_CODE_ADDR     0x2704
-#define ERR_POPUP_MSG_ADDR      0x2706
+//==================================================
 
-#define TEMP_DEBUG_ADDR			0x2840
-#define DUTY_DEBUG_ADDR			0x2842
-
-#define ENERGY_ADDR 			0x2860
-#define PULSE_DURATION_ADDR 	0x2880
-#define POST_COOLING_ADDR 		0x28A0
-#define INTERVAL_ADDR 			0x28C0
-#define TOTAL_JOULE_ADDR 		0x28C8
-#define CURRENT_JOULE_ADDR 		0x28CA
-
-#define REMIND_SHOT_ADDR 		0x28CC
-#define ENERGY_MINI_ADDR		0x28D0
-#define PULSE_MINI_ADDR	 		0x28D4
-#define INTERVAL_MINI_ADDR	 	0x28D8
-#define COOLING_MINI_ADDR		0x28DC
-#define CALIV_PULSETIME_ADDR	0x28E0
-#define CURRENT_SHOT_ADDR 		0x28E2
-
-#define START_ENDIS1_ADDR		0x2900
-#define START_ENDIS2_ADDR		0x2920
-#define START_ENDIS3_ADDR		0x2940
-#define START_ENDIS4_ADDR		0x2960
-#define START_ENDIS5_ADDR		0x2980
-#define START_ENDIS6_ADDR		0x29A0
-#define START_ENDIS7_ADDR		0x29C0
-#define START_RDY_SBY_ADDR		0x29E0
-
-#define LIGHT_ICON_ADDR  		0x3000
-#define VOLRUME_ICON_ADDR  		0x3020
-#define ERROR_EVENT_ADDR		 0x6010
-#define DEBUG_MSG1_ADDR		 	 0x6210
-#define DEBUG_MSG2_ADDR		 	 0x6310
 
 #define MAIN_P_START_ADDR			   0x2860
 #define MAIN_P1_WATT_ADDR			   0x2860
@@ -174,6 +185,14 @@
 #define MAIN_P4_EN_W_BLOCK_ADDR 		0x28C2
 #define MAIN_P4_EN_H_BLOCK_ADDR 		0x28C4
 #define MAIN_P4_EN_L_BLOCK_ADDR 		0x28C6
+//==================================================
+
+#define LIGHT_ICON_ADDR  		0x3000
+#define VOLRUME_ICON_ADDR  		0x3020
+
+#define ERROR_EVENT_ADDR		 0x6010
+#define DEBUG_MSG1_ADDR		 	 0x6210
+#define DEBUG_MSG2_ADDR		 	 0x6310
 
 typedef enum
 {
@@ -1041,14 +1060,14 @@ void Watt_Frq_All_Set()
 	for(i =1 ;i < 8;i++)
 	{
 		defultFrq = textFrqBuff[i];
-		add = (u16)(TRANDU_FREQ_NUM_ADDR + (i-1)*0x02);
+		add = (u16)(TRANDU_FREQ_NUM_START_ADDR + (i-1)*0x02);
 		sys_write_vp(add,(u8*)&defultFrq,2);
 	}
 
 	for(i =1 ;i <= 77;i++)
 	{
 		defultWatt = textWattBuff[i];
-		add = (u16)(TRANDU_WATT_NUM_ADDR + i*0x02);
+		add = (u16)(TRANDU_WATT_START_NUM_ADDR + i*0x02);
 		sys_write_vp(add,(u8*)&defultWatt,2);
 	}
 
@@ -1299,9 +1318,9 @@ void Event_PopUp_org(u16 eventData)
 //	else if(errLevel == LEVEL_INFO)iconErrIcon = 3;
 //	else return;
 
-	sys_write_vp(ERR_POPUP_BOX_ADDR, (u8*)&iconErrBack,2);//backGround
+	sys_write_vp(ERR_POPUP_BOX_ICON_ADDR, (u8*)&iconErrBack,2);//backGround
 //	sys_delay_ms(500);
-	sys_write_vp(ERR_POPUP_MSG_ADDR, (u8*)&errData,2);//icon
+	sys_write_vp(ERR_POPUP_MSG_ICON_ADDR, (u8*)&errData,2);//icon
 
 
 
@@ -1321,9 +1340,9 @@ void Event_PopDown_org()
 	const u16 iconErrBack= ICON_MAIN_EMPTY_POP; // 고정
 	const u16 iconErrMsgBack= 1; // 고정
 
-	sys_write_vp(ERR_POPUP_MSG_ADDR, (u8*)&iconErrBack,2);//backGround
+	sys_write_vp(ERR_POPUP_MSG_ICON_ADDR, (u8*)&iconErrBack,2);//backGround
 //	sys_delay_ms(500);
-	sys_write_vp(ERR_POPUP_BOX_ADDR, (u8*)&iconErrMsgBack,2);//backGround
+	sys_write_vp(ERR_POPUP_BOX_ICON_ADDR, (u8*)&iconErrMsgBack,2);//backGround
 }
 
 void Event_PopUp(u16 eventData)
@@ -1339,7 +1358,7 @@ void Event_PopUp(u16 eventData)
 	errLevel = eventData / LEVEL_UNIT;
 	errData = eventData % ERR_ENDIS_UNIT;
 
-	sys_write_vp(ERR_POPUP_BOX_ADDR, (u8*)&iconErrBack,2);//backGround
+	sys_write_vp(ERR_POPUP_BOX_ICON_ADDR, (u8*)&iconErrBack,2);//backGround
 	Evnt_Ascii_Msg(errData);
 }
 
@@ -1349,7 +1368,7 @@ void Event_PopDown()
 	const u16 iconErrMsgBack= 1; // 고정
 
 	Ascii_Clear(ERROR_EVENT_ADDR);
-	sys_write_vp(ERR_POPUP_BOX_ADDR, (u8*)&iconErrMsgBack,2);//backGround
+	sys_write_vp(ERR_POPUP_BOX_ICON_ADDR, (u8*)&iconErrMsgBack,2);//backGround
 }
 
 
@@ -1523,63 +1542,63 @@ void RX_Parssing_Config()
 
 			case CMD_ENERGY:
 				energy = value;
-				sys_write_vp(ENERGY_ADDR,(u8*)&energy ,2);
-				sys_write_vp(ENERGY_MINI_ADDR,(u8*)&energy ,2);
+				sys_write_vp(ENERGY_NUM_ADDR,(u8*)&energy ,2);
+				sys_write_vp(ENERGY_MINI_NUM_ADDR,(u8*)&energy ,2);
 
 			break;
 
 			case CMD_PULSE_DURATION:
 				pulseDuration = value;
-				sys_write_vp(PULSE_DURATION_ADDR,(u8*)&pulseDuration ,2);
-				sys_write_vp(PULSE_MINI_ADDR,(u8*)&pulseDuration ,2);
+				sys_write_vp(PULSE_DURATION_NUM_ADDR,(u8*)&pulseDuration ,2);
+				sys_write_vp(PULSE_MINI_NUM_ADDR,(u8*)&pulseDuration ,2);
 			break;
 
 			case CMD_POST_COOLING:
 				postCooling = value;
-				sys_write_vp(POST_COOLING_ADDR,(u8*)&postCooling ,2);
-				sys_write_vp(COOLING_MINI_ADDR,(u8*)&postCooling ,2);
+				sys_write_vp(POST_COOLING_NUM_ADDR,(u8*)&postCooling ,2);
+				sys_write_vp(COOLING_MINI_NUM_ADDR,(u8*)&postCooling ,2);
 			break;
 
 			case CMD_INTERVAL:
 				interval = value;
-				sys_write_vp(INTERVAL_ADDR,(u8*)&interval ,2);
-				sys_write_vp(INTERVAL_MINI_ADDR,(u8*)&interval ,2);
+				sys_write_vp(INTERVAL_NUM_ADDR,(u8*)&interval ,2);
+				sys_write_vp(INTERVAL_MINI_NUM_ADDR,(u8*)&interval ,2);
 			break;
 
 
 			case CMD_CURRENT_SHOT:
 				currentShot = value;
-				sys_write_vp(CURRENT_SHOT_ADDR,(u8*)&currentShot ,2);
+				sys_write_vp(CURRENT_SHOT_NUM_ADDR,(u8*)&currentShot ,2);
 
 			break;
 
 			case CMD_TOTAL_JOULE:
 				totalJoule = value;
-				sys_write_vp(TOTAL_JOULE_ADDR,(u8*)&totalJoule ,2);
+				sys_write_vp(TOTAL_JOULE_NUM_ADDR,(u8*)&totalJoule ,2);
 			break;
 
 			case CMD_CURRENT_JOULE:
 				currentJoule = value;
-				sys_write_vp(CURRENT_JOULE_ADDR,(u8*)&currentJoule ,2);
+				sys_write_vp(CURRENT_JOULE_NUM_ADDR,(u8*)&currentJoule ,2);
 			break;
 
 			case CMD_REMIND_SHOT:
 				remindShot = value;
 				textCartrigeBuff[CART_IDX_REMIND_SHOT] = value;
-				sys_write_vp(REMIND_SHOT_ADDR,(u8*)&remindShot ,2);
+				sys_write_vp(REMIND_SHOT_NUM_ADDR,(u8*)&remindShot ,2);
 				sys_write_vp(CART_VALUE_REMIND_SHOT_ADDR,(u8*)&value ,2);
 
 			break;
 
 			case CMD_TEMPERATURE_SHOT:
 				temperature = value;
-				sys_write_vp(TEMP_DEBUG_ADDR,(u8*)&temperature ,2);
+				sys_write_vp(TEMP_DEBUG_NUM_ADDR,(u8*)&temperature ,2);
 
 			break;
 
 			case CMD_PELTIER_DUTY:
 				peltierDuty = value;
-				sys_write_vp(DUTY_DEBUG_ADDR,(u8*)&peltierDuty ,2);
+				sys_write_vp(DUTY_DEBUG_NUM_ADDR,(u8*)&peltierDuty ,2);
 
 			break;
 
@@ -2404,7 +2423,7 @@ u8 Calibration_Config()//
 				else if(textNum < 0) textNum = 0;
 
 				textWattBuff[wattIdxMain] = textNum;
-				add = (u16)(TRANDU_WATT_NUM_ADDR + (wattIdxMain-1)*0x02);
+				add = (u16)(TRANDU_WATT_START_NUM_ADDR + (wattIdxMain-1)*0x02);
 				sys_write_vp(add,(u8*)&textNum,2);
 
 
@@ -2431,12 +2450,12 @@ u8 Calibration_Config()//
 
 			case KEY_CAL_UP:
 				if(onTimeCalv<130)onTimeCalv++;
-				sys_write_vp(CALIV_PULSETIME_ADDR,(u8*)&onTimeCalv ,4);
+				sys_write_vp(CALIV_PULSETIME_NUM_NUM_ADDR,(u8*)&onTimeCalv ,4);
 			break;
 
 			case KEY_CAL_DN:
 				if(onTimeCalv>0)onTimeCalv--;
-				sys_write_vp(CALIV_PULSETIME_ADDR,(u8*)&onTimeCalv ,4);
+				sys_write_vp(CALIV_PULSETIME_NUM_NUM_ADDR,(u8*)&onTimeCalv ,4);
 			break;
 		}
 		btn= 0;
@@ -2776,7 +2795,7 @@ u8 Engineer_Config()//
 			for(i =1 ;i <= 77; i++)
 			{
 				TX_Rx_Msg(CMD_TRANDU_WATT_BASE+i, REQ_DATA, textWattBuff+i );
-				add = (u16)(TRANDU_WATT_NUM_ADDR + (i-1)*0x02);
+				add = (u16)(TRANDU_WATT_START_NUM_ADDR + (i-1)*0x02);
 				value = textWattBuff[i];
 				sys_write_vp(add,(u8*)&value,2);
 			}
@@ -2807,7 +2826,7 @@ u8 Engineer_Config()//
 
 			for(i =1 ;i <= 77; i++)
 			{
-				add = (u16)(TRANDU_WATT_NUM_ADDR + (i-1)*0x02);
+				add = (u16)(TRANDU_WATT_START_NUM_ADDR + (i-1)*0x02);
 				value = textWattBuff[i];
 				sys_write_vp(add,(u8*)&value,2);
 			}
