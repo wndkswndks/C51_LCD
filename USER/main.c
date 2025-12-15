@@ -91,6 +91,16 @@
 #define TRANDU_WATT_7_END_NUM_ADDR       	0x26A8
 #define TRANDU_WATT_END_NUM_ADDR       		0x26A8
 
+#define TRANDU_WATT_EXP1_NUM_ADDR       	0x26AA
+#define TRANDU_WATT_EXP2_NUM_ADDR       	0x26AC
+#define TRANDU_WATT_EXP3_NUM_ADDR       	0x26AE
+#define TRANDU_WATT_EXP4_NUM_ADDR       	0x26B0
+#define TRANDU_WATT_EXP5_NUM_ADDR       	0x26B2
+#define TRANDU_WATT_EXP6_NUM_ADDR       	0x26B4
+#define TRANDU_WATT_EXP7_NUM_ADDR       	0x26B6
+
+
+
 #define ERR_POPUP_BOX_ICON_ADDR      0x2700
 #define ERR_POPUP_LEVEL_ICON_ADDR    0x2702
 #define ERR_POPUP_CODE_ICON_ADDR     0x2704
@@ -350,7 +360,9 @@ typedef enum
 	KEY_CLEAR = 12,
 	KEY_CAL_BACK_MAIN = 13,
 	KEY_CAL_WATT_LOAD = 14,
-	KEY_CAL_WATT_SAVE = 17,
+	KEY_CAL_WATT_SAVE = 15,
+	KEY_CAL_AUTOCAL = 16,
+	KEY_CAL_TEMP_RST = 17,
 	KEY_CAL_UP = 19,
 	KEY_CAL_DN = 20,
 
@@ -497,7 +509,7 @@ typedef enum
 	CMD_CAL_TEST_ZERO = 189,
 	CMD_CAL_TEST_EXP = 190,
 	CMD_CAL_TEST_IP = 191,
-	CMD_CAL_TEST_AUTOSTART = 192,
+	CMD_AUTO_CAL_START = 192,
 
 	CMD_DEBUG_PUMP = 193,
 	CMD_DEBUG_CHILLER = 194,
@@ -854,7 +866,7 @@ xdata u32 mainDataBuff[9];
 ///옮기는 변수는 오직이거
 
 xdata u16 textFrqBuff[8];
-xdata u16 textWattBuff[78];
+xdata u16 textWattBuff[85];
 xdata u16 textCartrigeBuff[20];
 
 xdata u8 frqIdx = 0;
@@ -992,7 +1004,7 @@ void TX_Rx_Msg(u16 txCmd, u16 txData , u16* rxValue, u16 wateTime)
 
 
 
-void Calv_Tx_Msg()
+void Calv_Tx_Msg_org()
 {
 	int i =0;
 	u16 add = 0;
@@ -1017,6 +1029,31 @@ void Calv_Tx_Msg()
 
 
 	sys_delay_ms(1000);
+	TX_Msg(CMD_CAL_TRET_READY_OK, 1);//
+}
+
+
+
+void Calv_Tx_Msg()
+{
+	int i =0;
+	u16 add = 0;
+	u16 value = 0;
+	u16 addIcon = 0;
+	const u16 icon9 = 9;
+
+	sys_delay_ms(100);
+
+	value = onTimeCalv;
+	TX_Msg(CMD_CAIV_DURATION, value);//
+
+	for(i =0 ;i < 7;i++)
+	{
+			add = i+CMD_WATT_CH0;
+			value = textWattBuff[i+78];
+			TX_Msg(add, value);//
+	}
+	sys_delay_ms(500);
 	TX_Msg(CMD_CAL_TRET_READY_OK, 1);//
 }
 
@@ -2209,7 +2246,7 @@ void Calibration_TDU_Parts()//
 {
 
 	u16 btnTtext;
-	u16 add = 0, pointAdd = 0;
+	u16 add = 0, pointAdd = 0, idx = 0;
 	const u16 iconEmptyPoint = ICON_CALIB_EMPTY_POINT,  iconPoint = ICON_CALIB_POINT;
 
 	sys_read_vp(CAL_TOUCH_TDU_ADDR, (u8*)&btnTtext,1);
@@ -2225,10 +2262,10 @@ void Calibration_TDU_Parts()//
 
 
 		prePointAddr = pointAdd;
-
-		wattIdxMain = btnTtext;
 		calMode = CAL_MODE_WATT;
+		wattIdxMain = btnTtext;
 		textNum = textWattBuff[wattIdxMain];
+
 
 		btnTtext= 0;
 		sys_write_vp(CAL_TOUCH_TDU_ADDR,(u8*)&btnTtext,2);
@@ -2250,8 +2287,23 @@ void Watt_All_Zero()
 		add = (u16)(TRANDU_WATT_START_NUM_ADDR + (i-1)*0x02);
 		sys_write_vp(add,(u8*)&defultWatt,2);
 	}
-
 }
+
+void Watt_Exp_zero()
+{
+	u16 add;
+	int i = 0;
+	u32 defultWatt =0;
+
+	for(i = 0 ;i < 7;i++)
+	{
+		textWattBuff[i+78] = 0;
+		defultWatt = 0;
+		add = (u16)(TRANDU_WATT_EXP1_NUM_ADDR + i*0x02);
+		sys_write_vp(add,(u8*)&defultWatt,2);
+	}
+}
+
 u8 Calibration_Config()//
 {
 	u8 returnValue = 0;
@@ -2307,6 +2359,11 @@ u8 Calibration_Config()//
 				Watt_Save();
 			break;
 
+			case KEY_CAL_AUTOCAL:
+				TX_Msg(CMD_AUTO_CAL_START, 1);
+			break;
+
+
 			case KEY_CAL_BACK_MAIN:
 				if(expFlag)
 				{
@@ -2317,6 +2374,11 @@ u8 Calibration_Config()//
 				Page_Change(LCD_MODE_ENGINIEER);
 				returnValue = LCD_MODE_ENGINIEER;
 			break;
+
+			case KEY_CAL_TEMP_RST:
+				Watt_Exp_zero();
+			break;
+
 
 			case KEY_CAL_UP:
 				if(onTimeCalv<130)onTimeCalv++;
@@ -2366,7 +2428,6 @@ u8 Calibration_Config()//
 	}
 
 
-//	RX_CALIBRATION_Parssing_Config();
 	return returnValue;
 
 }
@@ -2948,6 +3009,7 @@ void Lcd_Init()//
 	}
 
 	Watt_All_Zero();
+	Watt_Exp_zero();
 
 
 
