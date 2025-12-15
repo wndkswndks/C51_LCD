@@ -328,9 +328,9 @@ typedef enum
 	//ENGINER MODE
 	BTN_EG_INFOMATION = 1,
 	BTN_EG_CALIBRATION = 2,
-	BTN_EG_BACKHOME = 3,
-	BTN_EG_AUTOCAL = 4,
-	BTN_EG_CART_SET = 5,
+	BTN_EG_CART_SET = 3,
+	BTN_EG_ERR_EVENT = 4,
+	BTN_EG_BACKHOME = 5,
 
 	//INFOMATION MODE
 	BTN_INFO_BACKHOME = 1,
@@ -487,6 +487,7 @@ typedef enum
 	CMD_GET_ALL_CART_END = 72,
 
 	CMD_TEST_PULSE = 73,
+	CMD_GET_WATT_CART = 74,
 	CMD_TEST_FORCE_PAGE_CHANGE = 75,
 
 	CMD_LCD_EXP = 85,
@@ -986,32 +987,6 @@ void TX_Rx_Msg(u16 txCmd, u16 txData , u16* rxValue, u16 wateTime)
 		//err
 		errCartEvent = 1;
 	}
-
-}
-
-
-void Watt_Frq_All_Set()
-{
-	u16 add = 0;
-	int i = 0,j = 0;
-	u32 defultWatt=0;
-	u32 defultFrq=0;
-
-
-	for(i =1 ;i < 8;i++)
-	{
-		defultFrq = textFrqBuff[i];
-		add = (u16)(TRANDU_FREQ_NUM_START_ADDR + (i-1)*0x02);
-		sys_write_vp(add,(u8*)&defultFrq,2);
-	}
-
-	for(i =1 ;i <= 77;i++)
-	{
-		defultWatt = textWattBuff[i];
-		add = (u16)(TRANDU_WATT_START_NUM_ADDR + i*0x02);
-		sys_write_vp(add,(u8*)&defultWatt,2);
-	}
-
 
 }
 
@@ -1521,6 +1496,7 @@ void RX_Parssing_Config()
 				lcdPage = value;
 				Page_Change(value);
 				lcdPageForceFlag = 1;
+				engineerKey = 1;
 			break;
 
 			case CMD_PLUSE_VALUE:
@@ -1543,11 +1519,16 @@ void RX_Parssing_Config()
 					textCartrigeBuff[CART_IDX_ISSUED_DD+cmd] = value;
 					add = (u16)(CART_VALUE_TRANDU1_ADDR + (cmd-1)*0x02);
 					sys_write_vp(add,(u8*)&value ,2);
+
+					add = (u16)(TRANDU_FREQ_NUM_START_ADDR + (cmd-1)*0x02);
+					sys_write_vp(add,(u8*)&value ,2);
 				}
 				else if(CMD_TRANDU1_WATT10 <= cmd && cmd <=CMD_TRANDU7_WATT005)
 				{
 					cmd  = cmd-100;
 					textWattBuff[cmd] = value;
+					add = (u16)(TRANDU_WATT_START_NUM_ADDR + (cmd-1)*0x02);
+					sys_write_vp(add,(u8*)&value ,2);
 				}
 			break;
 		}
@@ -2125,6 +2106,8 @@ u8 Main_Config()
 						returnValue = LCD_MODE_ENGINIEER;
 					}
 				}
+			break;
+
 			case BTN_MAIN_SETTING_N:
 				Page_Change(LCD_MODE_SETTING);
 				returnValue = LCD_MODE_SETTING;
@@ -2254,7 +2237,21 @@ void Calibration_TDU_Parts()//
 
 }
 
+void Watt_All_Zero()
+{
+	u16 add;
+	int i = 0;
+	u32 defultWatt =0;
 
+	for(i =1 ;i <= 77;i++)
+	{
+		textWattBuff[i] = 0;
+		defultWatt = 0;
+		add = (u16)(TRANDU_WATT_START_NUM_ADDR + (i-1)*0x02);
+		sys_write_vp(add,(u8*)&defultWatt,2);
+	}
+
+}
 u8 Calibration_Config()//
 {
 	u8 returnValue = 0;
@@ -2302,7 +2299,8 @@ u8 Calibration_Config()//
 			break;
 
 			case KEY_CAL_WATT_LOAD:
-				////==Watt_Load();
+				Watt_All_Zero();
+				TX_Msg(CMD_GET_WATT_CART, 1);
 			break;
 
 			case KEY_CAL_WATT_SAVE:
@@ -2655,61 +2653,26 @@ u8 Engineer_Config()//
 			break;
 
 			case BTN_EG_CALIBRATION:
-#if 0
-			calRcvCnt = 0;
+				TX_Msg(CMD_GET_WATT_CART, 1);
+				Page_Change(LCD_MODE_CALIBRATION);
+				returnValue = LCD_MODE_CALIBRATION;
 
-			for(i =1 ;i <= 7; i++)
-			{
-				add = (u16)(TRANDU_FREQ_NUM_ADDR + (i-1)*0x02);
-				value = textFrqBuff[i];
-				sys_write_vp(add,(u8*)&value,2);
-			}
-			for(i =1 ;i <= 77; i++)
-			{
-				TX_Rx_Msg(CMD_TRANDU_WATT_BASE+i, REQ_DATA, textWattBuff+i );
-				add = (u16)(TRANDU_WATT_START_NUM_ADDR + (i-1)*0x02);
-				value = textWattBuff[i];
-				sys_write_vp(add,(u8*)&value,2);
-			}
-
-
-#endif
-			break;
-
-			case BTN_EG_BACKHOME:
-				Page_Change(LCD_MODE_MAIN);
-				returnValue = LCD_MODE_MAIN;
-			break;
-
-			case BTN_EG_AUTOCAL:
-#if 0
-			autoCalRcvCnt = 0;
-
-			for(i =CMD_TRANDU1_FRQ ;i <= CMD_TRANDU7_FRQ; i++)
-			{
-				add = (u16)(TRANDU_FREQ_NUM_ADDR + (i-1)*0x02);
-				value = textFrqBuff[i];
-				sys_write_vp(add,(u8*)&value,2);
-			}
-			for(i =CMD_TRANDU1_WATT10 ;i <= CMD_TRANDU7_WATT005; i++)
-			{
-				TX_RF_DA_Req_Msg(i);
-			}
-
-			for(i =1 ;i <= 77; i++)
-			{
-				add = (u16)(TRANDU_WATT_START_NUM_ADDR + (i-1)*0x02);
-				value = textWattBuff[i];
-				sys_write_vp(add,(u8*)&value,2);
-			}
-			timeStampQ = delay_tickMy;
-#endif
 			break;
 
 			case BTN_EG_CART_SET:
 				Cartrige_Init();
 				Page_Change(LCD_MODE_CART_SETTING);
 				returnValue = LCD_MODE_CART_SETTING;
+			break;
+
+			case BTN_EG_ERR_EVENT:
+
+			break;
+
+
+			case BTN_EG_BACKHOME:
+				Page_Change(LCD_MODE_MAIN);
+				returnValue = LCD_MODE_MAIN;
 			break;
 
 
@@ -2799,8 +2762,8 @@ void Debug_PrintConfig()
 		int indData1 = 0,indData2 = 0,indData3 = 0;
 
 
-		indData1 = uartCmdTemp;
-		indData2 = uartValueTemp;
+		indData1 = wattIdxMain;
+		indData2 = textNum;
 		indData3 = lcdPage;
 
 		printf("debug %d %d %d \r\n",indData1, indData2, indData3);
@@ -2879,8 +2842,8 @@ void Mode_Config()//
 void Lcd_Init()//
 {
 	int i = 0;
-	int j = 0;
 	const u16 iconStandby = ICON_MAIN_STANDBY;
+	u32 defultWatt =0;
 
 	pwCnt = 0;
 	iconCircle = 0;
@@ -2984,7 +2947,7 @@ void Lcd_Init()//
 		textCartrigeBuff[i] = 0;
 	}
 
-
+	Watt_All_Zero();
 
 
 
