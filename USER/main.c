@@ -365,6 +365,7 @@ typedef enum
 	KEY_CAL_TEMP_RST = 17,
 	KEY_CAL_UP = 19,
 	KEY_CAL_DN = 20,
+	KEY_CAL_SHOT = 21,
 
 
 	EN_1 = 1,
@@ -462,7 +463,7 @@ typedef enum
 	CMD_PLUSE_VALUE 	= 27,
 	CMD_CURRENT_JOULE = 28,
 
-	CMD_CAIV_DURATION = 30,
+	CMD_CALIV_SHOT = 30,
 
 	CMD_ERR = 31,
 	CMD_ALRAM = 32,
@@ -492,7 +493,6 @@ typedef enum
 
 	CMD_LCD_STATUS = 60,
 	CMD_SYS_CHK = 61,
-	CMD_CAL_TRET_READY_OK = 62,
 
 	CMD_DO_ALL_LIVE = 70,
 	CMD_GET_ALL_CART = 71,
@@ -1004,36 +1004,6 @@ void TX_Rx_Msg(u16 txCmd, u16 txData , u16* rxValue, u16 wateTime)
 
 
 
-void Calv_Tx_Msg_org()
-{
-	int i =0;
-	u16 add = 0;
-	u16 value = 0;
-	u16 addIcon = 0;
-	const u16 icon9 = 9;
-
-	sys_delay_ms(100);
-
-	value = onTimeCalv;
-	TX_Msg(CMD_CAIV_DURATION, value);//
-
-	for(i =0 ;i < 7;i++)
-	{
-		if(edBuff[i+1] )
-		{
-			add = i+CMD_WATT_CH0;
-			value = textWattBuff[wattIdxMain];
-			TX_Msg(add, value);//
-		}
-	}
-
-
-	sys_delay_ms(1000);
-	TX_Msg(CMD_CAL_TRET_READY_OK, 1);//
-}
-
-
-
 void Calv_Tx_Msg()
 {
 	int i =0;
@@ -1045,16 +1015,23 @@ void Calv_Tx_Msg()
 	sys_delay_ms(100);
 
 	value = onTimeCalv;
-	TX_Msg(CMD_CAIV_DURATION, value);//
 
-	for(i =0 ;i < 7;i++)
-	{
-			add = i+CMD_WATT_CH0;
-			value = textWattBuff[i+78];
-			TX_Msg(add, value);//
-	}
-	sys_delay_ms(500);
-	TX_Msg(CMD_CAL_TRET_READY_OK, 1);//
+	TX_Msg(CMD_WATT_CH0, textWattBuff[78]);
+	sys_delay_ms(50);
+	TX_Msg(CMD_WATT_CH1, textWattBuff[79]);
+	sys_delay_ms(50);
+	TX_Msg(CMD_WATT_CH2, textWattBuff[80]);
+	sys_delay_ms(50);
+	TX_Msg(CMD_WATT_CH3, textWattBuff[81]);
+	sys_delay_ms(50);
+	TX_Msg(CMD_WATT_CH4, textWattBuff[82]);
+	sys_delay_ms(50);
+	TX_Msg(CMD_WATT_CH5, textWattBuff[83]);
+	sys_delay_ms(50);
+	TX_Msg(CMD_WATT_CH6, textWattBuff[84]);
+	sys_delay_ms(50);
+
+	TX_Msg(CMD_CALIV_SHOT, value);//
 }
 
 
@@ -2307,13 +2284,8 @@ void Watt_Exp_zero()
 u8 Calibration_Config()//
 {
 	u8 returnValue = 0;
-	int value = 0;
-	int ccpy = 0;
-	u16 add = 0,addSub = 0;
-	u16 addIcon = 0;
-	int i = 0;
-	const u16 iconReady = ICON_CALIB_READY, iconStandby = ICON_CALIB_STANDBY, iconDis = ICON_CALIB_DISABLE, iconEn = ICON_CALIB_ENABLE;
-	u16 btn,bntED;
+	u16 add = 0;
+	u16 btn;
 	returnValue = LCD_MODE_CALIBRATION;
 	sys_read_vp(START_TOUCH_BTN_ADDR,(u8*)&btn,1);
 	if(btn)
@@ -2369,7 +2341,6 @@ u8 Calibration_Config()//
 				{
 					expFlag = 0;
 				}
-				TX_Msg(CMD_CAIV_DURATION, 0xff);//
 
 				Page_Change(LCD_MODE_ENGINIEER);
 				returnValue = LCD_MODE_ENGINIEER;
@@ -2389,6 +2360,11 @@ u8 Calibration_Config()//
 				if(onTimeCalv>0)onTimeCalv--;
 				sys_write_vp(CALIV_PULSETIME_NUM_NUM_ADDR,(u8*)&onTimeCalv ,4);
 			break;
+
+			case KEY_CAL_SHOT:
+				Calv_Tx_Msg();
+			break;
+
 		}
 		btn= 0;
 		sys_write_vp(START_TOUCH_BTN_ADDR,(u8*)&btn,2);
@@ -2396,36 +2372,6 @@ u8 Calibration_Config()//
 	}
 
 	Calibration_TDU_Parts();
-
-	sys_read_vp(CAL_TOUCH_ENDIS_ADDR,(u8*)&bntED,1);
-	if(bntED)
-	{
-		add = (u16)(EN_ICON_ADDR + (bntED-1)*0x02);
-		if(edBuff[bntED])
-		{
-			edBuff[bntED] = 0;
-			if(bntED==ED_RDY_SBY)
-			{
-				sys_write_vp(add, (u8*)&iconStandby,2);
-				TX_Msg(CMD_CAL_TRET_READY_OK, 0);//
-			}
-			else sys_write_vp(add, (u8*)&iconDis,2);
-
-		}
-		else
-		{
-			edBuff[bntED] = 1;
-			if(bntED==ED_RDY_SBY)
-			{
-				sys_write_vp(add, (u8*)&iconReady,2);
-				Calv_Tx_Msg();
-			}
-			else sys_write_vp(add, (u8*)&iconEn,2);
-
-		}
-		bntED= 0;
-		sys_write_vp(CAL_TOUCH_ENDIS_ADDR,(u8*)&bntED,2);
-	}
 
 
 	return returnValue;
@@ -3011,6 +2957,8 @@ void Lcd_Init()//
 	Watt_All_Zero();
 	Watt_Exp_zero();
 
+	onTimeCalv = 5;
+	sys_write_vp(CALIV_PULSETIME_NUM_NUM_ADDR,(u8*)&onTimeCalv ,4);
 
 
 /////////////////////
