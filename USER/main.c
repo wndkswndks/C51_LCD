@@ -12,6 +12,8 @@
 #define SETTING_BUTTON_ADDR		0x1040
 #define ENGINEER_BUTTON_ADDR	0x1060
 #define INFOMATION_BUTTON_ADDR	0x1080
+#define INFOMATION_TOUCH_ADDR	0x1082
+
 #define INITIAL_BUTTON_ADDR  	0x10A0
 #define TEST_BUTTON_ADDR  		0x10C0
 #define AUTOCAL_BUTTON_ADDR  	0x10C2
@@ -20,10 +22,11 @@
 #define CAL_TOUCH_ENDIS_ADDR	0x1140
 #define CAL_TOUCH_FRQ_ADDR		0x1142
 #define CAL_TOUCH_TDU_ADDR		0x1144
-
 #define CARTRIGE_KEYPAD_ADDR	0x1146
 #define CARTRIGE_TOUCH_ADDR		0x1148
 #define SYSTEM_BUTTON_ADDR		0x1150
+#define DEVICE_STATUS_BUTTON_ADDR 0x1152
+#define ERROR_EVENT_BUTTON_ADDR  0x1154
 
 
 #define PW_ICON_ADDR				0x1200
@@ -33,7 +36,7 @@
 #define SYSTEM_CHECK_HP_ICON_ADDR	0x1208
 #define READY_STANDBY_ICON_ADDR 	0x120A
 
-#define EN_ICON_ADDR 0x2200
+#define EN_ICON_ADDR 	0x2200
 #define TRANDU_WATT_POINT_ADDR 		0x22D0
 
 
@@ -41,6 +44,9 @@
 //==================================================
 #define CART_POINT_SATAT_ADDR       0x2550
 #define CART_POINT_END_ADDR       	0x2570
+
+
+
 
 #define CART_VALUE_SATAT_ADDR       	0x2590
 #define CART_VALUE_CART_ID_ADDR       	0x2590
@@ -62,6 +68,37 @@
 #define CART_VALUE_RTC_ADDR      		0x25B0
 #define CART_VALUE_END_ADDR       		0x25B0
 //==================================================
+#define INFO_POINT_SATAT_ADDR       0x25B2
+#define INFO_POINT_UI_DESING_ADDR   0x25B2
+#define INFO_POINT_UI_FW_ADDR     	0x25B4
+#define INFO_POINT_MAIN_FW_ADDR     0x25B6
+#define INFO_POINT_HP_FW_ADDR     	0x25B8
+#define INFO_POINT_RF_FW_ADDR     	0x25BA
+#define INFO_POINT_YY_ADDR     		0x25BC
+#define INFO_POINT_MM_ADDR     		0x25BE
+#define INFO_POINT_DD_ADDR     		0x25C0
+#define INFO_POINT_HOUR_ADDR     	0x25C2
+#define INFO_POINT_MIN_ADDR     	0x25C4
+#define INFO_POINT_SEC_ADDR     	0x25C6
+#define INFO_POINT_END_ADDR       	0x25C6
+
+#define INFO_NUM_SATAT_ADDR       	0x25D2
+#define INFO_NUM_UI_DESING_ADDR     0x25D2
+#define INFO_NUM_UI_FW_ADDR     	0x25D4
+#define INFO_NUM_MAIN_FW_ADDR     	0x25D6
+#define INFO_NUM_HP_FW_ADDR     	0x25D8
+#define INFO_NUM_RF_FW_ADDR     	0x25DA
+#define INFO_NUM_YY_ADDR     		0x25DC
+#define INFO_NUM_MM_ADDR     		0x25DE
+#define INFO_NUM_DD_ADDR     		0x25E0
+#define INFO_NUM_HOUR_ADDR     		0x25E2
+#define INFO_NUM_MIN_ADDR     		0x25E4
+#define INFO_NUM_SEC_ADDR     		0x25E6
+#define INFO_NUM_END_ADDR       	0x25E6
+
+
+
+
 
 
 #define TRANDU_FREQ_NUM_START_ADDR       	0x2600
@@ -195,6 +232,9 @@
 #define MAIN_P4_EN_W_BLOCK_ADDR 		0x28C2
 #define MAIN_P4_EN_H_BLOCK_ADDR 		0x28C4
 #define MAIN_P4_EN_L_BLOCK_ADDR 		0x28C6
+
+#define MAIN_CONNETION_ADDR	 			0x28C8
+
 //==================================================
 
 #define LIGHT_ICON_ADDR  		0x3000
@@ -267,6 +307,19 @@ typedef enum
 	CART_IDX_STATUS,
 	CART_IDX_RTC,
 
+	INFO_IDX_DUMY = 0,
+	INFO_IDX_UI_DESIGN,
+	INFO_IDX_UI_FW,
+	INFO_IDX_MAIN_FW,
+	INFO_IDX_HP_FW,
+	INFO_IDX_RF_FW,
+	INFO_IDX_YY,
+	INFO_IDX_MM,
+	INFO_IDX_DD,
+	INFO_IDX_HOUR,
+	INFO_IDX_MIN,
+	INFO_IDX_SEC,
+
 	LIVE_ALL_DETH = 0,
 	LIVE_HP_DIE_RF = 10,
 	LIVE_RF_DIE_HP = 1,
@@ -325,6 +378,7 @@ typedef enum
 	BTN_MAIN_P2_ENDIS = 21,
 	BTN_MAIN_P3_ENDIS = 22,
 	BTN_MAIN_P4_ENDIS = 23,
+	BTN_MAIN_ERR_OK_N = 24,
 
 
 	//SYSTEM MODE
@@ -340,10 +394,18 @@ typedef enum
 	BTN_EG_CALIBRATION = 2,
 	BTN_EG_CART_SET = 3,
 	BTN_EG_ERR_EVENT = 4,
-	BTN_EG_BACKHOME = 5,
+	BTN_EG_DEVICE_STATUS = 5,
+	BTN_EG_BACKHOME = 6,
 
 	//INFOMATION MODE
-	BTN_INFO_BACKHOME = 1,
+	BTN_INFO_BACKHOME = 13,
+	BTN_INFO_UI_DESING_ADDR = 14,
+	BTN_INFO_UI_FW_ADDR = 15,
+	BTN_INFO_MAIN_FW_ADDR = 16,
+	BTN_INFO_HP_FW_ADDR = 17,
+	BTN_INFO_RF_FW_ADDR = 18,
+	BTN_INFO_DAY_ADDR = 19,
+	BTN_INFO_TIME_ADDR = 20,
 
 	//CALIBRATION,PASSWARD
 	KEY_1 = 1,
@@ -419,8 +481,9 @@ typedef enum
 	LCD_MODE_PASSWARD =   11,
 	LCD_MODE_TEST =   12,
 	LCD_MODE_AUTOCAL =   13,
-	LCD_MODE_CART_SETTING    = 14,
-	LCD_MODE_SYS_CHK_POPUP =	15,
+	LCD_MODE_CART_SETTING  = 14,
+	LCD_MODE_DEVICE_STATUS = 15,
+	LCD_MODE_ERROR_EVENT = 	 16,
 
 
 } PAGE_E;
@@ -485,6 +548,7 @@ typedef enum
 	CMD_RTC_HOUR = 47,
 	CMD_RTC_MIN = 48,
 	CMD_RTC_SEC = 49,
+	CMD_RTC_EN = 50,
 
 	CMD_CATRIDGE_STATUS    = 56,
 	CMD_CATRIDGE_EVENT= 57,
@@ -493,6 +557,8 @@ typedef enum
 
 	CMD_LCD_STATUS = 60,
 	CMD_SYS_CHK = 61,
+	CMD_INFOMATION = 62,
+
 
 	CMD_DO_ALL_LIVE = 70,
 	CMD_GET_ALL_CART = 71,
@@ -504,6 +570,13 @@ typedef enum
 
 	CMD_LCD_EXP = 85,
 	CMD_LCD_AUTO_CAL = 87,
+	CMD_PULSE_TRIGER = 88,
+	CMD_INFO_UI_DESING = 89,
+	CMD_INFO_UI_FW = 90,
+	CMD_INFO_MAIN_FW = 91,
+	CMD_INFO_HP_FW = 92,
+	CMD_INFO_RF_FW = 93,
+
 
 	CMD_CAL_TEST = 188,
 	CMD_CAL_TEST_ZERO = 189,
@@ -759,6 +832,9 @@ typedef enum
 	ICON_PULSE_BLOCK_ENABLE = 51,
 	ICON_PULSE_BLOCK_DISABLE,
 
+	ICON_CONNET = 53,
+	ICON_DISCONNET = 54,
+
 
 } ICON_E;
 
@@ -778,7 +854,7 @@ typedef enum
   IDX_RTC_ERR,
 //------------------------------
 
-  IDX_PRE_COOL_ERR,
+  IDX_PRE_COOL_ERR = 12,
   IDX_HAND_COMU_ERR,
   IDX_CATRIGE_ID_ERR,
   IDX_CATRIGE_MANU_ERR,
@@ -794,11 +870,11 @@ typedef enum
   IDX_CATRIGE_UN_DETECT,
 //------------------------------
 
-  IDX_RF_COMU_ERR,
+  IDX_RF_COMU_ERR = 26,
   IDX_RF_STATUS_ERR,
 //------------------------------
 
-  IDX_HAND_TIMEOUT,
+  IDX_HAND_TIMEOUT = 28,
   IDX_LCD_COMU_ERR,
   IDX_LCD_TIMEOUT,
   IDX_ERROR_MAX,
@@ -868,6 +944,7 @@ xdata u32 mainDataBuff[9];
 xdata u16 textFrqBuff[8];
 xdata u16 textWattBuff[85];
 xdata u16 textCartrigeBuff[20];
+xdata u16 textinfoBuff[20];
 
 xdata u8 frqIdx = 0;
 xdata u8 wattIdxMain = 0, wattIdxSub = 0;
@@ -932,6 +1009,12 @@ xdata u8 cartTouch;
 xdata u8 cartIdx;
 xdata u32 cartValue;
 xdata u16 cartPrePointAddr;
+
+xdata u8 infoTouch;
+xdata u8 infoIdx;
+xdata u32 infoValue;
+xdata u16 infoPrePointAddr;
+
 
 xdata u8 getCartStep;
 xdata u8 systemStep;
@@ -1267,7 +1350,7 @@ void Event_PopUp_org(u16 eventData)
 
 void Event_PopDown_org()
 {
-	const u16 iconErrBack= ICON_MAIN_EMPTY_POP; // 고정
+	const u16 iconErrBack = ICON_MAIN_EMPTY_POP; // 고정
 	const u16 iconErrMsgBack= 1; // 고정
 
 	sys_write_vp(ERR_POPUP_MSG_ICON_ADDR, (u8*)&iconErrBack,2);//backGround
@@ -1278,7 +1361,7 @@ void Event_PopDown_org()
 void Event_PopUp(u16 eventData)
 {
 	u16 iconErrIcon= 0;
-	const u16 iconErrBack= ICON_MAIN_POP; // 고정
+	const u16 iconErrBack= ICON_MAIN_POP, iconConnect = ICON_CONNET, iconDisConnect = ICON_DISCONNET; // 고정
 	u16 iconErrCode= 0;
 	u16 iconErrMsg= 0;
 	u16 errLevel, errData;//errEnDis;
@@ -1290,6 +1373,20 @@ void Event_PopUp(u16 eventData)
 
 	sys_write_vp(ERR_POPUP_BOX_ICON_ADDR, (u8*)&iconErrBack,2);//backGround
 	Evnt_Ascii_Msg(errData);
+	Volume_Change(6, volumeLevel);
+
+
+	switch (errData)
+	{
+		case IDX_CATRIGE_DETECT:
+			sys_write_vp(MAIN_CONNETION_ADDR, (u8*)&iconConnect,2);
+		break;
+
+		case IDX_CATRIGE_UN_DETECT:
+			sys_write_vp(MAIN_CONNETION_ADDR, (u8*)&iconDisConnect,2);
+
+		break;
+	}
 }
 
 void Event_PopDown()
@@ -1346,6 +1443,8 @@ void RX_Parssing_Config()
 			case CMD_ERR:
 				errData = value;
 				Event_PopUp(errData);
+
+
 //				errEventBuff[errData] = errData;
 //				errEventFlag[errData] = CMD_ERR;
 			break;
@@ -1399,6 +1498,61 @@ void RX_Parssing_Config()
 				Rtc = value;
 				textCartrigeBuff[CART_IDX_RTC] = value;
 				sys_write_vp(CART_VALUE_RTC_ADDR,(u8*)&value ,2);
+			break;
+
+			case CMD_INFO_UI_DESING:
+				textinfoBuff[INFO_IDX_UI_DESIGN] = value;
+				sys_write_vp(INFO_NUM_UI_DESING_ADDR,(u8*)&value,2);
+			break;
+
+			case CMD_INFO_UI_FW:
+				textinfoBuff[INFO_IDX_UI_FW] = value;
+				sys_write_vp(INFO_NUM_UI_FW_ADDR,(u8*)&value,2);
+			break;
+
+			case CMD_INFO_MAIN_FW:
+				textinfoBuff[INFO_IDX_MAIN_FW] = value;
+				sys_write_vp(INFO_NUM_MAIN_FW_ADDR,(u8*)&value,2);
+			break;
+
+			case CMD_INFO_HP_FW:
+				textinfoBuff[INFO_IDX_HP_FW] = value;
+				sys_write_vp(INFO_NUM_HP_FW_ADDR,(u8*)&value,2);
+			break;
+
+			case CMD_INFO_RF_FW:
+				textinfoBuff[INFO_IDX_RF_FW] = value;
+				sys_write_vp(INFO_NUM_RF_FW_ADDR,(u8*)&value,2);
+			break;
+
+			case CMD_RTC_YY:
+				textinfoBuff[INFO_IDX_YY] = value;
+				sys_write_vp(INFO_NUM_YY_ADDR,(u8*)&value,2);
+			break;
+
+			case CMD_RTC_MM:
+				textinfoBuff[INFO_IDX_MM] = value;
+				sys_write_vp(INFO_NUM_MM_ADDR,(u8*)&value,2);
+			break;
+
+			case CMD_RTC_DD:
+				textinfoBuff[INFO_IDX_DD] = value;
+				sys_write_vp(INFO_NUM_DD_ADDR,(u8*)&value,2);
+			break;
+
+			case CMD_RTC_HOUR:
+				textinfoBuff[INFO_IDX_HOUR] = value;
+				sys_write_vp(INFO_NUM_HOUR_ADDR,(u8*)&value,2);
+			break;
+
+			case CMD_RTC_MIN:
+				textinfoBuff[INFO_IDX_MIN] = value;
+				sys_write_vp(INFO_NUM_MIN_ADDR,(u8*)&value,2);
+			break;
+
+			case CMD_RTC_SEC:
+				textinfoBuff[INFO_IDX_SEC] = value;
+				sys_write_vp(INFO_NUM_SEC_ADDR,(u8*)&value,2);
 			break;
 
 			case CMD_ENERGY:
@@ -2109,6 +2263,14 @@ u8 Main_Config()
 				TX_Msg(CMD_TOTAL_JOULE, 0);//
 			break;
 
+			case BTN_MAIN_ERR_OK_N:
+				if(errEvent)
+				{
+					errEvent = 0;
+					Event_PopDown();
+				}
+			break;
+
 			case BTN_MAIN_ENGINIER_N:
 				if(engineerKey)
 				{
@@ -2378,6 +2540,39 @@ u8 Calibration_Config()//
 
 }
 
+void Info_Parts()//
+{
+
+	u16 btnTtext;
+	u16 add = 0, pointAdd = 0;
+	const u16 iconEmptyPoint = ICON_CALIB_EMPTY_POINT,  iconPoint = ICON_CALIB_POINT;
+
+	sys_read_vp(INFOMATION_TOUCH_ADDR, (u8*)&btnTtext,1);
+	if (btnTtext)
+	{
+		pointAdd = (u16)(INFO_POINT_SATAT_ADDR + (btnTtext-1)*0x02);
+
+		if(infoPrePointAddr &&infoPrePointAddr != pointAdd)
+		{
+			sys_write_vp(infoPrePointAddr,(u8*)&iconEmptyPoint,2);
+		}
+		sys_write_vp(pointAdd,(u8*)&iconPoint,2);
+
+
+		infoPrePointAddr = pointAdd;
+
+		infoIdx = btnTtext;
+		infoTouch = 1;
+		infoValue = textinfoBuff[infoIdx];
+
+		btnTtext= 0;
+		sys_write_vp(INFOMATION_TOUCH_ADDR,(u8*)&btnTtext,2);
+	}
+
+
+}
+
+
 void Cartrige_Parts()//
 {
 
@@ -2462,20 +2657,14 @@ u8 Cartrige_Set_Config()//
 
 			case KEY_CART2_SET:
 				TX_Msg(CMD_MANUFAC_YY, textCartrigeBuff[CART_IDX_MANUFAC_YY]);
-//				sys_delay_ms(200);
 				TX_Msg(CMD_MANUFAC_MM, textCartrigeBuff[CART_IDX_MANUFAC_MM]);
-//				sys_delay_ms(200);
 				TX_Msg(CMD_MANUFAC_DD, textCartrigeBuff[CART_IDX_MANUFAC_DD]);
-//				sys_delay_ms(200);
 			break;
 
 			case KEY_CART3_SET:
 				TX_Msg(CMD_ISSUED_YY, textCartrigeBuff[CART_IDX_ISSUED_YY]);
-//				sys_delay_ms(200);
 				TX_Msg(CMD_ISSUED_MM, textCartrigeBuff[CART_IDX_ISSUED_MM]);
-//				sys_delay_ms(200);
 				TX_Msg(CMD_ISSUED_DD, textCartrigeBuff[CART_IDX_ISSUED_DD]);
-//				sys_delay_ms(200);
 			break;
 
 			case KEY_CART4_SET:
@@ -2613,30 +2802,145 @@ u8 Auto_Calibration_Config()//
 
 }
 
-
 u8 Information_Config()//
+{
+		u8 returnValue = 0;
+		u16 add = 0;
+		int i = 0;
+		u16 btn;
+		returnValue = LCD_MODE_INFOMATION;
+		sys_read_vp(INFOMATION_BUTTON_ADDR,(u8*)&btn,1);
+		if(btn)
+		{
+			switch (btn)
+			{
+				case KEY_0:
+				case KEY_1:
+				case KEY_2:
+				case KEY_3:
+				case KEY_4:
+				case KEY_5:
+				case KEY_6:
+				case KEY_7:
+				case KEY_8:
+				case KEY_9:
+				case KEY_DEL:
+					if(infoTouch == 0) break;
+
+					if(btn==KEY_0) infoValue = infoValue*10 + 0;
+					else if(btn==KEY_DEL )
+					{
+						if(infoValue !=0) infoValue = infoValue/10;
+					}
+					else infoValue = infoValue*10 + btn;
+
+					if(infoValue < 0) infoValue = 0;
+
+					textinfoBuff[infoIdx] = infoValue;
+					add = (u16)(INFO_NUM_SATAT_ADDR + (infoIdx-1)*0x02);
+					sys_write_vp(add,(u8*)&infoValue,2);
+
+
+				break;
+
+				case BTN_INFO_BACKHOME:
+
+					Page_Change(LCD_MODE_ENGINIEER);
+					returnValue = LCD_MODE_ENGINIEER;
+				break;
+
+				case BTN_INFO_UI_DESING_ADDR:
+					TX_Msg(CMD_INFO_UI_DESING, textinfoBuff[INFO_IDX_UI_DESIGN]);
+				break;
+
+				case BTN_INFO_UI_FW_ADDR:
+					TX_Msg(CMD_INFO_UI_FW, textinfoBuff[INFO_IDX_UI_FW]);
+				break;
+
+				case BTN_INFO_MAIN_FW_ADDR:
+					TX_Msg(CMD_INFO_MAIN_FW, textinfoBuff[INFO_IDX_MAIN_FW]);
+				break;
+
+				case BTN_INFO_HP_FW_ADDR:
+					TX_Msg(CMD_INFO_HP_FW, textinfoBuff[INFO_IDX_HP_FW]);
+				break;
+
+				case BTN_INFO_RF_FW_ADDR:
+					TX_Msg(CMD_INFO_RF_FW, textinfoBuff[INFO_IDX_RF_FW]);
+				break;
+
+				case BTN_INFO_DAY_ADDR:
+
+					TX_Msg(CMD_RTC_EN, 0);
+					sys_delay_ms(1000);
+					TX_Msg(CMD_RTC_YY, textinfoBuff[INFO_IDX_YY]);
+					TX_Msg(CMD_RTC_MM, textinfoBuff[INFO_IDX_MM]);
+					TX_Msg(CMD_RTC_DD, textinfoBuff[INFO_IDX_DD]);
+					sys_delay_ms(1000);
+					TX_Msg(CMD_RTC_EN, 1);
+				break;
+
+				case BTN_INFO_TIME_ADDR:
+					TX_Msg(CMD_RTC_EN, 0);
+					sys_delay_ms(1000);
+					TX_Msg(CMD_RTC_HOUR, textinfoBuff[INFO_IDX_HOUR]);
+					TX_Msg(CMD_RTC_MIN, textinfoBuff[INFO_IDX_MIN]);
+					TX_Msg(CMD_RTC_SEC, textinfoBuff[INFO_IDX_SEC]);
+					sys_delay_ms(1000);
+					TX_Msg(CMD_RTC_EN, 1);
+				break;
+			}
+			btn= 0;
+			sys_write_vp(INFOMATION_BUTTON_ADDR,(u8*)&btn,2);
+		}
+
+		Info_Parts();
+
+		return returnValue;
+
+}
+
+u8 Device_Status_Config()
 {
 	u8 returnValue = 0;
 	u16 btn =0;
-	returnValue = LCD_MODE_INFOMATION;
-	sys_read_vp(INFOMATION_BUTTON_ADDR,(u8*)&btn,1);
+
+	returnValue = LCD_MODE_DEVICE_STATUS;
+
+	sys_read_vp(DEVICE_STATUS_BUTTON_ADDR, (u8*)&btn,1);
 	if(btn)
 	{
-		switch (btn)
-		{
-			case BTN_INFO_BACKHOME:
-				Page_Change(LCD_MODE_ENGINIEER);
-				returnValue = LCD_MODE_ENGINIEER;
-			break;
+		Page_Change(LCD_MODE_ENGINIEER);
+		returnValue = LCD_MODE_ENGINIEER;
 
-		}
 		btn= 0;
-		sys_write_vp(INFOMATION_BUTTON_ADDR,(u8*)&btn,2);
-
+		sys_write_vp(DEVICE_STATUS_BUTTON_ADDR,(u8*)&btn,2);
 	}
 
 	return returnValue;
 }
+
+
+u8 Error_Event_Config()
+{
+	u8 returnValue = 0;
+	u16 btn =0;
+
+	returnValue = LCD_MODE_ERROR_EVENT;
+
+	sys_read_vp(ERROR_EVENT_BUTTON_ADDR,(u8*)&btn,1);
+	if(btn)
+	{
+		Page_Change(LCD_MODE_ENGINIEER);
+		returnValue = LCD_MODE_ENGINIEER;
+
+		btn= 0;
+		sys_write_vp(ERROR_EVENT_BUTTON_ADDR,(u8*)&btn,2);
+	}
+
+	return returnValue;
+}
+
 
 u8 Engineer_Config()//
 {
@@ -2655,6 +2959,7 @@ u8 Engineer_Config()//
 		switch (btn)
 		{
 			case BTN_EG_INFOMATION:
+				TX_Msg(CMD_INFOMATION, 1);
 				Page_Change(LCD_MODE_INFOMATION);
 				returnValue = LCD_MODE_INFOMATION;
 			break;
@@ -2673,9 +2978,14 @@ u8 Engineer_Config()//
 			break;
 
 			case BTN_EG_ERR_EVENT:
-
+				Page_Change(LCD_MODE_ERROR_EVENT);
+				returnValue = LCD_MODE_ERROR_EVENT;
 			break;
 
+			case BTN_EG_DEVICE_STATUS:
+				Page_Change(LCD_MODE_DEVICE_STATUS);
+				returnValue = LCD_MODE_DEVICE_STATUS;
+			break;
 
 			case BTN_EG_BACKHOME:
 				Page_Change(LCD_MODE_MAIN);
@@ -2827,6 +3137,13 @@ void Mode_Config()//
 			lcdPage = Cartrige_Set_Config();
 		break;
 
+		case LCD_MODE_DEVICE_STATUS:
+			lcdPage = Device_Status_Config();
+		break;
+
+		case LCD_MODE_ERROR_EVENT:
+			lcdPage = Error_Event_Config();
+		break;
 
 //		case LCD_MODE_MAIN_POPUP:
 //			lcdPage = Pop_Main_Config();
@@ -2899,6 +3216,12 @@ void Lcd_Init()//
 	cartIdx = 0;
 	cartValue = 0;
 	cartPrePointAddr = 0;
+
+	infoTouch = 0;
+	infoIdx = 0;
+	infoValue = 0;
+	infoPrePointAddr = 0;
+
 	errEvent = 0;
 	errCartEvent = 0;
 	sysChkStart = 0;
@@ -2952,6 +3275,7 @@ void Lcd_Init()//
 	for(i =1 ;i <18; i++)
 	{
 		textCartrigeBuff[i] = 0;
+		textinfoBuff[i] = 0;
 	}
 
 	Watt_All_Zero();
