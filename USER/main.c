@@ -15,7 +15,6 @@
 #define INFOMATION_TOUCH_ADDR	0x1082
 
 #define INITIAL_BUTTON_ADDR  	0x10A0
-#define TEST_BUTTON_ADDR  		0x10C0
 #define AUTOCAL_BUTTON_ADDR  	0x10C2
 #define START_TOUCH_BTN_ADDR	0x1100
 #define START_TOUCH_TEXT_ADDR	0x1120
@@ -25,8 +24,10 @@
 #define CARTRIGE_KEYPAD_ADDR	0x1146
 #define CARTRIGE_TOUCH_ADDR		0x1148
 #define SYSTEM_BUTTON_ADDR		0x1150
-#define DEVICE_STATUS_BUTTON_ADDR 0x1152
-#define ERROR_EVENT_BUTTON_ADDR  0x1154
+#define DEVICE_STATUS_BUTTON_ADDR 	0x1152
+#define ERROR_EVENT_BUTTON_ADDR		  0x1154
+#define UP_LONG_BUTTON_ADDR	    0x1156
+#define DN_LONG_BUTTON_ADDR	    0x1158
 
 
 #define PW_ICON_ADDR				0x1200
@@ -329,6 +330,8 @@ typedef enum
 	SYS_CART_OK = 1,
 	SYS_CART_TIMEOUT = 2,
 
+	POPUP_MODE_1 = 1,
+	POPUP_MODE_2 = 2,
 } TOUCH_E;
 
 
@@ -378,7 +381,9 @@ typedef enum
 	BTN_MAIN_P2_ENDIS = 21,
 	BTN_MAIN_P3_ENDIS = 22,
 	BTN_MAIN_P4_ENDIS = 23,
-	BTN_MAIN_ERR_OK_N = 24,
+	BTN_MAIN_ERR_OK_CENTER = 24,
+	BTN_MAIN_ERR_OK_LEFT = 25,
+	BTN_MAIN_ERR_CANCEL_RIGHT = 26,
 
 
 	//SYSTEM MODE
@@ -824,16 +829,17 @@ typedef enum
 
 	ICON_MAIN_EMPTY_POP = 46,
 	ICON_MAIN_POP = 47,
+	ICON_MAIN_POP_SELLEC = 48,
 
-	ICON_PULSE_BOX_ENABLE = 48,
+	ICON_PULSE_BOX_ENABLE = 49,
 	ICON_PULSE_BOX_DISABLE,
 	ICON_PULSE_4_BOX_DISABLE,
 
-	ICON_PULSE_BLOCK_ENABLE = 51,
+	ICON_PULSE_BLOCK_ENABLE = 52,
 	ICON_PULSE_BLOCK_DISABLE,
 
-	ICON_CONNET = 53,
-	ICON_DISCONNET = 54,
+	ICON_CONNET = 54,
+	ICON_DISCONNET,
 
 
 } ICON_E;
@@ -1034,6 +1040,7 @@ xdata u16 pulseStrAddr;
 xdata u16 pulsePointAddr;
 
 xdata u16 pulseAddr;
+xdata u8 popUpMode;
 
 
 
@@ -1316,20 +1323,10 @@ void Pulse_En_Dis(u8 enDisValue)
 	}
 }
 
-void Event_PopDown_org()
-{
-	const u16 iconErrBack = ICON_MAIN_EMPTY_POP; // 고정
-	const u16 iconErrMsgBack= 1; // 고정
-
-	sys_write_vp(ERR_POPUP_MSG_ICON_ADDR, (u8*)&iconErrBack,2);//backGround
-//	sys_delay_ms(500);
-	sys_write_vp(ERR_POPUP_BOX_ICON_ADDR, (u8*)&iconErrMsgBack,2);//backGround
-}
-
 void Event_PopUp(u16 eventData)
 {
 	u16 iconErrIcon= 0;
-	const u16 iconErrBack= ICON_MAIN_POP, iconConnect = ICON_CONNET, iconDisConnect = ICON_DISCONNET; // 고정
+	const u16 iconErrBack1= ICON_MAIN_POP, iconErrBack2= ICON_MAIN_POP_SELLEC , iconConnect = ICON_CONNET, iconDisConnect = ICON_DISCONNET; // 고정
 	u16 iconErrCode= 0;
 	u16 iconErrMsg= 0;
 	u16 errLevel, errData;//errEnDis;
@@ -1339,10 +1336,9 @@ void Event_PopUp(u16 eventData)
 	errLevel = eventData / LEVEL_UNIT;
 	errData = eventData % ERR_ENDIS_UNIT;
 
-	sys_write_vp(ERR_POPUP_BOX_ICON_ADDR, (u8*)&iconErrBack,2);//backGround
-	Evnt_Ascii_Msg(errData);
-	Volume_Change(6, volumeLevel);
 
+
+	popUpMode = POPUP_MODE_1;
 
 	switch (errData)
 	{
@@ -1355,21 +1351,26 @@ void Event_PopUp(u16 eventData)
 		break;
 
 		case IDX_IS_CURRNTSHOT_RESET:
-
+			popUpMode = POPUP_MODE_2;
 		break;
 
 		case IDX_IS_TOTALJULE_RESET:
-
+			popUpMode = POPUP_MODE_2;
 		break;
 
 
 	}
+
+	if(popUpMode == POPUP_MODE_1) sys_write_vp(ERR_POPUP_BOX_ICON_ADDR, (u8*)&iconErrBack1,2);//backGround
+	else if(popUpMode == POPUP_MODE_2) sys_write_vp(ERR_POPUP_BOX_ICON_ADDR, (u8*)&iconErrBack2,2);//backGround
+
+	Evnt_Ascii_Msg(errData);
+	Volume_Change(6, volumeLevel);
 }
 
-void Event_PopDown()
+void Event_PopDown_Ok()
 {
 	const u16 iconErrBack= ICON_MAIN_EMPTY_POP; // 고정
-	const u16 iconErrMsgBack= 1; // 고정
 	if(errEvent)
 	{
 		switch (errEvent)
@@ -1385,11 +1386,22 @@ void Event_PopDown()
 		}
 		errEvent = 0;
 		Ascii_Clear(ERROR_EVENT_ADDR);
-		sys_write_vp(ERR_POPUP_BOX_ICON_ADDR, (u8*)&iconErrMsgBack,2);//backGround
+		sys_write_vp(ERR_POPUP_BOX_ICON_ADDR, (u8*)&iconErrBack,2);//backGround
 	}
 
 }
 
+void Event_PopDown_Cancel()
+{
+	const u16 iconErrBack= ICON_MAIN_EMPTY_POP; // 고정
+	if(errEvent)
+	{
+		errEvent = 0;
+		Ascii_Clear(ERROR_EVENT_ADDR);
+		sys_write_vp(ERR_POPUP_BOX_ICON_ADDR, (u8*)&iconErrBack,2);//backGround
+	}
+
+}
 
 void SYS_CHK_OK(u16 device)
 {
@@ -1890,33 +1902,22 @@ u8 Test_Config()
 
 	if(delay_tickMy-timeStampQ >= 3000)
 	{
-		TX_Msg(111, Tint);
-		TX_Msg(222, Tu8);
-		TX_Msg(333, Tu16);
-		TX_Msg(444, Tu32);
+//		TX_Msg(111, Tint);
+//		TX_Msg(222, Tu8);
+//		TX_Msg(333, Tu16);
+//		TX_Msg(444, Tu32);
 
 		timeStampQ = delay_tickMy;
-		numTest++;
 	}
-	sys_read_vp(TEST_BUTTON_ADDR,(u8*)&btn,1);
-	if(btn)
-	{
-		switch (btn)
-		{
-			case 1:
-				Ascii_Clear(ERROR_EVENT_ADDR);
-				Ascii_text("0123453789012345378901234537890123453789", ERROR_EVENT_ADDR);
-			break;
-
-			case 2:
-				Ascii_Clear(ERROR_EVENT_ADDR);
-				Ascii_text("ABCDEFGHIJABCDEFGHIJABCDEFGHIJABCDEFGHIJ", ERROR_EVENT_ADDR);
-			break;
-		}
-		btn= 0;
-		//Ascii_text("QWER MSG");
-		sys_write_vp(TEST_BUTTON_ADDR,(u8*)&btn,2);
-	}
+//	sys_read_vp(TEST_BUTTON_ADDR,(u8*)&btn,1);
+//	if(btn)
+//	{
+//		numTest++;
+//		Debug_Print(1, (int)numTest);
+//		btn= 0;
+//		//Ascii_text("QWER MSG");
+//		sys_write_vp(TEST_BUTTON_ADDR,(u8*)&btn,2);
+//	}
 
 
 
@@ -1969,9 +1970,8 @@ u8 System_Check_Config()
 			case BTN_SYSTEM_ERROK:
 			if(errEvent)
 			{
-				errEvent = 0;
 				sysChkFlag = 1;
-				Event_PopDown();
+				Event_PopDown_Ok();
 			}
 			break;
 		}
@@ -2152,8 +2152,7 @@ u8 Main_Config_old()
 			case BTN_MAIN_ERR_OK:
 				if(errEvent)
 				{
-					errEvent = 0;
-					Event_PopDown();
+					Event_PopDown_Ok();
 				}
 			break;
 			case BTN_MAIN_ENGINIER:
@@ -2234,13 +2233,13 @@ u8 Main_Config()
 				Touch_Pluse(btnMain);
 			break;
 
-			case BTN_MAIN_UP:
-				if(pulseAddr) TX_Msg(CMD_PLUSE_BTN_UP_DN, BUTTON_UP);
-			break;
+//			case BTN_MAIN_UP:
+//				if(pulseAddr) TX_Msg(CMD_PLUSE_BTN_UP_DN, BUTTON_UP);
+//			break;
 
-			case BTN_MAIN_DN:
-				if(pulseAddr) TX_Msg(CMD_PLUSE_BTN_UP_DN, BUTTON_DN);
-			break;
+//			case BTN_MAIN_DN:
+//				if(pulseAddr) TX_Msg(CMD_PLUSE_BTN_UP_DN, BUTTON_DN);
+//			break;
 
 			case BTN_MAIN_RDY_STNBY_N:
 				if(rdyStnbyMode == STATUS_STNBY)
@@ -2257,9 +2256,28 @@ u8 Main_Config()
 //				TX_Msg(CMD_TOTAL_JOULE, 0);//
 			break;
 
-			case BTN_MAIN_ERR_OK_N:
+			case BTN_MAIN_ERR_OK_CENTER:
+				if(popUpMode == POPUP_MODE_1)
+				{
+					popUpMode = 0;
+					Event_PopDown_Ok();
+				}
+			break;
 
-				Event_PopDown();
+			case BTN_MAIN_ERR_OK_LEFT:
+				if(popUpMode == POPUP_MODE_2)
+				{
+					popUpMode = 0;
+					Event_PopDown_Ok();
+				}
+			break;
+
+			case BTN_MAIN_ERR_CANCEL_RIGHT:
+				if(popUpMode == POPUP_MODE_2)
+				{
+					popUpMode = 0;
+					Event_PopDown_Cancel();
+				}
 			break;
 
 			case BTN_MAIN_ENGINIER_N:
@@ -2297,6 +2315,26 @@ u8 Main_Config()
 
 		btnMain= 0;
 		sys_write_vp(MAIN_BUTTON_ADDR,(u8*)&btnMain,2);
+	}
+
+
+	sys_read_vp(UP_LONG_BUTTON_ADDR,(u8*)&btn,1);
+	if(btn)
+	{
+//		numTest++;
+//		Debug_Print(1, (int)numTest);
+		if(pulseAddr) TX_Msg(CMD_PLUSE_BTN_UP_DN, BUTTON_UP);
+		btn= 0;
+		sys_write_vp(UP_LONG_BUTTON_ADDR,(u8*)&btn,2);
+	}
+	sys_read_vp(DN_LONG_BUTTON_ADDR,(u8*)&btn,1);
+	if(btn)
+	{
+//		numTest++;
+//		Debug_Print(1, (int)numTest);
+		if(pulseAddr) TX_Msg(CMD_PLUSE_BTN_UP_DN, BUTTON_DN);
+		btn= 0;
+		sys_write_vp(DN_LONG_BUTTON_ADDR,(u8*)&btn,2);
 	}
 
 	EXP_FreeCool_Motion();
@@ -3233,6 +3271,7 @@ void Lcd_Init()//
 	pulseStrAddr = 0;
 	pulsePointAddr = 0;
 	pulseAddr = 0;
+	popUpMode = 0;
 
 	Flash_Read();
 
@@ -3289,7 +3328,7 @@ void Lcd_Init()//
 
 
 
-#if 1
+#if 0
 	lcdPage = LCD_MODE_INIT;
 
 #else //  시간단축 하이패스
