@@ -878,6 +878,8 @@ typedef enum
   IDX_LCD_COMU_ERR,
   IDX_LCD_TIMEOUT,
   IDX_ERROR_MAX,
+  IDX_IS_CURRNTSHOT_RESET,
+  IDX_IS_TOTALJULE_RESET,
 
 } ERROR_IDX_E;
 
@@ -1032,6 +1034,7 @@ xdata u16 pulseStrAddr;
 xdata u16 pulsePointAddr;
 
 xdata u16 pulseAddr;
+
 
 
 void Light_Change(u16 light);
@@ -1246,6 +1249,8 @@ void Evnt_Ascii_Msg(u8 num)
 	case IDX_CATRIGE_UN_DETECT: 	  Ascii_text("CATRIGE_UN_DETECT", add);	 break;
 	case IDX_RF_COMU_ERR:			  Ascii_text("RF_COMU_ERR", add);   break;
 	case IDX_RF_STATUS_ERR: 		  Ascii_text("RF_STATUS_ERR", add);	 break;
+	case IDX_IS_CURRNTSHOT_RESET:	  Ascii_text("IS_CURRNTSHOT_RESET", add);	 break;
+  	case IDX_IS_TOTALJULE_RESET:	  Ascii_text("IS_TOTALJULE_RESET", add);	 break;
 
 	}
 }
@@ -1311,43 +1316,6 @@ void Pulse_En_Dis(u8 enDisValue)
 	}
 }
 
-void Event_PopUp_org(u16 eventData)
-{
-	u16 iconErrIcon= 0;
-	const u16 iconErrBack= ICON_MAIN_POP; // 고정
-	u16 iconErrCode= 0;
-	u16 iconErrMsg= 0;
-	u16 errLevel, errData;//errEnDis;
-
-	errEvent = 1;
-	errLevel = eventData / LEVEL_UNIT;
-	errData = eventData % ERR_ENDIS_UNIT;
-//	if(1 > errData || errData >6)
-//	{
-//		return;
-//	}
-//	if(errLevel == LEVEL_ERROR)iconErrIcon = 1;
-//	else if(errLevel == LEVEL_ALRAM)iconErrIcon = 2;
-//	else if(errLevel == LEVEL_INFO)iconErrIcon = 3;
-//	else return;
-
-	sys_write_vp(ERR_POPUP_BOX_ICON_ADDR, (u8*)&iconErrBack,2);//backGround
-//	sys_delay_ms(500);
-	sys_write_vp(ERR_POPUP_MSG_ICON_ADDR, (u8*)&errData,2);//icon
-
-
-
-#if 0
-
-	iconErrCode = EVENT_ICON_BASE +eventData;// if codeIcon== 51, 50+1
-	sys_write_vp(0x2222, (u8*)&iconErrCode,2);//code
-
-	iconErrMsg = EVENT_ICON_BASE + EVENT_MAX_NUM+ eventData;//msg는 code 뒤에 있음
-	sys_write_vp(0x3333, (u8*)&iconErrMsg,2);//msg
-#endif
-
-}
-
 void Event_PopDown_org()
 {
 	const u16 iconErrBack = ICON_MAIN_EMPTY_POP; // 고정
@@ -1366,7 +1334,7 @@ void Event_PopUp(u16 eventData)
 	u16 iconErrMsg= 0;
 	u16 errLevel, errData;//errEnDis;
 
-	errEvent = 1;
+	errEvent = eventData;
 	sysChkFlag = 0;
 	errLevel = eventData / LEVEL_UNIT;
 	errData = eventData % ERR_ENDIS_UNIT;
@@ -1384,8 +1352,17 @@ void Event_PopUp(u16 eventData)
 
 		case IDX_CATRIGE_UN_DETECT:
 			sys_write_vp(MAIN_CONNETION_ADDR, (u8*)&iconDisConnect,2);
+		break;
+
+		case IDX_IS_CURRNTSHOT_RESET:
 
 		break;
+
+		case IDX_IS_TOTALJULE_RESET:
+
+		break;
+
+
 	}
 }
 
@@ -1393,9 +1370,24 @@ void Event_PopDown()
 {
 	const u16 iconErrBack= ICON_MAIN_EMPTY_POP; // 고정
 	const u16 iconErrMsgBack= 1; // 고정
+	if(errEvent)
+	{
+		switch (errEvent)
+		{
+			case IDX_IS_CURRNTSHOT_RESET:
+				TX_Msg(CMD_CURRENT_SHOT, 0);
+			break;
 
-	Ascii_Clear(ERROR_EVENT_ADDR);
-	sys_write_vp(ERR_POPUP_BOX_ICON_ADDR, (u8*)&iconErrMsgBack,2);//backGround
+			case IDX_IS_TOTALJULE_RESET:
+				TX_Msg(CMD_TOTAL_JOULE, 0);
+			break;
+
+		}
+		errEvent = 0;
+		Ascii_Clear(ERROR_EVENT_ADDR);
+		sys_write_vp(ERR_POPUP_BOX_ICON_ADDR, (u8*)&iconErrMsgBack,2);//backGround
+	}
+
 }
 
 
@@ -2257,18 +2249,17 @@ u8 Main_Config()
 				{TX_Msg(CMD_LCD_STATUS, STATUS_STNBY);}//
 			break;
 			case BTN_MAIN_CURRENT_SHOT_RST_N:
-				TX_Msg(CMD_CURRENT_SHOT, 0);
+				Event_PopUp(IDX_IS_CURRNTSHOT_RESET);
+//				TX_Msg(CMD_CURRENT_SHOT, 0);
 			break;
 			case BTN_MAIN_TOTAL_JOULE_RST_N:
-				TX_Msg(CMD_TOTAL_JOULE, 0);//
+				Event_PopUp(IDX_IS_TOTALJULE_RESET);
+//				TX_Msg(CMD_TOTAL_JOULE, 0);//
 			break;
 
 			case BTN_MAIN_ERR_OK_N:
-				if(errEvent)
-				{
-					errEvent = 0;
-					Event_PopDown();
-				}
+
+				Event_PopDown();
 			break;
 
 			case BTN_MAIN_ENGINIER_N:
@@ -3242,6 +3233,7 @@ void Lcd_Init()//
 	pulseStrAddr = 0;
 	pulsePointAddr = 0;
 	pulseAddr = 0;
+
 	Flash_Read();
 
 
