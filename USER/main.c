@@ -332,6 +332,12 @@ typedef enum
 
 	POPUP_MODE_1 = 1,
 	POPUP_MODE_2 = 2,
+
+	CART_EVENT_UNDETECT = 0,
+	CART_EVENT_DETECT = 1,
+	CART_EVENT_DETECT_NEW = 2,
+	CART_EVENT_EXPRATION = 3,
+
 } TOUCH_E;
 
 
@@ -554,6 +560,7 @@ typedef enum
 	CMD_RTC_MIN = 48,
 	CMD_RTC_SEC = 49,
 	CMD_RTC_EN = 50,
+	CMD_CART_ALLOW = 51,
 
 	CMD_CATRIDGE_STATUS    = 56,
 	CMD_CATRIDGE_EVENT= 57,
@@ -583,10 +590,10 @@ typedef enum
 	CMD_INFO_RF_FW = 93,
 
 
-	CMD_CAL_TEST = 188,
-	CMD_CAL_TEST_ZERO = 189,
-	CMD_CAL_TEST_EXP = 190,
-	CMD_CAL_TEST_IP = 191,
+	CMD_RF_ALL_SETTING = 188,
+	CMD_RF_WATT_MEATER_Z = 189,
+	CMD_RF_SINGLE_EXP = 190,
+	CMD_RF_WATT_MEATER_IP = 191,
 	CMD_AUTO_CAL_START = 192,
 
 	CMD_DEBUG_PUMP = 193,
@@ -886,6 +893,7 @@ typedef enum
   IDX_ERROR_MAX,
   IDX_IS_CURRNTSHOT_RESET,
   IDX_IS_TOTALJULE_RESET,
+  IDX_CATRIGE_NEW,
 
 } ERROR_IDX_E;
 
@@ -1342,14 +1350,6 @@ void Event_PopUp(u16 eventData)
 
 	switch (errData)
 	{
-		case IDX_CATRIGE_DETECT:
-			sys_write_vp(MAIN_CONNETION_ADDR, (u8*)&iconConnect,2);
-		break;
-
-		case IDX_CATRIGE_UN_DETECT:
-			sys_write_vp(MAIN_CONNETION_ADDR, (u8*)&iconDisConnect,2);
-		break;
-
 		case IDX_IS_CURRNTSHOT_RESET:
 			popUpMode = POPUP_MODE_2;
 		break;
@@ -1357,6 +1357,11 @@ void Event_PopUp(u16 eventData)
 		case IDX_IS_TOTALJULE_RESET:
 			popUpMode = POPUP_MODE_2;
 		break;
+
+		case IDX_CATRIGE_NEW:
+			popUpMode = POPUP_MODE_2;
+		break;
+
 
 
 	}
@@ -1381,6 +1386,10 @@ void Event_PopDown_Ok()
 
 			case IDX_IS_TOTALJULE_RESET:
 				TX_Msg(CMD_TOTAL_JOULE, 0);
+			break;
+
+			case IDX_CATRIGE_NEW:
+				TX_Msg(CMD_CART_ALLOW, 1);
 			break;
 
 		}
@@ -1436,6 +1445,7 @@ void RX_Parssing_Config()
 	u16 pluseAddr = 0;
 	const u16 iconCalEmptyPoint = ICON_CALIB_EMPTY_POINT;
 	const u16 iconStandby = ICON_MAIN_STANDBY, iconTreat = ICON_MAIN_TREAT;
+	const u16 iconConnect = ICON_CONNET, iconDisConnect = ICON_DISCONNET;
 	if(uartRxFlag)
 	{
 		uartRxFlag = 0;
@@ -1558,6 +1568,28 @@ void RX_Parssing_Config()
 				textinfoBuff[INFO_IDX_SEC] = value;
 				sys_write_vp(INFO_NUM_SEC_ADDR,(u8*)&value,2);
 			break;
+
+			case CMD_CATRIDGE_EVENT:
+				switch (value)
+				{
+					case CART_EVENT_EXPRATION:
+						Event_PopUp(IDX_CATRIGE_RESHOT_ZERO);
+					break;
+
+					case CART_EVENT_DETECT_NEW:
+						Event_PopUp(IDX_CATRIGE_NEW);
+					break;
+
+					case CART_EVENT_DETECT:
+						sys_write_vp(MAIN_CONNETION_ADDR, (u8*)&iconConnect,2);
+					break;
+
+					case CART_EVENT_UNDETECT:
+						sys_write_vp(MAIN_CONNETION_ADDR, (u8*)&iconDisConnect,2);
+					break;
+				}
+			break;
+
 
 			case CMD_ENERGY:
 				energy = value;
@@ -2755,81 +2787,7 @@ u8 Cartrige_Set_Config()//
 
 }
 
-void AutoCal_PointToggle()
-{
-	u16 add = 0;
-	const u16 iconEmptyPoint = ICON_CALIB_EMPTY_POINT, iconPoint = ICON_CALIB_POINT;
-	static u32 timeStamp = 0;
 
-	if(autoCalStart == 0)return;
-
-	if(delay_tickMy-timeStamp >= 500)
-	{
-
-		if(toggle)
-		{
-			toggle = 0;
-			sys_write_vp(autoCalAdd, (u8*)&iconEmptyPoint,2);
-		}
-		else
-		{
-			toggle = 1;
-			sys_write_vp(autoCalAdd, (u8*)&iconPoint,2);
-
-		}
-		timeStamp = delay_tickMy;
-	}
-
-}
-
-
-u8 Auto_Calibration_Config()//
-{
-	u8 returnValue = 0;
-	int value = 0;
-	u16 addIcon = 0;
-	int i = 0;
-	u16 btn,bntED = 0;
-	returnValue = LCD_MODE_AUTOCAL;
-	sys_read_vp(AUTOCAL_BUTTON_ADDR,(u8*)&btn,1);
-	if(btn)
-	{
-		switch (btn)
-		{
-			case KEY_AUTO_CAL_1_2:
-				TX_Msg(CMD_LCD_AUTO_CAL, KEY_AUTO_CAL_1_2);//
-			break;
-
-			case KEY_AUTO_CAL_3_4_5:
-				TX_Msg(CMD_LCD_AUTO_CAL, KEY_AUTO_CAL_3_4_5);//
-			break;
-
-			case KEY_AUTO_CAL_6_7:
-				TX_Msg(CMD_LCD_AUTO_CAL, KEY_AUTO_CAL_6_7);//
-			break;
-
-			case KEY_AUTO_CAL_STOP:
-				TX_Msg(CMD_LCD_AUTO_CAL, KEY_AUTO_CAL_STOP);//
-			break;
-
-			case KEY_AUTO_CAL_BACK:
-				Page_Change(LCD_MODE_ENGINIEER);
-				returnValue = LCD_MODE_ENGINIEER;
-				TX_Msg(CMD_LCD_AUTO_CAL, KEY_AUTO_CAL_BACK);//
-			break;
-
-		}
-		btn= 0;
-		sys_write_vp(AUTOCAL_BUTTON_ADDR,(u8*)&btn,2);
-
-	}
-
-	AutoCal_PointToggle();
-
-//	RX_AUTOCAL_Parssing_Config();
-	return returnValue;
-
-}
 
 u8 Information_Config()//
 {
@@ -3158,10 +3116,6 @@ void Mode_Config()//
 			lcdPage = Test_Config();
 		break;
 
-		case LCD_MODE_AUTOCAL:
-			lcdPage = Auto_Calibration_Config();
-		break;
-
 		case LCD_MODE_CART_SETTING:
 			lcdPage = Cartrige_Set_Config();
 		break;
@@ -3328,7 +3282,7 @@ void Lcd_Init()//
 
 
 
-#if 0
+#if 1
 	lcdPage = LCD_MODE_INIT;
 
 #else //  시간단축 하이패스
