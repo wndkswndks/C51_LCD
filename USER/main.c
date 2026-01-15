@@ -579,6 +579,7 @@ typedef enum
 	CMD_TEST_PULSE = 73,
 	CMD_GET_WATT_CART = 74,
 	CMD_TEST_FORCE_PAGE_CHANGE = 75,
+	CMD_TEMP_DUTY_ON = 76,
 
 	CMD_LCD_EXP = 85,
 	CMD_LCD_AUTO_CAL = 87,
@@ -599,8 +600,6 @@ typedef enum
 	CMD_DEBUG_PUMP = 193,
 	CMD_DEBUG_CHILLER = 194,
 	CMD_DEBUG_PELTIER = 195,
-	CMD_DEGUG_TEMP_DUTY_ON = 196,
-	CMD_DEGUG_LCD_TEMP_DUTY_ON = 197,
 
 	CMD_HP1_ADD = 200,
 
@@ -1756,6 +1755,7 @@ u8 Get_All_Catrige()
 			systemLive = ALL_DIE;
 			systemCartStatus = 0;
 			systemErr = 0;
+			TX_Msg(CMD_TEMP_DUTY_ON, 0);
 			TX_Rx_Msg(CMD_DO_ALL_LIVE, 0,&systemLive, 3000);
 
 			switch (systemLive)
@@ -1883,6 +1883,7 @@ u8 System_Err_Check()
 			if(systemLiveStatus == LIVE_HP_RF && systemCartStatus == SYS_CART_OK)
 			{
 				iconSystemCircle = ICON_SYS_CHK_PER_0;
+				TX_Msg(CMD_TEMP_DUTY_ON, 1);
 				Page_Change(LCD_MODE_MAIN);
 				returnValue = LCD_MODE_MAIN;
 			}
@@ -2503,6 +2504,71 @@ void Watt_Exp_zero()
 		sys_write_vp(add,(u8*)&defultWatt,2);
 	}
 }
+void Info_Parts()//
+{
+
+	u16 btnTtext;
+	u16 add = 0, pointAdd = 0;
+	const u16 iconEmptyPoint = ICON_CALIB_EMPTY_POINT,  iconPoint = ICON_CALIB_POINT;
+
+	sys_read_vp(INFOMATION_TOUCH_ADDR, (u8*)&btnTtext,1);
+	if (btnTtext)
+	{
+		pointAdd = (u16)(INFO_POINT_SATAT_ADDR + (btnTtext-1)*0x02);
+
+		if(infoPrePointAddr &&infoPrePointAddr != pointAdd)
+		{
+			sys_write_vp(infoPrePointAddr,(u8*)&iconEmptyPoint,2);
+		}
+		sys_write_vp(pointAdd,(u8*)&iconPoint,2);
+
+
+		infoPrePointAddr = pointAdd;
+
+		infoIdx = btnTtext;
+		infoTouch = 1;
+		infoValue = textinfoBuff[infoIdx];
+
+		btnTtext= 0;
+		sys_write_vp(INFOMATION_TOUCH_ADDR,(u8*)&btnTtext,2);
+	}
+
+
+}
+
+
+void Cartrige_Parts()//
+{
+
+	u16 btnTtext;
+	u16 add = 0, pointAdd = 0;
+	const u16 iconEmptyPoint = ICON_CALIB_EMPTY_POINT,  iconPoint = ICON_CALIB_POINT;
+
+	sys_read_vp(CARTRIGE_TOUCH_ADDR, (u8*)&btnTtext,1);
+	if (btnTtext)
+	{
+		pointAdd = (u16)(CART_POINT_SATAT_ADDR + (btnTtext-1)*0x02);
+
+		if(cartPrePointAddr &&cartPrePointAddr != pointAdd)
+		{
+			sys_write_vp(cartPrePointAddr,(u8*)&iconEmptyPoint,2);
+		}
+		sys_write_vp(pointAdd,(u8*)&iconPoint,2);
+
+
+		cartPrePointAddr = pointAdd;
+
+		cartIdx = btnTtext;
+		Debug_Print(0,cartIdx);
+		cartTouch = 1;
+		cartValue = textCartrigeBuff[cartIdx];
+
+		btnTtext= 0;
+		sys_write_vp(CARTRIGE_TOUCH_ADDR,(u8*)&btnTtext,2);
+	}
+
+
+}
 
 u8 Calibration_Config()//
 {
@@ -2601,71 +2667,6 @@ u8 Calibration_Config()//
 
 }
 
-void Info_Parts()//
-{
-
-	u16 btnTtext;
-	u16 add = 0, pointAdd = 0;
-	const u16 iconEmptyPoint = ICON_CALIB_EMPTY_POINT,  iconPoint = ICON_CALIB_POINT;
-
-	sys_read_vp(INFOMATION_TOUCH_ADDR, (u8*)&btnTtext,1);
-	if (btnTtext)
-	{
-		pointAdd = (u16)(INFO_POINT_SATAT_ADDR + (btnTtext-1)*0x02);
-
-		if(infoPrePointAddr &&infoPrePointAddr != pointAdd)
-		{
-			sys_write_vp(infoPrePointAddr,(u8*)&iconEmptyPoint,2);
-		}
-		sys_write_vp(pointAdd,(u8*)&iconPoint,2);
-
-
-		infoPrePointAddr = pointAdd;
-
-		infoIdx = btnTtext;
-		infoTouch = 1;
-		infoValue = textinfoBuff[infoIdx];
-
-		btnTtext= 0;
-		sys_write_vp(INFOMATION_TOUCH_ADDR,(u8*)&btnTtext,2);
-	}
-
-
-}
-
-
-void Cartrige_Parts()//
-{
-
-	u16 btnTtext;
-	u16 add = 0, pointAdd = 0;
-	const u16 iconEmptyPoint = ICON_CALIB_EMPTY_POINT,  iconPoint = ICON_CALIB_POINT;
-
-	sys_read_vp(CARTRIGE_TOUCH_ADDR, (u8*)&btnTtext,1);
-	if (btnTtext)
-	{
-		pointAdd = (u16)(CART_POINT_SATAT_ADDR + (btnTtext-1)*0x02);
-
-		if(cartPrePointAddr &&cartPrePointAddr != pointAdd)
-		{
-			sys_write_vp(cartPrePointAddr,(u8*)&iconEmptyPoint,2);
-		}
-		sys_write_vp(pointAdd,(u8*)&iconPoint,2);
-
-
-		cartPrePointAddr = pointAdd;
-
-		cartIdx = btnTtext;
-		Debug_Print(0,cartIdx);
-		cartTouch = 1;
-		cartValue = textCartrigeBuff[cartIdx];
-
-		btnTtext= 0;
-		sys_write_vp(CARTRIGE_TOUCH_ADDR,(u8*)&btnTtext,2);
-	}
-
-
-}
 
 u8 Cartrige_Set_Config()//
 {
@@ -2994,68 +2995,6 @@ u8 Engineer_Config()//
 
 }
 
-#if 0
-u8 Pop_Main_Config()//
-{
-	u8 returnValue = 0;
-	u16 btn =0;
-	u16 add =0;
-	u32 value =0;
-
-	int i =0;
-
-	returnValue = LCD_MODE_MAIN_POPUP;
-
-	sys_read_vp(ENGINEER_BUTTON_ADDR,(u8*)&btn,1);
-	if(btn)
-	{
-		switch (btn)
-		{
-			case BTN_EG_INFOMATION:
-				Page_Change(LCD_MODE_MAIN);
-				returnValue = LCD_MODE_MAIN;
-			break;
-		}
-		btn= 0;
-		sys_write_vp(ENGINEER_BUTTON_ADDR,(u8*)&btn,2);
-
-	}
-
-	return returnValue;
-
-}
-
-u8 Pop_System_Chk_Config()//
-{
-	u8 returnValue = 0;
-	u16 btn =0;
-	u16 add =0;
-	u32 value =0;
-
-	int i =0;
-
-	returnValue = LCD_MODE_SYS_CHK_POPUP;
-
-	sys_read_vp(ENGINEER_BUTTON_ADDR,(u8*)&btn,1);
-	if(btn)
-	{
-		switch (btn)
-		{
-			case BTN_EG_INFOMATION:
-				Page_Change(LCD_MODE_SYS_CHK);
-				returnValue = LCD_MODE_SYS_CHK;
-			break;
-		}
-		btn= 0;
-		sys_write_vp(ENGINEER_BUTTON_ADDR,(u8*)&btn,2);
-
-	}
-
-	return returnValue;
-
-}
-
-#endif
 
 void Debug_PrintConfig()
 {
