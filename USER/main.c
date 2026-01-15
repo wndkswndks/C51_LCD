@@ -1974,6 +1974,148 @@ void Cartrige_Init()
 	}
 
 }
+void Watt_Save()
+{
+	u16 add = 0;
+	int i=0, j=0 ;
+	u16 cmd = 0;
+	u32 value = 0;
+
+	for(i =1 ;i <= 77;i++)
+	{
+		cmd = i+CMD_TRANDU_WATT_BASE;// 101~177
+		value = textWattBuff[i];
+		TX_Msg(cmd, value);//
+	}
+
+}
+
+void Calibration_TDU_Parts()//
+{
+
+	u16 btnTtext;
+	u16 add = 0, pointAdd = 0, idx = 0;
+	const u16 iconEmptyPoint = ICON_CALIB_EMPTY_POINT,  iconPoint = ICON_CALIB_POINT;
+
+	sys_read_vp(CAL_TOUCH_TDU_ADDR, (u8*)&btnTtext,1);
+	if (btnTtext)
+	{
+		pointAdd = (u16)(TRANDU_WATT_POINT_ADDR + (btnTtext-1)*0x02);
+
+		if(prePointAddr &&prePointAddr != pointAdd)
+		{
+			sys_write_vp(prePointAddr,(u8*)&iconEmptyPoint,2);
+		}
+		sys_write_vp(pointAdd,(u8*)&iconPoint,2);
+
+
+		prePointAddr = pointAdd;
+		calMode = CAL_MODE_WATT;
+		wattIdxMain = btnTtext;
+		textNum = textWattBuff[wattIdxMain];
+
+
+		btnTtext= 0;
+		sys_write_vp(CAL_TOUCH_TDU_ADDR,(u8*)&btnTtext,2);
+	}
+
+
+}
+
+void Watt_All_Zero()
+{
+	u16 add;
+	int i = 0;
+	u32 defultWatt =0;
+
+	for(i =1 ;i <= 77;i++)
+	{
+		textWattBuff[i] = 0;
+		defultWatt = 0;
+		add = (u16)(TRANDU_WATT_START_NUM_ADDR + (i-1)*0x02);
+		sys_write_vp(add,(u8*)&defultWatt,2);
+	}
+}
+
+void Watt_Exp_zero()
+{
+	u16 add;
+	int i = 0;
+	u32 defultWatt =0;
+
+	for(i = 0 ;i < 7;i++)
+	{
+		textWattBuff[i+78] = 0;
+		defultWatt = 0;
+		add = (u16)(TRANDU_WATT_EXP1_NUM_ADDR + i*0x02);
+		sys_write_vp(add,(u8*)&defultWatt,2);
+	}
+}
+void Info_Parts()//
+{
+
+	u16 btnTtext;
+	u16 add = 0, pointAdd = 0;
+	const u16 iconEmptyPoint = ICON_CALIB_EMPTY_POINT,  iconPoint = ICON_CALIB_POINT;
+
+	sys_read_vp(INFOMATION_TOUCH_ADDR, (u8*)&btnTtext,1);
+	if (btnTtext)
+	{
+		pointAdd = (u16)(INFO_POINT_SATAT_ADDR + (btnTtext-1)*0x02);
+
+		if(infoPrePointAddr &&infoPrePointAddr != pointAdd)
+		{
+			sys_write_vp(infoPrePointAddr,(u8*)&iconEmptyPoint,2);
+		}
+		sys_write_vp(pointAdd,(u8*)&iconPoint,2);
+
+
+		infoPrePointAddr = pointAdd;
+
+		infoIdx = btnTtext;
+		infoTouch = 1;
+		infoValue = textinfoBuff[infoIdx];
+
+		btnTtext= 0;
+		sys_write_vp(INFOMATION_TOUCH_ADDR,(u8*)&btnTtext,2);
+	}
+
+
+}
+
+
+void Cartrige_Parts()//
+{
+
+	u16 btnTtext;
+	u16 add = 0, pointAdd = 0;
+	const u16 iconEmptyPoint = ICON_CALIB_EMPTY_POINT,  iconPoint = ICON_CALIB_POINT;
+
+	sys_read_vp(CARTRIGE_TOUCH_ADDR, (u8*)&btnTtext,1);
+	if (btnTtext)
+	{
+		pointAdd = (u16)(CART_POINT_SATAT_ADDR + (btnTtext-1)*0x02);
+
+		if(cartPrePointAddr &&cartPrePointAddr != pointAdd)
+		{
+			sys_write_vp(cartPrePointAddr,(u8*)&iconEmptyPoint,2);
+		}
+		sys_write_vp(pointAdd,(u8*)&iconPoint,2);
+
+
+		cartPrePointAddr = pointAdd;
+
+		cartIdx = btnTtext;
+		Debug_Print(0,cartIdx);
+		cartTouch = 1;
+		cartValue = textCartrigeBuff[cartIdx];
+
+		btnTtext= 0;
+		sys_write_vp(CARTRIGE_TOUCH_ADDR,(u8*)&btnTtext,2);
+	}
+
+
+}
 
 u8 System_Check_Config()
 {
@@ -2028,8 +2170,19 @@ u8 Init_Config()
 	sys_read_vp(INITIAL_BUTTON_ADDR,(u8*)&btn,1);
 	if(btn)
 	{
-		Page_Change(LCD_MODE_PASSWARD);
-		returnValue = LCD_MODE_PASSWARD;
+		switch (btn)
+		{
+			case 1:
+				Page_Change(LCD_MODE_PASSWARD);
+				returnValue = LCD_MODE_PASSWARD;
+			break;
+
+			case 2: //test
+				TX_Msg(CMD_TEST_FORCE_PAGE_CHANGE, LCD_MODE_MAIN);
+				Page_Change(LCD_MODE_MAIN);
+				returnValue = LCD_MODE_MAIN;
+			break;
+		}
 
 		btn= 0;
 		sys_write_vp(INITIAL_BUTTON_ADDR,(u8*)&btn,2);
@@ -2427,148 +2580,7 @@ u8 Setting_Config()
 
 
 
-void Watt_Save()
-{
-	u16 add = 0;
-	int i=0, j=0 ;
-	u16 cmd = 0;
-	u32 value = 0;
 
-	for(i =1 ;i <= 77;i++)
-	{
-		cmd = i+CMD_TRANDU_WATT_BASE;// 101~177
-		value = textWattBuff[i];
-		TX_Msg(cmd, value);//
-	}
-
-}
-
-void Calibration_TDU_Parts()//
-{
-
-	u16 btnTtext;
-	u16 add = 0, pointAdd = 0, idx = 0;
-	const u16 iconEmptyPoint = ICON_CALIB_EMPTY_POINT,  iconPoint = ICON_CALIB_POINT;
-
-	sys_read_vp(CAL_TOUCH_TDU_ADDR, (u8*)&btnTtext,1);
-	if (btnTtext)
-	{
-		pointAdd = (u16)(TRANDU_WATT_POINT_ADDR + (btnTtext-1)*0x02);
-
-		if(prePointAddr &&prePointAddr != pointAdd)
-		{
-			sys_write_vp(prePointAddr,(u8*)&iconEmptyPoint,2);
-		}
-		sys_write_vp(pointAdd,(u8*)&iconPoint,2);
-
-
-		prePointAddr = pointAdd;
-		calMode = CAL_MODE_WATT;
-		wattIdxMain = btnTtext;
-		textNum = textWattBuff[wattIdxMain];
-
-
-		btnTtext= 0;
-		sys_write_vp(CAL_TOUCH_TDU_ADDR,(u8*)&btnTtext,2);
-	}
-
-
-}
-
-void Watt_All_Zero()
-{
-	u16 add;
-	int i = 0;
-	u32 defultWatt =0;
-
-	for(i =1 ;i <= 77;i++)
-	{
-		textWattBuff[i] = 0;
-		defultWatt = 0;
-		add = (u16)(TRANDU_WATT_START_NUM_ADDR + (i-1)*0x02);
-		sys_write_vp(add,(u8*)&defultWatt,2);
-	}
-}
-
-void Watt_Exp_zero()
-{
-	u16 add;
-	int i = 0;
-	u32 defultWatt =0;
-
-	for(i = 0 ;i < 7;i++)
-	{
-		textWattBuff[i+78] = 0;
-		defultWatt = 0;
-		add = (u16)(TRANDU_WATT_EXP1_NUM_ADDR + i*0x02);
-		sys_write_vp(add,(u8*)&defultWatt,2);
-	}
-}
-void Info_Parts()//
-{
-
-	u16 btnTtext;
-	u16 add = 0, pointAdd = 0;
-	const u16 iconEmptyPoint = ICON_CALIB_EMPTY_POINT,  iconPoint = ICON_CALIB_POINT;
-
-	sys_read_vp(INFOMATION_TOUCH_ADDR, (u8*)&btnTtext,1);
-	if (btnTtext)
-	{
-		pointAdd = (u16)(INFO_POINT_SATAT_ADDR + (btnTtext-1)*0x02);
-
-		if(infoPrePointAddr &&infoPrePointAddr != pointAdd)
-		{
-			sys_write_vp(infoPrePointAddr,(u8*)&iconEmptyPoint,2);
-		}
-		sys_write_vp(pointAdd,(u8*)&iconPoint,2);
-
-
-		infoPrePointAddr = pointAdd;
-
-		infoIdx = btnTtext;
-		infoTouch = 1;
-		infoValue = textinfoBuff[infoIdx];
-
-		btnTtext= 0;
-		sys_write_vp(INFOMATION_TOUCH_ADDR,(u8*)&btnTtext,2);
-	}
-
-
-}
-
-
-void Cartrige_Parts()//
-{
-
-	u16 btnTtext;
-	u16 add = 0, pointAdd = 0;
-	const u16 iconEmptyPoint = ICON_CALIB_EMPTY_POINT,  iconPoint = ICON_CALIB_POINT;
-
-	sys_read_vp(CARTRIGE_TOUCH_ADDR, (u8*)&btnTtext,1);
-	if (btnTtext)
-	{
-		pointAdd = (u16)(CART_POINT_SATAT_ADDR + (btnTtext-1)*0x02);
-
-		if(cartPrePointAddr &&cartPrePointAddr != pointAdd)
-		{
-			sys_write_vp(cartPrePointAddr,(u8*)&iconEmptyPoint,2);
-		}
-		sys_write_vp(pointAdd,(u8*)&iconPoint,2);
-
-
-		cartPrePointAddr = pointAdd;
-
-		cartIdx = btnTtext;
-		Debug_Print(0,cartIdx);
-		cartTouch = 1;
-		cartValue = textCartrigeBuff[cartIdx];
-
-		btnTtext= 0;
-		sys_write_vp(CARTRIGE_TOUCH_ADDR,(u8*)&btnTtext,2);
-	}
-
-
-}
 
 u8 Calibration_Config()//
 {
@@ -3027,16 +3039,16 @@ void Mode_Config()//
 			lcdPage = PassWard_Config();
 		break;
 
+		case LCD_MODE_SYS_CHK:
+			lcdPage = System_Check_Config();
+		break;
+
 		case LCD_MODE_MAIN:
 			lcdPage = Main_Config();
 		break;
 
 		case LCD_MODE_SETTING:
 			lcdPage = Setting_Config();
-		break;
-
-		case LCD_MODE_SYS_CHK:
-			lcdPage = System_Check_Config();
 		break;
 
 		case LCD_MODE_CALIBRATION:
