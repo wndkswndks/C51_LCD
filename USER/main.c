@@ -236,6 +236,77 @@
 
 #define MAIN_CONNETION_ADDR	 			0x28C8
 
+#define DEBUG_STATUS_1_ADDR	 				0x28D0
+#define DEBUG_STATUS_2_ADDR	 				0x28D2
+#define DEBUG_STATUS_3_ADDR	 				0x28D4
+#define DEBUG_STATUS_4_ADDR	 				0x28D6
+#define DEBUG_STATUS_5_ADDR	 				0x28D8
+#define DEBUG_STATUS_6_ADDR	 				0x28DA
+#define DEBUG_STATUS_7_ADDR	 				0x28DC
+#define DEBUG_STATUS_8_ADDR	 				0x28DE
+
+#define DEBUG_DATA_1_ADDR	 				0x28F6
+#define DEBUG_DATA_2_ADDR	 				0x28F8
+#define DEBUG_DATA_3_ADDR	 				0x28FA
+#define DEBUG_DATA_4_ADDR	 				0x28FC
+#define DEBUG_DATA_5_ADDR	 				0x28FE
+#define DEBUG_DATA_6_ADDR	 				0x2900
+#define DEBUG_DATA_7_ADDR	 				0x2902
+#define DEBUG_DATA_8_ADDR	 				0x2904
+
+#define DEBUG_ERRCNT_1_ADDR   0x2910
+#define DEBUG_ERRCNT_2_ADDR   0x2912
+#define DEBUG_ERRCNT_3_ADDR   0x2914
+#define DEBUG_ERRCNT_4_ADDR   0x2916
+#define DEBUG_ERRCNT_5_ADDR   0x2918
+#define DEBUG_ERRCNT_6_ADDR   0x291A
+#define DEBUG_ERRCNT_7_ADDR   0x291C
+#define DEBUG_ERRCNT_8_ADDR   0x291E
+#define DEBUG_ERRCNT_9_ADDR   0x2920
+#define DEBUG_ERRCNT_10_ADDR  0x2922
+#define DEBUG_ERRCNT_11_ADDR  0x2924
+#define DEBUG_ERRCNT_12_ADDR  0x2926
+#define DEBUG_ERRCNT_13_ADDR  0x2928
+#define DEBUG_ERRCNT_14_ADDR  0x292A
+#define DEBUG_ERRCNT_15_ADDR  0x292C
+#define DEBUG_ERRCNT_16_ADDR  0x292E
+#define DEBUG_ERRCNT_17_ADDR  0x2930
+#define DEBUG_ERRCNT_18_ADDR  0x2932
+#define DEBUG_ERRCNT_19_ADDR  0x2934
+#define DEBUG_ERRCNT_20_ADDR  0x2936
+#define DEBUG_ERRCNT_21_ADDR  0x2938
+#define DEBUG_ERRCNT_22_ADDR  0x293A
+#define DEBUG_ERRCNT_23_ADDR  0x293C
+#define DEBUG_ERRCNT_24_ADDR  0x293E
+#define DEBUG_ERRCNT_25_ADDR  0x2940
+#define DEBUG_ERRCNT_26_ADDR  0x2942
+#define DEBUG_ERRCNT_27_ADDR  0x2944
+#define DEBUG_ERRCNT_28_ADDR  0x2946
+#define DEBUG_ERRCNT_29_ADDR  0x2948
+#define DEBUG_ERRCNT_30_ADDR  0x294A
+#define DEBUG_ERRCNT_31_ADDR  0x294C
+#define DEBUG_ERRCNT_32_ADDR  0x294E
+#define DEBUG_ERRCNT_33_ADDR  0x2950
+#define DEBUG_ERRCNT_34_ADDR  0x2952
+#define DEBUG_ERRCNT_35_ADDR  0x2954
+#define DEBUG_ERRCNT_36_ADDR  0x2956
+#define DEBUG_ERRCNT_37_ADDR  0x2958
+#define DEBUG_ERRCNT_38_ADDR  0x295A
+#define DEBUG_ERRCNT_39_ADDR  0x295C
+#define DEBUG_ERRCNT_40_ADDR  0x295E
+#define DEBUG_ERRCNT_41_ADDR  0x2960
+#define DEBUG_ERRCNT_42_ADDR  0x2962
+#define DEBUG_ERRCNT_43_ADDR  0x2964
+#define DEBUG_ERRCNT_44_ADDR  0x2966
+#define DEBUG_ERRCNT_45_ADDR  0x2968
+#define DEBUG_ERRCNT_46_ADDR  0x296A
+#define DEBUG_ERRCNT_47_ADDR  0x296C
+#define DEBUG_ERRCNT_48_ADDR  0x296E
+#define DEBUG_ERRCNT_49_ADDR  0x2970
+#define DEBUG_ERRCNT_50_ADDR  0x2972
+
+
+
 //==================================================
 
 #define LIGHT_ICON_ADDR  		0x3000
@@ -338,6 +409,14 @@ typedef enum
 	CART_EVENT_DETECT_NEW = 2,
 	CART_EVENT_EXPRATION = 3,
 
+	IDX_DEBUG_TEMP 			= 1,
+	IDX_DEBUG_MAIN_COMMU = 2,
+	IDX_DEBUG_HAND_COMMU = 3,
+	IDX_DEBUG_RF_COMMU 		= 4,
+	IDX_DEBUG_RF_STATUS 	= 5,
+	IDX_DEBUG_RTC_BATTRY 	= 6,
+	IDX_DEBUG_FLOW_SENSOR   = 7,
+	IDX_DEBUG_LEVEL_SENSOR  = 8,
 } TOUCH_E;
 
 
@@ -477,6 +556,10 @@ typedef enum
 	KEY_CART12_SET,
 	KEY_CART13_SET,
 
+	//DEVICE_STATUS
+
+	KEY_DEVICE_BACKHOME =1,
+
 } BUTTON_E;
 
 
@@ -570,6 +653,8 @@ typedef enum
 	CMD_LCD_STATUS = 60,
 	CMD_SYS_CHK = 61,
 	CMD_INFOMATION = 62,
+	CMD_DEVICE_STATUS = 63,
+	CMD_ERR_EVENT = 64,
 
 
 	CMD_DO_ALL_LIVE = 70,
@@ -847,13 +932,16 @@ typedef enum
 	ICON_CONNET = 54,
 	ICON_DISCONNET,
 
+	ICON_STATUS_OK = 56,
+	ICON_STATUS_ERR = 57,
+
 
 } ICON_E;
 
 typedef enum
 {
-  IDX_ERR_DUMY = 0,
-  IDX_TEMP_OUT,
+  IDX_MAIN_EVENT_START = 1,
+  IDX_TEMP_OUT = IDX_MAIN_EVENT_START,
   IDX_TEMP_LIMIT_UNDER,
   IDX_TEMP_LOW,
   IDX_FLOW_LIMIT_UNDER,
@@ -864,9 +952,10 @@ typedef enum
   IDX_BATTRY_LIMIT_UNDER,
   IDX_BATTRY_LIMIT_LOW,
   IDX_RTC_ERR,
+  IDX_MAIN_EVENT_END,
 //------------------------------
-
-  IDX_PRE_COOL_ERR = 12,
+  IDX_HP_EVENT_START,
+  IDX_PRE_COOL_ERR = IDX_HP_EVENT_START,
   IDX_HAND_COMU_ERR,
   IDX_CATRIGE_ID_ERR,
   IDX_CATRIGE_MANU_ERR,
@@ -880,19 +969,22 @@ typedef enum
   IDX_CATRIGE_RESHOT_ZERO,
   IDX_CATRIGE_DETECT,
   IDX_CATRIGE_UN_DETECT,
+  IDX_HAND_TIMEOUT,
+  IDX_HP_EVENT_END,
 //------------------------------
-
-  IDX_RF_COMU_ERR = 26,
+  IDX_RF_EVENT_START,
+  IDX_RF_COMU_ERR = IDX_RF_EVENT_START,
   IDX_RF_STATUS_ERR,
+  IDX_RF_EVENT_END,
 //------------------------------
 
-  IDX_HAND_TIMEOUT = 28,
   IDX_LCD_COMU_ERR,
   IDX_LCD_TIMEOUT,
-  IDX_ERROR_MAX,
   IDX_IS_CURRNTSHOT_RESET,
   IDX_IS_TOTALJULE_RESET,
   IDX_CATRIGE_NEW,
+  IDX_ERROR_MAX,
+
 
 } ERROR_IDX_E;
 
@@ -1336,12 +1428,11 @@ void Event_PopUp(u16 eventData)
 	const u16 iconErrBack1= ICON_MAIN_POP, iconErrBack2= ICON_MAIN_POP_SELLEC , iconConnect = ICON_CONNET, iconDisConnect = ICON_DISCONNET; // 고정
 	u16 iconErrCode= 0;
 	u16 iconErrMsg= 0;
-	u16 errLevel, errData;//errEnDis;
+	u16 errData;//errEnDis;
 
 	errEvent = eventData;
 	sysChkFlag = 0;
-	errLevel = eventData / LEVEL_UNIT;
-	errData = eventData % ERR_ENDIS_UNIT;
+	errData = eventData;
 
 
 
@@ -1429,22 +1520,86 @@ void SYS_CHK_OK(u16 device)
 	}
 }
 
+void Device_Satatus_Passing(u16 passingValue)
+{
+	u16 add = 0;
+	u32 statusData = 0;
+	const u16 iconSatusOk = ICON_STATUS_OK, iconSatusErr = ICON_STATUS_ERR;
+	add = passingValue/1000;
+	statusData = passingValue%1000;
+	switch (add)
+	{
+		case IDX_DEBUG_TEMP:
+			sys_write_vp(DEBUG_DATA_1_ADDR, (u8*)&statusData ,2);
+			if(20<=statusData && statusData<200) sys_write_vp(DEBUG_STATUS_1_ADDR, (u8*)&iconSatusOk ,2);
+			else sys_write_vp(DEBUG_STATUS_1_ADDR, (u8*)&iconSatusErr ,2);
 
+		break;
+
+		case IDX_DEBUG_MAIN_COMMU:
+			sys_write_vp(DEBUG_DATA_2_ADDR, (u8*)&statusData ,2);
+			if(0<=statusData && statusData<5) sys_write_vp(DEBUG_STATUS_2_ADDR, (u8*)&iconSatusOk ,2);
+			else sys_write_vp(DEBUG_STATUS_2_ADDR, (u8*)&iconSatusErr ,2);
+		break;
+
+		case IDX_DEBUG_HAND_COMMU:
+			sys_write_vp(DEBUG_DATA_3_ADDR, (u8*)&statusData ,2);
+			if(0<=statusData && statusData<5) sys_write_vp(DEBUG_STATUS_3_ADDR, (u8*)&iconSatusOk ,2);
+			else sys_write_vp(DEBUG_STATUS_3_ADDR, (u8*)&iconSatusErr ,2);
+		break;
+
+		case IDX_DEBUG_RF_COMMU:
+			sys_write_vp(DEBUG_DATA_4_ADDR, (u8*)&statusData ,2);
+			if(0<=statusData && statusData<5) sys_write_vp(DEBUG_STATUS_4_ADDR, (u8*)&iconSatusOk ,2);
+			else sys_write_vp(DEBUG_STATUS_4_ADDR, (u8*)&iconSatusErr ,2);
+		break;
+
+		case IDX_DEBUG_RF_STATUS:
+			sys_write_vp(DEBUG_DATA_5_ADDR, (u8*)&statusData ,2);
+			if(0<=statusData && statusData<1) sys_write_vp(DEBUG_STATUS_5_ADDR, (u8*)&iconSatusOk ,2);
+			else sys_write_vp(DEBUG_STATUS_5_ADDR, (u8*)&iconSatusErr ,2);
+		break;
+
+		case IDX_DEBUG_RTC_BATTRY:
+			sys_write_vp(DEBUG_DATA_6_ADDR, (u8*)&statusData ,2);
+			if(2<=statusData && statusData<4) sys_write_vp(DEBUG_STATUS_6_ADDR, (u8*)&iconSatusOk ,2);
+			else sys_write_vp(DEBUG_STATUS_6_ADDR, (u8*)&iconSatusErr ,2);
+		break;
+
+		case IDX_DEBUG_FLOW_SENSOR:
+			sys_write_vp(DEBUG_DATA_7_ADDR, (u8*)&statusData ,2);
+			if(6<=statusData && statusData<10) sys_write_vp(DEBUG_STATUS_7_ADDR, (u8*)&iconSatusOk ,2);
+			else sys_write_vp(DEBUG_STATUS_7_ADDR, (u8*)&iconSatusErr ,2);
+		break;
+
+		case IDX_DEBUG_LEVEL_SENSOR:
+			sys_write_vp(DEBUG_DATA_8_ADDR, (u8*)&statusData ,2);
+			if(statusData == 1) sys_write_vp(DEBUG_STATUS_8_ADDR, (u8*)&iconSatusOk ,2);
+			else sys_write_vp(DEBUG_STATUS_8_ADDR, (u8*)&iconSatusErr ,2);
+		break;
+
+	}
+
+}
 
 
 
 void RX_Parssing_Config()
 {
 	u16 add = 0;
+	u32 statusData = 0;
 	u16 cmd = 0;
 	u32 value=0;
-	u16 errData = 0;
+	u16 errData = 0, errNum= 0,errAddr= 0;
+	u32 errCnt= 0;
 	u16 pluseNum = 0;
 	u32 pluseValue = 0;
 	u16 pluseAddr = 0;
 	const u16 iconCalEmptyPoint = ICON_CALIB_EMPTY_POINT;
 	const u16 iconStandby = ICON_MAIN_STANDBY, iconTreat = ICON_MAIN_TREAT;
 	const u16 iconConnect = ICON_CONNET, iconDisConnect = ICON_DISCONNET;
+
+
 	if(uartRxFlag)
 	{
 		uartRxFlag = 0;
@@ -1456,10 +1611,6 @@ void RX_Parssing_Config()
 			case CMD_ERR:
 				errData = value;
 				Event_PopUp(errData);
-
-
-//				errEventBuff[errData] = errData;
-//				errEventFlag[errData] = CMD_ERR;
 			break;
 
 			case CMD_OK://앞에 커멘드는 고정 뒤에는 장치명
@@ -1711,6 +1862,19 @@ void RX_Parssing_Config()
 
 			case CMD_PLUSE_EN:
 				Pulse_En_Dis(value);
+			break;
+
+			case CMD_DEVICE_STATUS:
+				Device_Satatus_Passing(value);
+			break;
+
+			case CMD_ERR_EVENT:
+				errNum = (value/1000);
+				errCnt = value%1000;
+				errAddr = DEBUG_ERRCNT_1_ADDR + (errNum -1)*2;
+				sys_write_vp(errAddr,(u8*)&errCnt ,2);
+
+
 			break;
 
 
@@ -2180,6 +2344,7 @@ u8 Init_Config()
 			case 2: //test
 				TX_Msg(CMD_TEST_FORCE_PAGE_CHANGE, LCD_MODE_MAIN);
 				Page_Change(LCD_MODE_MAIN);
+				engineerKey = 1;
 				returnValue = LCD_MODE_MAIN;
 			break;
 		}
@@ -2507,8 +2672,6 @@ u8 Main_Config()
 	sys_read_vp(UP_LONG_BUTTON_ADDR,(u8*)&btn,1);
 	if(btn)
 	{
-//		numTest++;
-//		Debug_Print(1, (int)numTest);
 		if(pulseAddr) TX_Msg(CMD_PLUSE_BTN_UP_DN, BUTTON_UP);
 		btn= 0;
 		sys_write_vp(UP_LONG_BUTTON_ADDR,(u8*)&btn,2);
@@ -2516,8 +2679,7 @@ u8 Main_Config()
 	sys_read_vp(DN_LONG_BUTTON_ADDR,(u8*)&btn,1);
 	if(btn)
 	{
-//		numTest++;
-//		Debug_Print(1, (int)numTest);
+
 		if(pulseAddr) TX_Msg(CMD_PLUSE_BTN_UP_DN, BUTTON_DN);
 		btn= 0;
 		sys_write_vp(DN_LONG_BUTTON_ADDR,(u8*)&btn,2);
@@ -2910,8 +3072,12 @@ u8 Device_Status_Config()
 	sys_read_vp(DEVICE_STATUS_BUTTON_ADDR, (u8*)&btn,1);
 	if(btn)
 	{
-		Page_Change(LCD_MODE_ENGINIEER);
-		returnValue = LCD_MODE_ENGINIEER;
+		if(btn ==KEY_DEVICE_BACKHOME)
+		{
+			TX_Msg(CMD_DEVICE_STATUS, 0);
+			Page_Change(LCD_MODE_ENGINIEER);
+			returnValue = LCD_MODE_ENGINIEER;
+		}
 
 		btn= 0;
 		sys_write_vp(DEVICE_STATUS_BUTTON_ADDR,(u8*)&btn,2);
@@ -2978,11 +3144,13 @@ u8 Engineer_Config()//
 			break;
 
 			case BTN_EG_ERR_EVENT:
+				TX_Msg(CMD_ERR_EVENT, 1);
 				Page_Change(LCD_MODE_ERROR_EVENT);
 				returnValue = LCD_MODE_ERROR_EVENT;
 			break;
 
 			case BTN_EG_DEVICE_STATUS:
+				TX_Msg(CMD_DEVICE_STATUS, 1);
 				Page_Change(LCD_MODE_DEVICE_STATUS);
 				returnValue = LCD_MODE_DEVICE_STATUS;
 			break;
