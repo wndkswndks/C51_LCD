@@ -655,7 +655,8 @@ typedef enum
 	CMD_INFOMATION = 62,
 	CMD_DEVICE_STATUS = 63,
 	CMD_ERR_EVENT = 64,
-
+	CMD_AGING_BUTTON = 65,
+	CMD_AUTO_EXP = 66,
 
 	CMD_DO_ALL_LIVE = 70,
 	CMD_GET_ALL_CART = 71,
@@ -1009,7 +1010,7 @@ extern xdata u8  uartCmdTemp;
 extern xdata u16  uartValueTemp;
 
 idata u32 textCpy=0;
-xdata u16 btn,btnMain,btnSetting;
+xdata u16 btn,btnMain,btnUp,btnDn,btnSetting;
 
 idata u32 sysTimeStamp;
 
@@ -1140,7 +1141,9 @@ xdata u16 pulsePointAddr;
 
 xdata u16 pulseAddr;
 xdata u8 popUpMode;
-
+xdata u8 agingFlag;
+xdata u8 agingUpFlag;
+xdata u8 agingDnFlag;
 
 
 void Light_Change(u16 light);
@@ -1873,10 +1876,23 @@ void RX_Parssing_Config()
 				errCnt = value%1000;
 				errAddr = DEBUG_ERRCNT_1_ADDR + (errNum -1)*2;
 				sys_write_vp(errAddr,(u8*)&errCnt ,2);
-
-
 			break;
 
+			case CMD_AGING_BUTTON:
+				if(value <= 30)
+				{
+					agingFlag = value;
+				}
+				else if(value == 31)
+				{
+					agingUpFlag = 1;
+				}
+				else if(value == 32)
+				{
+					agingDnFlag = 1;
+				}
+
+			break;
 
 			default:
 				if(CMD_TRANDU1_FRQ <= cmd && cmd <=CMD_TRANDU7_FRQ)
@@ -1901,7 +1917,7 @@ void RX_Parssing_Config()
 		}
 
 	}
-//	ReTry_Tx();
+
 }
 
 idata u16 numTest =0;
@@ -2247,6 +2263,32 @@ void Info_Parts()//
 
 }
 
+void Aging_Button()
+{
+	if(agingFlag)
+	{
+		btnMain = agingFlag;
+		agingFlag = 0;
+	}
+}
+void Aging_Up_Button()
+{
+	if(agingUpFlag)
+	{
+		btnUp = agingUpFlag;
+		agingUpFlag = 0;
+	}
+}
+
+void Aging_Dn_Button()
+{
+	if(agingDnFlag)
+	{
+		btnDn = agingDnFlag;
+		agingDnFlag = 0;
+	}
+}
+
 
 void Cartrige_Parts()//
 {
@@ -2559,12 +2601,13 @@ u8 Main_Config_old()
 u8 Main_Config()
 {
 	u8 returnValue = 0;
-
+	int bbtn = 0;
 	returnValue = LCD_MODE_MAIN;
 
 
 
 	sys_read_vp(MAIN_BUTTON_ADDR,(u8*)&btnMain,1);
+	Aging_Button();
 	if(btnMain)
 	{
 		switch (btnMain)
@@ -2669,20 +2712,21 @@ u8 Main_Config()
 	}
 
 
-	sys_read_vp(UP_LONG_BUTTON_ADDR,(u8*)&btn,1);
-	if(btn)
+	sys_read_vp(UP_LONG_BUTTON_ADDR,(u8*)&btnUp,1);
+	Aging_Up_Button();
+	if(btnUp)
 	{
 		if(pulseAddr) TX_Msg(CMD_PLUSE_BTN_UP_DN, BUTTON_UP);
-		btn= 0;
-		sys_write_vp(UP_LONG_BUTTON_ADDR,(u8*)&btn,2);
+		btnUp= 0;
+		sys_write_vp(UP_LONG_BUTTON_ADDR,(u8*)&btnUp,2);
 	}
-	sys_read_vp(DN_LONG_BUTTON_ADDR,(u8*)&btn,1);
-	if(btn)
+	sys_read_vp(DN_LONG_BUTTON_ADDR,(u8*)&btnDn,1);
+	Aging_Dn_Button();
+	if(btnDn)
 	{
-
 		if(pulseAddr) TX_Msg(CMD_PLUSE_BTN_UP_DN, BUTTON_DN);
-		btn= 0;
-		sys_write_vp(DN_LONG_BUTTON_ADDR,(u8*)&btn,2);
+		btnDn= 0;
+		sys_write_vp(DN_LONG_BUTTON_ADDR,(u8*)&btnDn,2);
 	}
 
 	EXP_FreeCool_Motion();
@@ -3346,6 +3390,12 @@ void Lcd_Init()//
 	pulseAddr = 0;
 	popUpMode = 0;
 
+	btn = 0;
+	btnMain = 0;
+	btnUp = 0;
+	btnDn = 0;
+	btnSetting = 0;
+
 	Flash_Read();
 
 
@@ -3398,6 +3448,9 @@ void Lcd_Init()//
 	}
 	engineerKey = 0;
 
+	agingFlag = 0;
+	agingUpFlag = 0;
+	agingDnFlag = 0;
 
 
 
