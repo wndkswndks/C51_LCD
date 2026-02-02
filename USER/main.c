@@ -8,7 +8,8 @@
 #define NOR_FLASH_DATA_ADDR		0
 
 #define PW_NUM_BUTTON_ADDR		0x1000
-#define MAIN_BUTTON_ADDR		0x1020
+#define MAIN_BUTTON_ADDR	0x1002
+#define MAIN_MAX_BUTTON_ADDR	0x1020
 #define SETTING_BUTTON_ADDR		0x1040
 #define ENGINEER_BUTTON_ADDR	0x1060
 #define INFOMATION_BUTTON_ADDR	0x1080
@@ -148,10 +149,10 @@
 #define PULSE_DURATION_NUM_ADDR 	0x2712
 #define POST_COOLING_NUM_ADDR 		0x2714
 #define INTERVAL_NUM_ADDR 			0x2716
-#define TOTAL_JOULE_NUM_ADDR 		0x2718
-#define CURRENT_JOULE_NUM_ADDR 		0x271A
-#define REMIND_SHOT_NUM_ADDR 		0x271C
-#define CURRENT_SHOT_NUM_ADDR 		0x271E
+#define TOTAL_JOULE_NUM_ADDR 		0x2718//
+#define CURRENT_JOULE_NUM_ADDR 		0x271A//
+#define REMIND_SHOT_NUM_ADDR 		0x271C//
+#define CURRENT_SHOT_NUM_ADDR 		0x271E//
 
 #define ENERGY_MINI_NUM_ADDR		0x2720
 #define PULSE_MINI_NUM_ADDR	 		0x2722
@@ -2606,7 +2607,7 @@ u8 Main_Config()
 
 
 
-	sys_read_vp(MAIN_BUTTON_ADDR,(u8*)&btnMain,1);
+	sys_read_vp(MAIN_MAX_BUTTON_ADDR,(u8*)&btnMain,1);
 	Aging_Button();
 	if(btnMain)
 	{
@@ -2708,7 +2709,7 @@ u8 Main_Config()
 		}
 
 		btnMain= 0;
-		sys_write_vp(MAIN_BUTTON_ADDR,(u8*)&btnMain,2);
+		sys_write_vp(MAIN_MAX_BUTTON_ADDR,(u8*)&btnMain,2);
 	}
 
 
