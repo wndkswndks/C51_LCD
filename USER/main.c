@@ -160,6 +160,10 @@
 #define COOLING_MINI_NUM_ADDR		0x2726
 #define CALIV_PULSETIME_NUM_NUM_ADDR	0x2728
 
+#define CALIV_PULSE_ICON_ADDR		0x272A
+
+
+
 #define TEMP_DEBUG_NUM_ADDR			0x2840
 #define DUTY_DEBUG_NUM_ADDR			0x2842
 
@@ -433,7 +437,7 @@ typedef enum
 	BTN_MAIN_INTERVAL_UP = 7,
 	BTN_MAIN_INTERVAL_DN = 8,
 	BTN_MAIN_CURRENT_SHOT_RST = 9,
-	BTN_MAIN_TOTAL_JOULE_RST = 10,
+	BTN_MAIN_PULSE_CHANGE = 10,
 	BTN_MAIN_RDY_STNBY = 11,
 	BTN_MAIN_SETTING = 12,
 	BTN_MAIN_ERR_OK = 13,
@@ -579,6 +583,7 @@ typedef enum
 	LCD_MODE_CART_SETTING  = 14,
 	LCD_MODE_DEVICE_STATUS = 15,
 	LCD_MODE_ERROR_EVENT = 	 16,
+	LCD_MODE_MAIN_MAX = 	 17,
 
 
 } PAGE_E;
@@ -936,6 +941,10 @@ typedef enum
 
 	ICON_STATUS_OK = 56,
 	ICON_STATUS_ERR = 57,
+	ICON_PULSE_1 	= 58,
+	ICON_PULSE_2 	= 59,
+	ICON_PULSE_3 	= 60,
+	ICON_PULSE_4 	= 61,
 
 
 } ICON_E;
@@ -1599,6 +1608,7 @@ void RX_Parssing_Config()
 	u16 pluseNum = 0;
 	u32 pluseValue = 0;
 	u16 pluseAddr = 0;
+	u16 iconPulse = 0;
 	const u16 iconCalEmptyPoint = ICON_CALIB_EMPTY_POINT;
 	const u16 iconStandby = ICON_MAIN_STANDBY, iconTreat = ICON_MAIN_TREAT;
 	const u16 iconConnect = ICON_CONNET, iconDisConnect = ICON_DISCONNET;
@@ -1894,6 +1904,18 @@ void RX_Parssing_Config()
 				}
 
 			break;
+
+			case CMD_TEST_PULSE:
+				switch (value)
+				{
+					case 1:  iconPulse = ICON_PULSE_1;  break;
+					case 2:  iconPulse = ICON_PULSE_2;  break;
+					case 3:  iconPulse = ICON_PULSE_3;  break;
+					case 4:  iconPulse = ICON_PULSE_4;  break;
+				}
+				sys_write_vp(CALIV_PULSE_ICON_ADDR,(u8*)&iconPulse ,2);
+			break;
+
 
 			default:
 				if(CMD_TRANDU1_FRQ <= cmd && cmd <=CMD_TRANDU7_FRQ)
@@ -2488,7 +2510,7 @@ u8 PassWard_Config()
 
 }
 
-u8 Main_Config_old()
+u8 Main_Config()
 {
 	u8 returnValue = 0;
 	int i =0;
@@ -2528,8 +2550,8 @@ u8 Main_Config_old()
 			case BTN_MAIN_CURRENT_SHOT_RST:
 				TX_Msg(CMD_CURRENT_SHOT, 0);
 			break;
-			case BTN_MAIN_TOTAL_JOULE_RST:
-				TX_Msg(CMD_TOTAL_JOULE, 0);//
+			case BTN_MAIN_PULSE_CHANGE:
+				TX_Msg(CMD_TEST_PULSE, 1);
 			break;
 			case BTN_MAIN_RDY_STNBY:
 				if(rdyStnbyMode==STATUS_STNBY)
@@ -2563,21 +2585,21 @@ u8 Main_Config_old()
 			break;
 
 
-			case BTN_MAIN_TEST_2_PULSE:
-				TX_Msg(CMD_TEST_PULSE, 2);
-			break;
+//			case BTN_MAIN_TEST_2_PULSE:
+//				TX_Msg(CMD_TEST_PULSE, 2);
+//			break;
 
-			case BTN_MAIN_TEST_3_PULSE:
-				TX_Msg(CMD_TEST_PULSE, 3);
-			break;
+//			case BTN_MAIN_TEST_3_PULSE:
+//				TX_Msg(CMD_TEST_PULSE, 3);
+//			break;
 
-			case BTN_MAIN_TEST_4_PULSE:
-				TX_Msg(CMD_TEST_PULSE, 4);
-			break;
+//			case BTN_MAIN_TEST_4_PULSE:
+//				TX_Msg(CMD_TEST_PULSE, 4);
+//			break;
 
-			case BTN_MAIN_TEST_5_PULSE:
-				TX_Msg(CMD_TEST_PULSE, 5);
-			break;
+//			case BTN_MAIN_TEST_5_PULSE:
+//				TX_Msg(CMD_TEST_PULSE, 5);
+//			break;
 		}
 
 		btnMain= 0;
@@ -2599,11 +2621,11 @@ u8 Main_Config_old()
 
 
 
-u8 Main_Config()
+u8 Main_Max_Config()
 {
 	u8 returnValue = 0;
 	int bbtn = 0;
-	returnValue = LCD_MODE_MAIN;
+	returnValue = LCD_MODE_MAIN_MAX;
 
 
 
@@ -3290,6 +3312,10 @@ void Mode_Config()//
 
 		case LCD_MODE_ERROR_EVENT:
 			lcdPage = Error_Event_Config();
+		break;
+
+		case LCD_MODE_MAIN_MAX:
+			lcdPage = Main_Max_Config();
 		break;
 
 //		case LCD_MODE_MAIN_POPUP:
