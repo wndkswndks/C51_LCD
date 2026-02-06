@@ -13,6 +13,9 @@ xdata u8  uartRxStep;
 xdata u8  uartCmdTemp;
 xdata u16  uartValueTemp;
 
+extern xdata u8 cmdBuff[4][2];
+extern xdata u8 cmdRxRingCnt;
+extern xdata u8 cmdPassingRingCnt;
 
 //串口2中断服务程序
 //发送数据时,必须关闭中断,这里只负责处理接受中断
@@ -80,6 +83,9 @@ void uart2_Rx_Passing(u8 rxData)
 			{
 				uartCmdTemp = 0;
 				uartValueTemp  = 0;
+				cmdBuff[cmdRxRingCnt][0] = 0;
+				cmdBuff[cmdRxRingCnt][1] = 0;
+
 				uartRxStep = STEP1;
 			}
 
@@ -91,6 +97,7 @@ void uart2_Rx_Passing(u8 rxData)
 				rxData = rxData -'0';
 				uartCmdTemp *= 10;
 				uartCmdTemp += rxData;
+				cmdBuff[cmdRxRingCnt][0] = uartCmdTemp;
 			}
 			else if(rxData == ',')
 			{
@@ -109,10 +116,13 @@ void uart2_Rx_Passing(u8 rxData)
 				rxData = rxData -'0';
 				uartValueTemp *= 10;
 				uartValueTemp += rxData;
+				cmdBuff[cmdRxRingCnt][1] = uartValueTemp;
 			}
 			else if(rxData == ']')
 			{
 				uartRxStep = STEP0;
+				cmdRxRingCnt++;
+				cmdRxRingCnt %= 4;
 				uartRxFlag = 1;
 			}
 			else

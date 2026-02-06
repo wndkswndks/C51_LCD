@@ -1167,6 +1167,9 @@ xdata u8 agingFlag;
 xdata u8 agingUpFlag;
 xdata u8 agingDnFlag;
 xdata u8 newAreaCnt;
+xdata u8 cmdBuff[4][2];
+xdata u8 cmdRxRingCnt;
+xdata u8 cmdPassingRingCnt;
 
 
 void Light_Change(u16 light);
@@ -1610,7 +1613,9 @@ void Device_Satatus_Passing(u16 passingValue)
 
 
 
-void RX_Parssing_Config()
+
+
+void RX_Parssing_Config_org()
 {
 	u16 add = 0;
 	u32 statusData = 0;
@@ -1952,6 +1957,375 @@ void RX_Parssing_Config()
 			break;
 		}
 
+	}
+
+}
+
+void RX_Parssing_Config()
+{
+	u16 add = 0;
+	u32 statusData = 0;
+	u16 cmd = 0;
+	u32 value=0;
+	u16 errData = 0, errNum= 0,errAddr= 0;
+	u32 errCnt= 0;
+	u16 pluseNum = 0;
+	u32 pluseValue = 0;
+	u16 pluseAddr = 0;
+	u16 iconPulse = 0;
+	const u16 iconCalEmptyPoint = ICON_CALIB_EMPTY_POINT;
+	const u16 iconStandby = ICON_MAIN_STANDBY, iconTreat = ICON_MAIN_TREAT;
+	const u16 iconConnect = ICON_CONNET, iconDisConnect = ICON_DISCONNET;
+
+
+	//if(uartRxFlag)
+	if(cmdRxRingCnt > cmdPassingRingCnt)
+	{
+		uartRxFlag = 0;
+
+
+
+
+//		cmd = uartCmdTemp;
+//		value = uartValueTemp;
+		cmd = cmdBuff[cmdPassingRingCnt][0];
+		value = cmdBuff[cmdPassingRingCnt][1];
+		switch (cmd)
+		{
+
+			case CMD_ERR:
+				errData = value;
+				Event_PopUp(errData);
+			break;
+
+			case CMD_OK://앞에 커멘드는 고정 뒤에는 장치명
+				SYS_CHK_OK(value);
+			break;
+
+			case CMD_CART_ID:
+				cartId = value;
+				textCartrigeBuff[CART_IDX_CART_ID] = value;
+				sys_write_vp(CART_VALUE_CART_ID_ADDR,(u8*)&value ,2);
+			break;
+
+			case CMD_MANUFAC_YY:
+				manufacYY = value;
+				textCartrigeBuff[CART_IDX_MANUFAC_YY] = value;
+				sys_write_vp(CART_VALUE_MANUFAC_YY_ADDR,(u8*)&value ,2);
+			break;
+
+			case CMD_MANUFAC_MM:
+				manufacMM = value;
+				textCartrigeBuff[CART_IDX_MANUFAC_MM] = value;
+				sys_write_vp(CART_VALUE_MANUFAC_MM_ADDR,(u8*)&value ,2);
+			break;
+
+			case CMD_MANUFAC_DD:
+				manufacDD = value;
+				textCartrigeBuff[CART_IDX_MANUFAC_DD] = value;
+				sys_write_vp(CART_VALUE_MANUFAC_DD_ADDR,(u8*)&value ,2);
+			break;
+
+			case CMD_ISSUED_YY:
+				issuedYY=value;
+				textCartrigeBuff[CART_IDX_ISSUED_YY] = value;
+				sys_write_vp(CART_VALUE_ISSUED_YY_ADDR,(u8*)&value ,2);
+			break;
+			case CMD_ISSUED_MM:
+				issuedMM = value;
+				textCartrigeBuff[CART_IDX_ISSUED_MM] = value;
+				sys_write_vp(CART_VALUE_ISSUED_MM_ADDR,(u8*)&value ,2);
+			break;
+
+			case CMD_ISSUED_DD:
+				issuedDD = value;
+				textCartrigeBuff[CART_IDX_ISSUED_DD] = value;
+				sys_write_vp(CART_VALUE_ISSUED_DD_ADDR,(u8*)&value ,2);
+			break;
+
+			case CMD_RTC:
+				Rtc = value;
+				textCartrigeBuff[CART_IDX_RTC] = value;
+				sys_write_vp(CART_VALUE_RTC_ADDR,(u8*)&value ,2);
+			break;
+
+			case CMD_INFO_UI_DESING:
+				textinfoBuff[INFO_IDX_UI_DESIGN] = value;
+				sys_write_vp(INFO_NUM_UI_DESING_ADDR,(u8*)&value,2);
+			break;
+
+			case CMD_INFO_UI_FW:
+				textinfoBuff[INFO_IDX_UI_FW] = value;
+				sys_write_vp(INFO_NUM_UI_FW_ADDR,(u8*)&value,2);
+			break;
+
+			case CMD_INFO_MAIN_FW:
+				textinfoBuff[INFO_IDX_MAIN_FW] = value;
+				sys_write_vp(INFO_NUM_MAIN_FW_ADDR,(u8*)&value,2);
+			break;
+
+			case CMD_INFO_HP_FW:
+				textinfoBuff[INFO_IDX_HP_FW] = value;
+				sys_write_vp(INFO_NUM_HP_FW_ADDR,(u8*)&value,2);
+			break;
+
+			case CMD_INFO_RF_FW:
+				textinfoBuff[INFO_IDX_RF_FW] = value;
+				sys_write_vp(INFO_NUM_RF_FW_ADDR,(u8*)&value,2);
+			break;
+
+			case CMD_RTC_YY:
+				textinfoBuff[INFO_IDX_YY] = value;
+				sys_write_vp(INFO_NUM_YY_ADDR,(u8*)&value,2);
+			break;
+
+			case CMD_RTC_MM:
+				textinfoBuff[INFO_IDX_MM] = value;
+				sys_write_vp(INFO_NUM_MM_ADDR,(u8*)&value,2);
+			break;
+
+			case CMD_RTC_DD:
+				textinfoBuff[INFO_IDX_DD] = value;
+				sys_write_vp(INFO_NUM_DD_ADDR,(u8*)&value,2);
+			break;
+
+			case CMD_RTC_HOUR:
+				textinfoBuff[INFO_IDX_HOUR] = value;
+				sys_write_vp(INFO_NUM_HOUR_ADDR,(u8*)&value,2);
+			break;
+
+			case CMD_RTC_MIN:
+				textinfoBuff[INFO_IDX_MIN] = value;
+				sys_write_vp(INFO_NUM_MIN_ADDR,(u8*)&value,2);
+			break;
+
+			case CMD_RTC_SEC:
+				textinfoBuff[INFO_IDX_SEC] = value;
+				sys_write_vp(INFO_NUM_SEC_ADDR,(u8*)&value,2);
+			break;
+
+			case CMD_CATRIDGE_EVENT:
+				switch (value)
+				{
+					case CART_EVENT_EXPRATION:
+						Event_PopUp(IDX_CATRIGE_RESHOT_ZERO);
+					break;
+
+					case CART_EVENT_DETECT_NEW:
+						Event_PopUp(IDX_CATRIGE_NEW);
+					break;
+
+					case CART_EVENT_DETECT:
+						sys_write_vp(MAIN_CONNETION_ADDR, (u8*)&iconConnect,2);
+					break;
+
+					case CART_EVENT_UNDETECT:
+						sys_write_vp(MAIN_CONNETION_ADDR, (u8*)&iconDisConnect,2);
+					break;
+				}
+			break;
+
+
+			case CMD_ENERGY:
+				energy = value;
+				sys_write_vp(ENERGY_NUM_ADDR,(u8*)&energy ,2);
+
+			break;
+
+			case CMD_PULSE_DURATION:
+				pulseDuration = value;
+				sys_write_vp(PULSE_DURATION_NUM_ADDR,(u8*)&pulseDuration ,2);
+			break;
+
+			case CMD_POST_COOLING:
+				postCooling = value;
+				sys_write_vp(POST_COOLING_NUM_ADDR,(u8*)&postCooling ,2);
+			break;
+
+			case CMD_INTERVAL:
+				interval = value;
+				sys_write_vp(INTERVAL_NUM_ADDR,(u8*)&interval ,2);
+			break;
+
+
+			case CMD_CURRENT_SHOT:
+				currentShot = value;
+				sys_write_vp(CURRENT_SHOT_NUM_ADDR,(u8*)&currentShot ,2);
+				add = CURRENT_SHOT1_NUM_ADDR + (newAreaCnt*2);
+				sys_write_vp(add,(u8*)&currentShot ,2);
+
+			break;
+
+			case CMD_TOTAL_JOULE:
+				totalJoule = value;
+				sys_write_vp(TOTAL_JOULE_NUM_ADDR,(u8*)&totalJoule ,2);
+				add = TOTAL_ENERGY1_NUM_ADDR + (newAreaCnt*2);
+				sys_write_vp(add,(u8*)&totalJoule ,2);
+			break;
+
+			case CMD_CURRENT_JOULE:
+				currentJoule = value;
+				sys_write_vp(CURRENT_JOULE_NUM_ADDR,(u8*)&currentJoule ,2);
+			break;
+
+			case CMD_REMIND_SHOT:
+				remindShot = value;
+				textCartrigeBuff[CART_IDX_REMIND_SHOT] = value;
+				sys_write_vp(REMIND_SHOT_NUM_ADDR,(u8*)&remindShot ,2);
+				sys_write_vp(CART_VALUE_REMIND_SHOT_ADDR,(u8*)&value ,2);
+
+			break;
+
+			case CMD_TEMPERATURE_SHOT:
+				temperature = value;
+				sys_write_vp(TEMP_DEBUG_NUM_ADDR,(u8*)&temperature ,2);
+
+			break;
+
+			case CMD_PELTIER_DUTY:
+				peltierDuty = value;
+				sys_write_vp(DUTY_DEBUG_NUM_ADDR,(u8*)&peltierDuty ,2);
+
+			break;
+
+
+			case CMD_LCD_STATUS:
+				rdyStnbyMode = value;
+				if(lcdPage == LCD_MODE_MAIN)
+				{
+					if(rdyStnbyMode == STATUS_STNBY)
+					{
+						sys_write_vp(READY_STANDBY_ICON_ADDR,(u8*)&iconStandby ,2);
+					}
+					else if(rdyStnbyMode == STATUS_TRET)
+					{
+						sys_write_vp(READY_STANDBY_ICON_ADDR,(u8*)&iconTreat ,2);
+						Volume_Change(6, volumeLevel);
+					}
+					else if(rdyStnbyMode == STATUS_PRECOOLING)
+					{
+						iconMove = ICON_MAIN_COOLING1;
+					}
+				}
+			break;
+
+			case CMD_DO_ALL_LIVE:
+				systemLive = value;
+			break;
+
+			case CMD_GET_ALL_CART_END:
+				systemCartEnd = value;
+			break;
+
+
+			case CMD_LCD_EXP:
+				if(value == LCD_EXP_START)
+				{
+					expFlag = 1;
+//					Volume_Change(6, volumeLevel);
+				}
+				else if(value == LCD_EXP_END)
+				{
+					expFlag = 0;
+					Volume_Change(10, volumeLevel);
+				}
+			break;
+
+			case CMD_TEST_FORCE_PAGE_CHANGE:
+				lcdPage = value;
+				Page_Change(value);
+				lcdPageForceFlag = 1;
+				engineerKey = 1;
+			break;
+
+			case CMD_PLUSE_VALUE:
+				pluseNum = value/100;
+				pluseValue = value%100;
+				pluseAddr =  MAIN_P_START_ADDR + (pluseNum-1)*2;
+				sys_write_vp(pluseAddr, (u8*)&pluseValue ,2);
+			break;
+
+			case CMD_PLUSE_EN:
+				Pulse_En_Dis(value);
+			break;
+
+			case CMD_DEVICE_STATUS:
+				Device_Satatus_Passing(value);
+			break;
+
+			case CMD_ERR_EVENT:
+				errNum = (value/1000);
+				errCnt = value%1000;
+				errAddr = DEBUG_ERRCNT_1_ADDR + (errNum -1)*2;
+				sys_write_vp(errAddr,(u8*)&errCnt ,2);
+			break;
+
+			case CMD_AGING_BUTTON:
+				if(value <= 30)
+				{
+					agingFlag = value;
+				}
+				else if(value == 31)
+				{
+					agingUpFlag = 1;
+				}
+				else if(value == 32)
+				{
+					agingDnFlag = 1;
+				}
+
+			break;
+
+			case CMD_TEST_PULSE:
+				switch (value)
+				{
+					case 1:  iconPulse = ICON_PULSE_1;  break;
+					case 2:  iconPulse = ICON_PULSE_2;  break;
+					case 3:  iconPulse = ICON_PULSE_3;  break;
+					case 4:  iconPulse = ICON_PULSE_4;  break;
+				}
+				sys_write_vp(CALIV_PULSE_ICON_ADDR,(u8*)&iconPulse ,2);
+			break;
+
+
+			default:
+				if(CMD_TRANDU1_FRQ <= cmd && cmd <=CMD_TRANDU7_FRQ)
+				{
+					cmd  = cmd-90;
+					textFrqBuff[cmd] = value;
+					textCartrigeBuff[CART_IDX_ISSUED_DD+cmd] = value;
+					add = (u16)(CART_VALUE_TRANDU1_ADDR + (cmd-1)*0x02);
+					sys_write_vp(add,(u8*)&value ,2);
+
+					add = (u16)(TRANDU_FREQ_NUM_START_ADDR + (cmd-1)*0x02);
+					sys_write_vp(add,(u8*)&value ,2);
+				}
+				else if(CMD_TRANDU1_WATT10 <= cmd && cmd <=CMD_TRANDU7_WATT005)
+				{
+					cmd  = cmd-100;
+					textWattBuff[cmd] = value;
+					add = (u16)(TRANDU_WATT_START_NUM_ADDR + (cmd-1)*0x02);
+					sys_write_vp(add,(u8*)&value ,2);
+				}
+			break;
+		}
+
+
+//		TX_Msg(197, cmdRxRingCnt);//
+//		TX_Msg(198, cmdPassingRingCnt);//
+//		TX_Msg(199, uartRxFlag);//
+		if(cmdRxRingCnt > cmdPassingRingCnt)
+		{
+			cmdPassingRingCnt++;
+			if(cmdRxRingCnt == cmdPassingRingCnt)
+			{
+				cmdPassingRingCnt = 0;
+				cmdRxRingCnt = 0;
+			}
+		}
+//		TX_Msg(210, cmdRxRingCnt);//
+//		TX_Msg(211, cmdPassingRingCnt);//
+//		TX_Msg(212, uartRxFlag);//
 	}
 
 }
@@ -2613,7 +2987,7 @@ u8 Main_Config()
 				newAreaCnt++;
 				newAreaCnt %= 5;
 				TX_Msg(CMD_CURRENT_SHOT, 0);
-//				TX_Msg(CMD_TOTAL_JOULE, 0);
+				TX_Msg(CMD_TOTAL_JOULE, 0);
 			break;
 
 
@@ -3356,6 +3730,7 @@ void Mode_Config()//
 void Lcd_Init()//
 {
 	int i = 0;
+	int j = 0;
 	const u16 iconStandby = ICON_MAIN_STANDBY;
 	u32 defultWatt =0;
 
@@ -3497,6 +3872,17 @@ void Lcd_Init()//
 	agingDnFlag = 0;
 	newAreaCnt = 0;
 
+
+	for(i =0 ;i < 4;i++)
+	{
+		for(j =0 ;j < 2;j++)
+		{
+			cmdBuff[i][j] = 0;
+		}
+	}
+
+	cmdRxRingCnt = 0;
+	cmdPassingRingCnt = 0;
 
 
 #if 1
