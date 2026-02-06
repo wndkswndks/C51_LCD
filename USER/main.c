@@ -153,19 +153,33 @@
 #define CURRENT_JOULE_NUM_ADDR 		0x271A//
 #define REMIND_SHOT_NUM_ADDR 		0x271C//
 #define CURRENT_SHOT_NUM_ADDR 		0x271E//
+#define CALIV_PULSETIME_NUM_NUM_ADDR	0x2720
+#define CALIV_PULSE_ICON_ADDR			0x2722
 
-#define ENERGY_MINI_NUM_ADDR		0x2720
-#define PULSE_MINI_NUM_ADDR	 		0x2722
-#define INTERVAL_MINI_NUM_ADDR	 	0x2724
-#define COOLING_MINI_NUM_ADDR		0x2726
-#define CALIV_PULSETIME_NUM_NUM_ADDR	0x2728
+#define CURRENT_SHOT1_NUM_ADDR			0x2724
+#define CURRENT_SHOT2_NUM_ADDR			0x2726
+#define CURRENT_SHOT3_NUM_ADDR			0x2728
+#define CURRENT_SHOT4_NUM_ADDR			0x272A
+#define CURRENT_SHOT5_NUM_ADDR			0x272C
 
-#define CALIV_PULSE_ICON_ADDR		0x272A
+#define TOTAL_ENERGY1_NUM_ADDR		0x272E
+#define TOTAL_ENERGY2_NUM_ADDR		0x2730
+#define TOTAL_ENERGY3_NUM_ADDR		0x2732
+#define TOTAL_ENERGY4_NUM_ADDR		0x2734
+#define TOTAL_ENERGY5_NUM_ADDR		0x2736
+
+#define AVG_ENERGY1_NUM_ADDR			0x2738
+#define AVG_ENERGY2_NUM_ADDR			0x273A
+#define AVG_ENERGY3_NUM_ADDR			0x273C
+#define AVG_ENERGY4_NUM_ADDR			0x273E
+#define AVG_ENERGY5_NUM_ADDR			0x2740
 
 
 
-#define TEMP_DEBUG_NUM_ADDR			0x2840
-#define DUTY_DEBUG_NUM_ADDR			0x2842
+
+
+#define TEMP_DEBUG_NUM_ADDR			0x2850
+#define DUTY_DEBUG_NUM_ADDR			0x2852
 
 
 
@@ -268,47 +282,47 @@
 #define DEBUG_ERRCNT_7_ADDR   0x291C
 #define DEBUG_ERRCNT_8_ADDR   0x291E
 #define DEBUG_ERRCNT_9_ADDR   0x2920
-#define DEBUG_ERRCNT_10_ADDR  0x2922
-#define DEBUG_ERRCNT_11_ADDR  0x2924
-#define DEBUG_ERRCNT_12_ADDR  0x2926
-#define DEBUG_ERRCNT_13_ADDR  0x2928
-#define DEBUG_ERRCNT_14_ADDR  0x292A
-#define DEBUG_ERRCNT_15_ADDR  0x292C
-#define DEBUG_ERRCNT_16_ADDR  0x292E
-#define DEBUG_ERRCNT_17_ADDR  0x2930
-#define DEBUG_ERRCNT_18_ADDR  0x2932
-#define DEBUG_ERRCNT_19_ADDR  0x2934
-#define DEBUG_ERRCNT_20_ADDR  0x2936
-#define DEBUG_ERRCNT_21_ADDR  0x2938
-#define DEBUG_ERRCNT_22_ADDR  0x293A
-#define DEBUG_ERRCNT_23_ADDR  0x293C
-#define DEBUG_ERRCNT_24_ADDR  0x293E
-#define DEBUG_ERRCNT_25_ADDR  0x2940
-#define DEBUG_ERRCNT_26_ADDR  0x2942
-#define DEBUG_ERRCNT_27_ADDR  0x2944
-#define DEBUG_ERRCNT_28_ADDR  0x2946
-#define DEBUG_ERRCNT_29_ADDR  0x2948
-#define DEBUG_ERRCNT_30_ADDR  0x294A
-#define DEBUG_ERRCNT_31_ADDR  0x294C
-#define DEBUG_ERRCNT_32_ADDR  0x294E
-#define DEBUG_ERRCNT_33_ADDR  0x2950
-#define DEBUG_ERRCNT_34_ADDR  0x2952
-#define DEBUG_ERRCNT_35_ADDR  0x2954
-#define DEBUG_ERRCNT_36_ADDR  0x2956
-#define DEBUG_ERRCNT_37_ADDR  0x2958
-#define DEBUG_ERRCNT_38_ADDR  0x295A
-#define DEBUG_ERRCNT_39_ADDR  0x295C
-#define DEBUG_ERRCNT_40_ADDR  0x295E
-#define DEBUG_ERRCNT_41_ADDR  0x2960
-#define DEBUG_ERRCNT_42_ADDR  0x2962
-#define DEBUG_ERRCNT_43_ADDR  0x2964
-#define DEBUG_ERRCNT_44_ADDR  0x2966
-#define DEBUG_ERRCNT_45_ADDR  0x2968
-#define DEBUG_ERRCNT_46_ADDR  0x296A
-#define DEBUG_ERRCNT_47_ADDR  0x296C
-#define DEBUG_ERRCNT_48_ADDR  0x296E
-#define DEBUG_ERRCNT_49_ADDR  0x2970
-#define DEBUG_ERRCNT_50_ADDR  0x2972
+#define DEBUG_ERRCNT_10_ADDR   0x2922
+#define DEBUG_ERRCNT_11_ADDR   0x2924
+#define DEBUG_ERRCNT_12_ADDR   0x2926
+#define DEBUG_ERRCNT_13_ADDR   0x2928
+#define DEBUG_ERRCNT_14_ADDR   0x292A
+#define DEBUG_ERRCNT_15_ADDR   0x292C
+#define DEBUG_ERRCNT_16_ADDR   0x292E
+#define DEBUG_ERRCNT_17_ADDR   0x2930
+#define DEBUG_ERRCNT_18_ADDR   0x2932
+#define DEBUG_ERRCNT_19_ADDR   0x2934
+#define DEBUG_ERRCNT_20_ADDR   0x2936
+#define DEBUG_ERRCNT_21_ADDR   0x2938
+#define DEBUG_ERRCNT_22_ADDR   0x293A
+#define DEBUG_ERRCNT_23_ADDR   0x293C
+#define DEBUG_ERRCNT_24_ADDR   0x293E
+#define DEBUG_ERRCNT_25_ADDR   0x2940
+#define DEBUG_ERRCNT_26_ADDR   0x2942
+#define DEBUG_ERRCNT_27_ADDR   0x2944
+#define DEBUG_ERRCNT_28_ADDR   0x2946
+#define DEBUG_ERRCNT_29_ADDR   0x2948
+#define DEBUG_ERRCNT_30_ADDR   0x294A
+#define DEBUG_ERRCNT_31_ADDR   0x294C
+#define DEBUG_ERRCNT_32_ADDR   0x294E
+#define DEBUG_ERRCNT_33_ADDR   0x2950
+#define DEBUG_ERRCNT_34_ADDR   0x2952
+#define DEBUG_ERRCNT_35_ADDR   0x2954
+#define DEBUG_ERRCNT_36_ADDR   0x2956
+#define DEBUG_ERRCNT_37_ADDR   0x2958
+#define DEBUG_ERRCNT_38_ADDR   0x295A
+#define DEBUG_ERRCNT_39_ADDR   0x295C
+#define DEBUG_ERRCNT_40_ADDR   0x295E
+#define DEBUG_ERRCNT_41_ADDR   0x2960
+#define DEBUG_ERRCNT_42_ADDR   0x2962
+#define DEBUG_ERRCNT_43_ADDR   0x2964
+#define DEBUG_ERRCNT_44_ADDR   0x2966
+#define DEBUG_ERRCNT_45_ADDR   0x2968
+#define DEBUG_ERRCNT_46_ADDR   0x296A
+#define DEBUG_ERRCNT_47_ADDR   0x296C
+#define DEBUG_ERRCNT_48_ADDR   0x296E
+#define DEBUG_ERRCNT_49_ADDR   0x2970
+#define DEBUG_ERRCNT_50_ADDR   0x2972
 
 
 
@@ -436,16 +450,14 @@ typedef enum
 	BTN_MAIN_POST_COOLING_DN = 6,
 	BTN_MAIN_INTERVAL_UP = 7,
 	BTN_MAIN_INTERVAL_DN = 8,
-	BTN_MAIN_CURRENT_SHOT_RST = 9,
+	BTN_MAIN_ALL_RST = 9,
 	BTN_MAIN_PULSE_CHANGE = 10,
 	BTN_MAIN_RDY_STNBY = 11,
 	BTN_MAIN_SETTING = 12,
 	BTN_MAIN_ERR_OK = 13,
 	BTN_MAIN_ENGINIER = 15,
-	BTN_MAIN_TEST_2_PULSE = 16,
-	BTN_MAIN_TEST_3_PULSE = 17,
-	BTN_MAIN_TEST_4_PULSE = 18,
-	BTN_MAIN_TEST_5_PULSE = 19,
+	BTN_MAIN_NEW_AREA = 16,
+
 
 	BTN_MAIN_P1_WATT = 1,
 	BTN_MAIN_P1_DURATION_TIME ,
@@ -1154,6 +1166,7 @@ xdata u8 popUpMode;
 xdata u8 agingFlag;
 xdata u8 agingUpFlag;
 xdata u8 agingDnFlag;
+xdata u8 newAreaCnt;
 
 
 void Light_Change(u16 light);
@@ -1758,38 +1771,38 @@ void RX_Parssing_Config()
 			case CMD_ENERGY:
 				energy = value;
 				sys_write_vp(ENERGY_NUM_ADDR,(u8*)&energy ,2);
-				sys_write_vp(ENERGY_MINI_NUM_ADDR,(u8*)&energy ,2);
 
 			break;
 
 			case CMD_PULSE_DURATION:
 				pulseDuration = value;
 				sys_write_vp(PULSE_DURATION_NUM_ADDR,(u8*)&pulseDuration ,2);
-				sys_write_vp(PULSE_MINI_NUM_ADDR,(u8*)&pulseDuration ,2);
 			break;
 
 			case CMD_POST_COOLING:
 				postCooling = value;
 				sys_write_vp(POST_COOLING_NUM_ADDR,(u8*)&postCooling ,2);
-				sys_write_vp(COOLING_MINI_NUM_ADDR,(u8*)&postCooling ,2);
 			break;
 
 			case CMD_INTERVAL:
 				interval = value;
 				sys_write_vp(INTERVAL_NUM_ADDR,(u8*)&interval ,2);
-				sys_write_vp(INTERVAL_MINI_NUM_ADDR,(u8*)&interval ,2);
 			break;
 
 
 			case CMD_CURRENT_SHOT:
 				currentShot = value;
 				sys_write_vp(CURRENT_SHOT_NUM_ADDR,(u8*)&currentShot ,2);
+				add = CURRENT_SHOT1_NUM_ADDR + (newAreaCnt*2);
+				sys_write_vp(add,(u8*)&currentShot ,2);
 
 			break;
 
 			case CMD_TOTAL_JOULE:
 				totalJoule = value;
 				sys_write_vp(TOTAL_JOULE_NUM_ADDR,(u8*)&totalJoule ,2);
+				add = TOTAL_ENERGY1_NUM_ADDR + (newAreaCnt*2);
+				sys_write_vp(add,(u8*)&totalJoule ,2);
 			break;
 
 			case CMD_CURRENT_JOULE:
@@ -2514,7 +2527,9 @@ u8 Main_Config()
 {
 	u8 returnValue = 0;
 	int i =0;
+	u16 add = 0;
 	const u16 icon44 = 44, icon45 = 45;
+	u32 zero = 0;
 	returnValue = LCD_MODE_MAIN;
 
 
@@ -2547,8 +2562,18 @@ u8 Main_Config()
 			case BTN_MAIN_INTERVAL_DN:
 				TX_Msg(CMD_INTERVAL, BUTTON_DN);//
 			break;
-			case BTN_MAIN_CURRENT_SHOT_RST:
+			case BTN_MAIN_ALL_RST:
+				newAreaCnt = 0;
 				TX_Msg(CMD_CURRENT_SHOT, 0);
+				TX_Msg(CMD_TOTAL_JOULE, 0);
+				for(i =0 ;i < 5;i++)
+				{
+					add = CURRENT_SHOT1_NUM_ADDR + (i*2);
+					sys_write_vp(add,(u8*)&zero ,2);
+
+					add = TOTAL_ENERGY1_NUM_ADDR + (i*2);
+					sys_write_vp(add,(u8*)&zero ,2);
+				}
 			break;
 			case BTN_MAIN_PULSE_CHANGE:
 				TX_Msg(CMD_TEST_PULSE, 1);
@@ -2584,22 +2609,14 @@ u8 Main_Config()
 				}
 			break;
 
+			case BTN_MAIN_NEW_AREA:
+				newAreaCnt++;
+				newAreaCnt %= 5;
+				TX_Msg(CMD_CURRENT_SHOT, 0);
+//				TX_Msg(CMD_TOTAL_JOULE, 0);
+			break;
 
-//			case BTN_MAIN_TEST_2_PULSE:
-//				TX_Msg(CMD_TEST_PULSE, 2);
-//			break;
 
-//			case BTN_MAIN_TEST_3_PULSE:
-//				TX_Msg(CMD_TEST_PULSE, 3);
-//			break;
-
-//			case BTN_MAIN_TEST_4_PULSE:
-//				TX_Msg(CMD_TEST_PULSE, 4);
-//			break;
-
-//			case BTN_MAIN_TEST_5_PULSE:
-//				TX_Msg(CMD_TEST_PULSE, 5);
-//			break;
 		}
 
 		btnMain= 0;
@@ -3478,6 +3495,7 @@ void Lcd_Init()//
 	agingFlag = 0;
 	agingUpFlag = 0;
 	agingDnFlag = 0;
+	newAreaCnt = 0;
 
 
 
