@@ -13,7 +13,7 @@ xdata u8  uartRxStep;
 xdata u8  uartCmdTemp;
 xdata u16  uartValueTemp;
 
-extern xdata u8 cmdBuff[4][2];
+extern xdata u16 cmdBuff[4][2];
 extern xdata u8 cmdRxRingCnt;
 extern xdata u8 cmdPassingRingCnt;
 
