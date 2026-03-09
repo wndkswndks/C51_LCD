@@ -14,6 +14,7 @@
 #define ENGINEER_BUTTON_ADDR	0x1060
 #define INFOMATION_BUTTON_ADDR	0x1080
 #define INFOMATION_TOUCH_ADDR	0x1082
+#define TEST_BUTTON_ADDR		0x1084
 
 #define INITIAL_BUTTON_ADDR  	0x10A0
 #define AUTOCAL_BUTTON_ADDR  	0x10C2
@@ -29,6 +30,16 @@
 #define ERROR_EVENT_BUTTON_ADDR		  0x1154
 #define UP_LONG_BUTTON_ADDR	    0x1156
 #define DN_LONG_BUTTON_ADDR	    0x1158
+
+#define ENERGY_UP_LONG_BTN_ADDR	    	0x115A
+#define ENERGY_DN_LONG_BTN_ADDR		    0x115C
+
+#define DURATION_UP_LONG_BTN_ADDR	    0x115E
+#define DURATION_DN_LONG_BTN_ADDR	    0x1160
+
+#define POST_UP_LONG_BTN_ADDR	    	0x1162
+#define POST_DN_LONG_BTN_ADDR	   	 	0x1164
+
 
 
 #define PW_ICON_ADDR				0x1200
@@ -177,6 +188,12 @@
 #define VIBE_LEVEL_ICON_ADDR			0x2742
 #define HIDE_BLOCK_ICON_ADDR			0x2744
 
+#define TEST_NUM_ADDR1					0x2746
+#define TEST_NUM_ADDR2					0x2748
+#define TEST_NUM_ADDR3					0x274A
+#define TEST_NUM_ADDR4					0x274C
+
+
 #define CIRCLE_WATE_ADDR				0x274E
 
 
@@ -185,6 +202,11 @@
 #define TEMP_DEBUG_NUM_ADDR			0x2850
 #define DUTY_DEBUG_NUM_ADDR			0x2852
 
+#define AREA1_ICON_ADDR				0x2854
+#define AREA2_ICON_ADDR				0x2856
+#define AREA3_ICON_ADDR				0x2858
+#define AREA4_ICON_ADDR				0x285A
+#define AREA5_ICON_ADDR				0x285C
 
 
 
@@ -335,14 +357,56 @@
 #define LIGHT_ICON_ADDR  		0x3000
 #define VOLRUME_ICON_ADDR  		0x3020
 
+
+#define XY_SP_CURRENT_SHOT1_ADD  		0x5000
+#define XY_SP_CURRENT_SHOT2_ADD  		0x5020
+#define XY_SP_CURRENT_SHOT3_ADD  		0x5040
+#define XY_SP_CURRENT_SHOT4_ADD  		0x5060
+#define XY_SP_CURRENT_SHOT5_ADD  		0x5080
+
+#define XY_SP_TOTAL_ENERGY1_ADD  		0x50A0
+#define XY_SP_TOTAL_ENERGY2_ADD  		0x50C0
+#define XY_SP_TOTAL_ENERGY3_ADD  		0x50E0
+#define XY_SP_TOTAL_ENERGY4_ADD  		0x5100
+#define XY_SP_TOTAL_ENERGY5_ADD  		0x5120
+
+#define XY_SP_AGV_ENERGY1_ADD  		0x5140
+#define XY_SP_AGV_ENERGY2_ADD  		0x5160
+#define XY_SP_AGV_ENERGY3_ADD  		0x5180
+#define XY_SP_AGV_ENERGY4_ADD  		0x51A0
+#define XY_SP_AGV_ENERGY5_ADD  		0x51C0
+
+#define XY_SP_TEST_ADD1  		0x51E0
+#define XY_SP_TEST_ADD2  		0x5200
+#define XY_SP_TEST_ADD3  		0x5220
+#define XY_SP_TEST_ADD4  		0x5240
+
+
+
 #define ERROR_EVENT_ADDR		 0x6010
 #define DEBUG_MSG1_ADDR		 	 0x6210
 #define DEBUG_MSG2_ADDR		 	 0x6310
 
+
+
+
+
+
+
+
 typedef enum
 {
 
+	CURRENT_SHOT_POS_X	= 641,
+	TOTAL_ENERGY_POS_X	= 	967,
+	AGV_ENERGY_POS_X =   1300,
+	HIDE_NUM_X	 = 2000,
 
+	POS_1_Y = 630,
+	POS_2_Y = 684,
+	POS_3_Y = 738,
+	POS_4_Y = 792,
+	POS_5_Y = 846,
 
 	OK_FLAG = 35,
 
@@ -1209,6 +1273,8 @@ xdata u8 popUpMode;
 xdata u8 agingFlag;
 xdata u8 agingUpFlag;
 xdata u8 agingDnFlag;
+xdata u8 agingLongFlag;
+
 xdata u8 newAreaCnt;
 xdata u32 shotSum;
 xdata u32 totaljouleSum;
@@ -1216,11 +1282,16 @@ xdata u32 totaljouleSum;
 
 xdata u8 cmdRxRingCnt;
 xdata u8 cmdPassingRingCnt;
+xdata u16 yPointBuff[5];
+xdata u32 testNum;
+xdata u32 testNum2;
 
 
 void Light_Change(u16 light);
 void Volume_Change(u8       id, u16 volume);
 void Event_PopUp(u16 eventData);
+void Area_Reset(u8 rst);
+
 
 void Debug_Print(int num, int debugData)
 {
@@ -1338,6 +1409,30 @@ void Page_Change(u16 PageID)
 	buf[3] = (u8)PageID;
  	sys_write_vp(0x0084,buf,2);
 }
+void XY_Change(u16 spAddr, u16 Xpoint, u16 Ypoint)
+{
+	u8 buf[4];
+
+	buf[0] = (Xpoint>>8)&0xff;
+	buf[1] = Xpoint&0xff;
+	buf[2] = (Ypoint>>8)&0xff;
+	buf[3] = Ypoint&0xff;
+ 	sys_write_vp(spAddr+1,buf,2);
+}
+
+
+void XY_test()
+{
+	u8 buf[4];
+
+	buf[0] = 7;
+	buf[1] = 8;
+	buf[2] = 0;
+	buf[3] = 255;
+ 	sys_write_vp(0x5021,buf,2);
+}
+
+
 
 void Light_Change(u16 light)
 {
@@ -1992,14 +2087,11 @@ void RX_Parssing_Config()
 				{
 					agingFlag = value;
 				}
-				else if(value == 31)
+				else
 				{
-					agingUpFlag = 1;
+					agingLongFlag = value;
 				}
-				else if(value == 32)
-				{
-					agingDnFlag = 1;
-				}
+
 
 			break;
 
@@ -2207,6 +2299,7 @@ u8 System_Err_Check()
 				iconSystemCircle = ICON_SYS_CHK_PER_0;
 				TX_Msg(CMD_TEMP_DUTY_ON, 1);
 				Page_Change(LCD_MODE_MAIN);
+				Area_Reset(1);
 				returnValue = LCD_MODE_MAIN;
 			}
 			else
@@ -2254,25 +2347,58 @@ u8 Test_Config()
 	u32 Tu32 =14140;
 
 	returnValue = LCD_MODE_TEST;
+#if 0
+		if(delay_tickMy-timeStampQ >= 3000)
+		{
+	//		TX_Msg(111, Tint);
+	//		TX_Msg(222, Tu8);
+	//		TX_Msg(333, Tu16);
+	//		TX_Msg(444, Tu32);
 
-	if(delay_tickMy-timeStampQ >= 3000)
+			timeStampQ = delay_tickMy;
+		}
+
+#endif
+	sys_read_vp(TEST_BUTTON_ADDR,(u8*)&btn,1);
+	if(btn)
 	{
-//		TX_Msg(111, Tint);
-//		TX_Msg(222, Tu8);
-//		TX_Msg(333, Tu16);
-//		TX_Msg(444, Tu32);
+		switch (btn)
+		{
+			case 1:
+				testNum += 200;
+				if(testNum>2500) testNum = 50;
+				XY_Change(XY_SP_TEST_ADD1 , (u16)testNum, (u16)testNum2);
+				XY_Change(XY_SP_TEST_ADD2 , (u16)testNum+10, (u16)testNum2+10);
+				XY_Change(XY_SP_TEST_ADD3 , (u16)testNum+20, (u16)testNum2+20);
+				XY_Change(XY_SP_TEST_ADD4 , (u16)testNum+30, (u16)testNum2+30);
 
-		timeStampQ = delay_tickMy;
+				sys_write_vp(TEST_NUM_ADDR1,(u8*)&testNum ,2);
+				sys_write_vp(TEST_NUM_ADDR2,(u8*)&testNum ,2);
+				sys_write_vp(TEST_NUM_ADDR3,(u8*)&testNum ,2);
+				sys_write_vp(TEST_NUM_ADDR4,(u8*)&testNum ,2);
+			break;
+
+			case 2:
+				testNum2 += 200;
+				if(testNum2>1200) testNum2 = 50;
+				XY_Change(XY_SP_TEST_ADD1 , (u16)testNum, (u16)testNum2);
+				XY_Change(XY_SP_TEST_ADD2 , (u16)testNum+10, (u16)testNum2+10);
+				XY_Change(XY_SP_TEST_ADD3 , (u16)testNum+20, (u16)testNum2+20);
+				XY_Change(XY_SP_TEST_ADD4 , (u16)testNum+30, (u16)testNum2+30);
+
+				sys_write_vp(TEST_NUM_ADDR1,(u8*)&testNum2 ,2);
+				sys_write_vp(TEST_NUM_ADDR2,(u8*)&testNum2 ,2);
+				sys_write_vp(TEST_NUM_ADDR3,(u8*)&testNum2 ,2);
+				sys_write_vp(TEST_NUM_ADDR4,(u8*)&testNum2 ,2);
+
+			break;
+
+
+		}
+
+		btn= 0;
+		sys_write_vp(TEST_BUTTON_ADDR,(u8*)&btn,2);
 	}
-//	sys_read_vp(TEST_BUTTON_ADDR,(u8*)&btn,1);
-//	if(btn)
-//	{
-//		numTest++;
-//		Debug_Print(1, (int)numTest);
-//		btn= 0;
-//		//Ascii_text("QWER MSG");
-//		sys_write_vp(TEST_BUTTON_ADDR,(u8*)&btn,2);
-//	}
 
 
 
@@ -2431,7 +2557,81 @@ void Aging_Dn_Button()
 	}
 }
 
+void Main_LongKey(u16 keyAddr, u16 cmd, u16 upDn, u16 agingTrg)
+{
+	u16 key = 0;
+	sys_read_vp(keyAddr,(u8*)&key,1);
+//	Aging_Up_Button();
+	if(key || agingLongFlag == agingTrg)
+	{
+		agingLongFlag = 0;
+		TX_Msg(cmd, upDn);
+		key= 0;
+		sys_write_vp(keyAddr,(u8*)&key,2);
+	}
 
+}
+
+void Area_Move(u8 row, u8 hideEn)
+{
+	if (hideEn)
+	{
+		XY_Change(XY_SP_CURRENT_SHOT1_ADD +(row*0x20) , HIDE_NUM_X, yPointBuff[row]);
+		XY_Change(XY_SP_TOTAL_ENERGY1_ADD +(row*0x20) , HIDE_NUM_X + 20, yPointBuff[row]);
+		XY_Change(XY_SP_AGV_ENERGY1_ADD +(row*0x20) , HIDE_NUM_X + 40, yPointBuff[row]);
+
+	}
+	else
+	{
+		XY_Change(XY_SP_CURRENT_SHOT1_ADD +(row*0x20) , CURRENT_SHOT_POS_X, yPointBuff[row]);
+		XY_Change(XY_SP_TOTAL_ENERGY1_ADD +(row*0x20) , TOTAL_ENERGY_POS_X, yPointBuff[row]);
+		XY_Change(XY_SP_AGV_ENERGY1_ADD +(row*0x20) , AGV_ENERGY_POS_X, yPointBuff[row]);
+	}
+}
+
+
+void Area_test()
+{
+	XY_test();
+
+}
+
+void Area_Reset(u8 rst)
+{
+	u16 add = 0;
+	u32 zero = 0;
+	int i = 0;
+
+	if(rst)
+	{
+		totaljouleSum = 0;
+		shotSum = 0;
+		sys_write_vp(TOTAL_JOULE_NUM_ADDR,(u8*)&totaljouleSum ,2);
+		sys_write_vp(CURRENT_SHOT_NUM_ADDR,(u8*)&shotSum ,2);
+	}
+
+	newAreaCnt = 0;
+//	TX_Msg(CMD_CURRENT_SHOT, 0);
+//	TX_Msg(CMD_TOTAL_JOULE, 0);
+
+	for(i =0 ;i < 5;i++)
+	{
+		add = CURRENT_SHOT1_NUM_ADDR + (i*2);
+		sys_write_vp(add,(u8*)&zero ,2);
+
+		add = TOTAL_ENERGY1_NUM_ADDR + (i*2);
+		sys_write_vp(add,(u8*)&zero ,2);
+
+		add = AVG_ENERGY1_NUM_ADDR + (i*2);
+		sys_write_vp(add,(u8*)&zero ,2);
+
+	}
+	Area_Move(1,1);
+	Area_Move(2,1);
+	Area_Move(3,1);
+	Area_Move(4,1);
+
+}
 void Cartrige_Parts()//
 {
 
@@ -2529,7 +2729,10 @@ u8 Init_Config()
 				TX_Msg(CMD_TEST_FORCE_PAGE_CHANGE, LCD_MODE_MAIN);
 				Page_Change(LCD_MODE_MAIN);
 				engineerKey = 1;
+
+				Area_Reset(1);
 				returnValue = LCD_MODE_MAIN;
+
 			break;
 		}
 
@@ -2646,6 +2849,7 @@ u8 Main_Config()
 	{
 		switch (btnMain)
 		{
+			/*
 			case BTN_MAIN_ENERGY_UP:
 				TX_Msg(CMD_ENERGY, BUTTON_UP);//
 			break;
@@ -2664,36 +2868,19 @@ u8 Main_Config()
 			case BTN_MAIN_POST_COOLING_DN:
 				TX_Msg(CMD_POST_COOLING, BUTTON_DN);//
 			break;
+			*/
 			case BTN_MAIN_INTERVAL_UP:
 				TX_Msg(CMD_INTERVAL, BUTTON_UP);//
+				Area_Move(1,1);
+
 			break;
 			case BTN_MAIN_INTERVAL_DN:
 				TX_Msg(CMD_INTERVAL, BUTTON_DN);//
 			break;
 			case BTN_MAIN_ALL_RST:
-				totaljouleSum = 0;
-				shotSum = 0;
-				sys_write_vp(TOTAL_JOULE_NUM_ADDR,(u8*)&totaljouleSum ,2);
-				sys_write_vp(CURRENT_SHOT_NUM_ADDR,(u8*)&shotSum ,2);
-				newAreaCnt = 0;
 				TX_Msg(CMD_CURRENT_SHOT, 0);
 				TX_Msg(CMD_TOTAL_JOULE, 0);
-				for(i =0 ;i < 5;i++)
-				{
-					add = CURRENT_SHOT1_NUM_ADDR + (i*2);
-					sys_write_vp(add,(u8*)&zero ,2);
-
-					add = TOTAL_ENERGY1_NUM_ADDR + (i*2);
-					sys_write_vp(add,(u8*)&zero ,2);
-
-					add = AVG_ENERGY1_NUM_ADDR + (i*2);
-					sys_write_vp(add,(u8*)&zero ,2);
-
-					if(i>0)
-					{
-						sys_write_vp(HIDE_BLOCK_ICON_ADDR,(u8*)&iconBlankBox ,2);
-					}
-				}
+				Area_Reset(1);
 			break;
 			case BTN_MAIN_PULSE_CHANGE:
 				TX_Msg(CMD_TEST_PULSE, 1);
@@ -2738,8 +2925,18 @@ u8 Main_Config()
 
 				add = AVG_ENERGY1_NUM_ADDR + (newAreaCnt*2);
 				sys_write_vp(add,(u8*)&zero ,2);
-				iconHideBox = ICON_HIDE_BOX_1 + newAreaCnt;
-				sys_write_vp(HIDE_BLOCK_ICON_ADDR,(u8*)&iconHideBox ,2);
+				if (!newAreaCnt)
+				{
+					Area_Reset(0);
+				}
+				else
+				{
+					Area_Move(newAreaCnt, 0);
+				}
+
+
+//				iconHideBox = ICON_HIDE_BOX_1 + newAreaCnt;
+//				sys_write_vp(HIDE_BLOCK_ICON_ADDR,(u8*)&iconHideBox ,2);
 			break;
 
 			case BTN_MAIN_VIBE_LEVEL:
@@ -2754,6 +2951,14 @@ u8 Main_Config()
 		btnMain= 0;
 		sys_write_vp(MAIN_BUTTON_ADDR,(u8*)&btnMain,2);
 	}
+
+
+	Main_LongKey(ENERGY_UP_LONG_BTN_ADDR, CMD_ENERGY, BUTTON_UP, 31);
+	Main_LongKey(ENERGY_DN_LONG_BTN_ADDR, CMD_ENERGY, BUTTON_DN, 32);
+	Main_LongKey(DURATION_UP_LONG_BTN_ADDR, CMD_PULSE_DURATION, BUTTON_UP, 33);
+	Main_LongKey(DURATION_DN_LONG_BTN_ADDR, CMD_PULSE_DURATION, BUTTON_DN, 34);
+	Main_LongKey(POST_UP_LONG_BTN_ADDR, CMD_POST_COOLING, BUTTON_UP, 35);
+	Main_LongKey(POST_DN_LONG_BTN_ADDR, CMD_POST_COOLING, BUTTON_DN, 36);
 
 	EXP_FreeCool_Motion();
 //	RX_MODE_MAIN_Parssing_Config();
@@ -3622,6 +3827,7 @@ void Lcd_Init()//
 	engineerKey = 0;
 
 	agingFlag = 0;
+	agingLongFlag = 0;
 	agingUpFlag = 0;
 	agingDnFlag = 0;
 	newAreaCnt = 0;
@@ -3640,14 +3846,21 @@ void Lcd_Init()//
 	shotSum = 0;
 	totaljouleSum = 0;
 
+	yPointBuff[0] = POS_1_Y;
+	yPointBuff[1] = POS_2_Y;
+	yPointBuff[2] = POS_3_Y;
+	yPointBuff[3] = POS_4_Y;
+	yPointBuff[4] = POS_5_Y;
+	testNum = 50;
+	testNum2 = 200;
 
-#if 1
+#if 0
 	lcdPage = LCD_MODE_INIT;
 
 #else //  시간단축 하이패스
-	lcdPage = LCD_MODE_MAIN;
+	lcdPage = LCD_MODE_TEST;
 
-	Page_Change(LCD_MODE_MAIN);
+	Page_Change(LCD_MODE_TEST);
 
 
 
