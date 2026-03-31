@@ -42,12 +42,12 @@
 
 
 
-#define PW_ICON_ADDR				0x1200
-#define SYSTEM_ICON_ADDR			0x1202
-#define SYSTEM_CHECK_CTRL_ICON_ADDR	0x1204
-#define SYSTEM_CHECK_GEN_ICON_ADDR	0x1206
-#define SYSTEM_CHECK_HP_ICON_ADDR	0x1208
-#define READY_STANDBY_ICON_ADDR 	0x120A
+#define PW_ICON_ADDR				 0x1200
+#define SYSTEM_ICON_ADDR			 0x1202
+#define SYSTEM_CHECK_CTRL_ICON_ADDR  0x1204
+#define SYSTEM_CHECK_GEN_ICON_ADDR	 0x1206
+#define SYSTEM_CHECK_HP_ICON_ADDR	 0x1208
+#define SYSTEM_CHECK_COOL_ICON_ADDR   0x120A
 
 #define EN_ICON_ADDR 	0x2200
 #define TRANDU_WATT_POINT_ADDR 		0x22D0
@@ -208,6 +208,7 @@
 #define AREA4_ICON_ADDR				0x285A
 #define AREA5_ICON_ADDR				0x285C
 
+#define HAND_EN_ADDR				0x285E
 
 
 //==================================================
@@ -289,6 +290,8 @@
 #define DEBUG_STATUS_6_ADDR	 				0x28DA
 #define DEBUG_STATUS_7_ADDR	 				0x28DC
 #define DEBUG_STATUS_8_ADDR	 				0x28DE
+#define DEBUG_STATUS_9_ADDR	 				0x28F0
+#define DEBUG_STATUS_10_ADDR	 			0x28F2
 
 #define DEBUG_DATA_1_ADDR	 				0x28F6
 #define DEBUG_DATA_2_ADDR	 				0x28F8
@@ -298,6 +301,8 @@
 #define DEBUG_DATA_6_ADDR	 				0x2900
 #define DEBUG_DATA_7_ADDR	 				0x2902
 #define DEBUG_DATA_8_ADDR	 				0x2904
+#define DEBUG_DATA_9_ADDR	 				0x2906
+#define DEBUG_DATA_10_ADDR	 				0x2908
 
 #define DEBUG_ERRCNT_1_ADDR   0x2910
 #define DEBUG_ERRCNT_2_ADDR   0x2912
@@ -351,6 +356,12 @@
 #define DEBUG_ERRCNT_50_ADDR   0x2972
 
 
+#define EVNT_MSG_ADDR   	   	   			 0x2980
+#define EVNT_MSG_RIGHT_CANCLE_BTN_ADDR       0x2982
+#define EVNT_MSG_CENTER_OK_BTN_ADDR   	     0x2984
+#define EVNT_MSG_LEFT_OK_BTN_ADDR 	    	 0x2986
+#define EVNT_MSG_ICON_ADDR 	    	 		 0x2988
+#define FOOT_EN_ADDR	 	    	 		 0x298A
 
 //==================================================
 
@@ -496,6 +507,14 @@ typedef enum
 	CART_EVENT_DETECT_NEW = 2,
 	CART_EVENT_EXPRATION = 3,
 
+	CATRIGE_CHK_OK = 0,
+	CATRIGE_CHK_NEW = 1,
+	CATRIGE_CHK_I2C_READ_ERR = 2,
+	CATRIGE_CHK_I2C_WRITE_ERR = 3,
+	CATRIGE_CHK_REMIND_ZERO_ERR = 4,
+	CATRIGE_CHK_UN_DETECT = 5,
+
+
 	IDX_DEBUG_TEMP 			= 1,
 	IDX_DEBUG_MAIN_COMMU = 2,
 	IDX_DEBUG_HAND_COMMU = 3,
@@ -504,6 +523,12 @@ typedef enum
 	IDX_DEBUG_RTC_BATTRY 	= 6,
 	IDX_DEBUG_FLOW_SENSOR   = 7,
 	IDX_DEBUG_LEVEL_SENSOR  = 8,
+	IDX_DEBUG_INSERT_HP	= 9,
+	IDX_DEBUG_DETECTE_CART = 10,
+
+	SWITCH_HAND = 0,
+	SWITCH_FOOT = 1,
+
 } TOUCH_E;
 
 
@@ -522,10 +547,16 @@ typedef enum
 	BTN_MAIN_PULSE_CHANGE = 10,
 	BTN_MAIN_RDY_STNBY = 11,
 	BTN_MAIN_SETTING = 12,
-	BTN_MAIN_ERR_OK = 13,
+	BTN_MAIN_ERR_OK_CENTER = 13,
 	BTN_MAIN_VIBE_LEVEL = 14,
 	BTN_MAIN_ENGINIER = 15,
 	BTN_MAIN_NEW_AREA = 16,
+	BTN_MAIN_HAND_FOOT = 17,
+	BTN_MAIN_ERR_OK_LEFT = 18,
+	BTN_MAIN_ERR_CANCEL_RIGHT = 19,
+
+
+
 
 
 	BTN_MAIN_P1_WATT = 1,
@@ -552,9 +583,9 @@ typedef enum
 	BTN_MAIN_P2_ENDIS = 21,
 	BTN_MAIN_P3_ENDIS = 22,
 	BTN_MAIN_P4_ENDIS = 23,
-	BTN_MAIN_ERR_OK_CENTER = 24,
-	BTN_MAIN_ERR_OK_LEFT = 25,
-	BTN_MAIN_ERR_CANCEL_RIGHT = 26,
+	BTN_MAIN_ERR_OK_CENTER_N = 24,
+	BTN_MAIN_ERR_OK_LEFT_N = 25,
+	BTN_MAIN_ERR_CANCEL_RIGHT_N = 26,
 
 
 	//SYSTEM MODE
@@ -594,8 +625,8 @@ typedef enum
 	KEY_8 = 8,
 	KEY_9 = 9,
 	KEY_0 = 10,
-	KEY_DEL = 11,
-	KEY_CLEAR = 12,
+	KEY_CLEAR = 11,
+	KEY_DEL = 12,
 	KEY_CAL_BACK_MAIN = 13,
 	KEY_CAL_WATT_LOAD = 14,
 	KEY_CAL_WATT_SAVE = 15,
@@ -703,7 +734,7 @@ typedef enum
 
 	CMD_PLUSE_NUM	= 24,
 	CMD_PLUSE_EN	= 25,
-	CMD_PLUSE_BTN_UP_DN	= 26,
+	CMD_PLUSE_BTN_UP_DN = 26,
 	CMD_PLUSE_VALUE 	= 27,
 	CMD_CURRENT_JOULE = 28,
 
@@ -731,6 +762,8 @@ typedef enum
 	CMD_RTC_SEC = 49,
 	CMD_RTC_EN = 50,
 	CMD_CART_ALLOW = 51,
+	CMD_VIBE_LEVEL = 52,
+	CMD_DEBUG_VIBE = 53,
 
 	CMD_CATRIDGE_STATUS    = 56,
 	CMD_CATRIDGE_EVENT= 57,
@@ -744,25 +777,30 @@ typedef enum
 	CMD_ERR_EVENT = 64,
 	CMD_AGING_BUTTON = 65,
 	CMD_AUTO_EXP = 66,
-	CMD_VIBE_LEVEL = 67,
+	CMD_IS_CATRIDGE    = 68,
+	CMD_HAND_FOOT    = 69,
 
 	CMD_DO_ALL_LIVE = 70,
 	CMD_GET_ALL_CART = 71,
 	CMD_GET_ALL_CART_END = 72,
-
 	CMD_TEST_PULSE = 73,
 	CMD_GET_WATT_CART = 74,
 	CMD_TEST_FORCE_PAGE_CHANGE = 75,
 	CMD_TEMP_DUTY_ON = 76,
 
+	CMD_INFO_UI_FW = 77,
+	CMD_INFO_MAIN_FW = 78,
+	CMD_INFO_HP_FW = 79,
+	CMD_INFO_RF_FW = 80,
+	CMD_PWM_DUTY = 81,
+	CMD_TEMPERATURE= 82,
+	CMD_COOLING = 83,
+
 	CMD_LCD_EXP = 85,
 	CMD_LCD_AUTO_CAL = 87,
 	CMD_PULSE_TRIGER = 88,
 	CMD_INFO_UI_DESING = 89,
-	CMD_INFO_UI_FW = 90,
-	CMD_INFO_MAIN_FW = 91,
-	CMD_INFO_HP_FW = 92,
-	CMD_INFO_RF_FW = 93,
+
 
 
 	CMD_RF_ALL_SETTING = 188,
@@ -775,6 +813,8 @@ typedef enum
 	CMD_DEBUG_CHILLER = 194,
 	CMD_DEBUG_PELTIER = 195,
 	CMD_WATT_FEEDBACK = 196,
+	CMD_BODY_LED_TEST = 197,
+	CMD_TTTEST = 199,
 
 	CMD_HP1_ADD = 200,
 
@@ -882,7 +922,6 @@ typedef enum
 
 
 
-
 } CMD_E;
 
 
@@ -949,6 +988,7 @@ typedef enum
 
 	ERR_NOT_EXIST = 0,
 	ERR_EXIST = 1,
+
 } ERR_CMD_E;
 
 
@@ -972,7 +1012,7 @@ typedef enum
 	ICON_NO_USE2,//12
 	ICON_NO_USE3,
 	ICON_NO_USE4,
-	ICON_NO_USE5,//15
+	ICON_EVENT_NUM,//15
 	ICON_SYS_CHK_PER_0 = 16,
 	ICON_SYS_CHK_PER_10,
 	ICON_SYS_CHK_PER_20,
@@ -992,21 +1032,24 @@ typedef enum
 	ICON_SYS_CHK_GEN_EN,
 	ICON_SYS_CHK_HP_DIS,
 	ICON_SYS_CHK_HP_EN = 32,
+	ICON_SYS_CHK_COOL_DIS = 33,
+	ICON_SYS_CHK_COOL_EN,
 
-	ICON_MAIN_STANDBY = 33,
-	ICON_MAIN_COOLING1,
 	ICON_MAIN_COOLING2,
 	ICON_MAIN_COOLING3,
 	ICON_MAIN_TREAT = 37,
 
-	ICON_NO_USE6,//38
-	ICON_NO_USE7,//39
+	ICON_EVENT_INFO_BLK,//38
+	ICON_EVENT_INFO,//39
 
 	ICON_NO_USE8,//40
 	ICON_NO_USE9,//41
 
 	ICON_CALIB_EMPTY_POINT = 42,
 	ICON_CALIB_POINT = 43,
+
+	ICON_HAND_EN = 44,
+	ICON_HAND_DIS,
 
 	ICON_MAIN_EMPTY_POP = 46,
 	ICON_MAIN_POP = 47,
@@ -1019,8 +1062,8 @@ typedef enum
 	ICON_PULSE_BLOCK_ENABLE = 52,
 	ICON_PULSE_BLOCK_DISABLE,
 
-	ICON_CONNET = 54,
-	ICON_DISCONNET,
+	ICON_FOOT_EN = 54,
+	ICON_FOOT_DIS,
 
 	ICON_STATUS_OK = 56,
 	ICON_STATUS_ERR = 57,
@@ -1035,11 +1078,11 @@ typedef enum
 	ICON_VIBE_LV3	= 65,
 	ICON_VIBE_LV4	= 66,
 
-	ICON_HIDE_BLANK	 = 67,
-	ICON_HIDE_BOX_1	= 68,
-	ICON_HIDE_BOX_2	= 69,
-	ICON_HIDE_BOX_3	= 70,
-	ICON_HIDE_BOX_4	= 71,
+	ICON_OK_BLANK	 = 67,
+	ICON_OK_IDLE	 = 68,
+	ICON_CANCLE_IDLE = 69,
+	ICON_OK_ACTIVE	 = 70,
+	ICON_CANCLE_ACTIVE	= 71,
 
 	ICON_STANDBY_BOX	= 72,
 	ICON_CIRCLE_WATE0_BOX	= 73,
@@ -1066,6 +1109,44 @@ typedef enum
 	ICON_CIRCLE_WATE_FULL_BOX	= 93,
 	ICON_READY_BOX	= 94,
 
+	ICON_AREA1 = 95,
+	ICON_AREA2 = 96,
+	ICON_AREA3 = 97,
+	ICON_AREA4 = 98,
+	ICON_AREA5 = 99,
+
+	ICON_HAND = 100,
+	ICON_FOOT = 101,
+
+	ICON_MSG_BLK = 102,
+	ICON_MSG_TEMP_OUT = 103,
+	ICON_MSG_TEMP_LIMIT_UNDER = 104,
+	ICON_MSG_TEMP_LOW = 105,
+	ICON_MSG_FLOW_LIMIT_UNDER = 106,
+	ICON_MSG_LEVEL_LOW = 107,
+	ICON_MSG_AUTO_CAL_COMU_ERR = 108,
+	ICON_MSG_BATTRY_LIMIT_OVER = 109,
+	ICON_MSG_BATTRY_LIMIT_UNDER = 110,
+	ICON_MSG_BATTRY_LIMIT_LOW = 111,
+	ICON_MSG_RTC_ERR = 112,
+	ICON_MSG_PRE_COOL_ERR = 113,
+	ICON_MSG_HAND_COMU_ERR = 114,
+	ICON_MSG_CATRIGE_I2C_ERR = 115,
+	ICON_MSG_CATRIGE_NEW_DETECT = 116,
+	ICON_MSG_CATRIGE_ID_ERR = 117,
+	ICON_MSG_CATRIGE_MANU_ERR = 118,
+	ICON_MSG_CATRIGE_MANU_OVER_ERR = 119,
+	ICON_MSG_CATRIGE_ISUE_ERR = 120,
+	ICON_MSG_CATRIGE_ISUE_OVER_ERR = 121,
+	ICON_MSG_CATRIGE_WATT_ERR = 122,
+	ICON_MSG_CATRIGE_FRQ_ERR = 123,
+	ICON_MSG_CATRIGE_RESHOT_ERR = 124,
+	ICON_MSG_CATRIGE_RESHOT_LOW = 125,
+	ICON_MSG_CATRIGE_RESHOT_ZERO = 126,
+	ICON_MSG_CATRIGE_DETECT = 127,
+	ICON_MSG_CATRIGE_UN_DETECT = 128,
+	ICON_MSG_RF_COMU_ERR = 129,
+	ICON_MSG_RF_STATUS_ERR = 130,
 
 } ICON_E;
 
@@ -1073,39 +1154,39 @@ typedef enum
 {
   IDX_MAIN_EVENT_START = 1,
   IDX_TEMP_OUT = IDX_MAIN_EVENT_START,
-  IDX_TEMP_LIMIT_UNDER,
-  IDX_TEMP_LOW,
-  IDX_FLOW_LIMIT_UNDER,
-  IDX_FLOW_ZERO_IDX,
-  IDX_LEVEL_LOW,
-  IDX_AUTO_CAL_COMU_ERR,
-  IDX_BATTRY_LIMIT_OVER,
-  IDX_BATTRY_LIMIT_UNDER,
-  IDX_BATTRY_LIMIT_LOW,
+  IDX_TEMP_LIMIT_UNDER,//
+  IDX_TEMP_LOW,//
+  IDX_FLOW_LIMIT_UNDER,//
+  IDX_LEVEL_LOW,//
+  IDX_AUTO_CAL_COMU_ERR,//
+  IDX_BATTRY_LIMIT_OVER,//
+  IDX_BATTRY_LIMIT_UNDER,//
+  IDX_BATTRY_LIMIT_LOW,//
   IDX_RTC_ERR,
-  IDX_MAIN_EVENT_END,
+  IDX_MAIN_EVENT_END,//12
 //------------------------------
-  IDX_HP_EVENT_START,
-  IDX_PRE_COOL_ERR = IDX_HP_EVENT_START,
-  IDX_HAND_COMU_ERR,
-  IDX_CATRIGE_ID_ERR,
-  IDX_CATRIGE_MANU_ERR,
-  IDX_CATRIGE_MANU_OVER_ERR,
-  IDX_CATRIGE_ISUE_ERR,
-  IDX_CATRIGE_ISUE_OVER_ERR,
-  IDX_CATRIGE_WATT_ERR,
-  IDX_CATRIGE_FRQ_ERR,
-  IDX_CATRIGE_RESHOT_ERR,
-  IDX_CATRIGE_RESHOT_LOW,
-  IDX_CATRIGE_RESHOT_ZERO,
+  IDX_HP_EVENT_START,//13
+  IDX_PRE_COOL_ERR = IDX_HP_EVENT_START,//13//
+  IDX_HAND_COMU_ERR,//
+  IDX_CATRIGE_I2C_ERR,//
+  IDX_CATRIGE_NEW_DETECT,//
+  IDX_CATRIGE_ID_ERR,//
+  IDX_CATRIGE_MANU_ERR,//
+  IDX_CATRIGE_MANU_OVER_ERR,//
+  IDX_CATRIGE_ISUE_ERR,//
+  IDX_CATRIGE_ISUE_OVER_ERR,//
+  IDX_CATRIGE_WATT_ERR,//
+  IDX_CATRIGE_FRQ_ERR,//
+  IDX_CATRIGE_RESHOT_ERR,//
+  IDX_CATRIGE_RESHOT_LOW,//
+  IDX_CATRIGE_RESHOT_ZERO,//
   IDX_CATRIGE_DETECT,
-  IDX_CATRIGE_UN_DETECT,
-  IDX_HAND_TIMEOUT,
-  IDX_HP_EVENT_END,
+  IDX_CATRIGE_UN_DETECT,//
+  IDX_HP_EVENT_END,//
 //------------------------------
   IDX_RF_EVENT_START,
   IDX_RF_COMU_ERR = IDX_RF_EVENT_START,
-  IDX_RF_STATUS_ERR,
+  IDX_RF_STATUS_ERR,//30
   IDX_RF_EVENT_END,
 //------------------------------
 
@@ -1118,6 +1199,7 @@ typedef enum
 
 
 } ERROR_IDX_E;
+
 
 typedef enum
 {
@@ -1285,6 +1367,7 @@ xdata u8 cmdPassingRingCnt;
 xdata u16 yPointBuff[5];
 xdata u32 testNum;
 xdata u32 testNum2;
+xdata u32 timeStampShot;
 
 
 void Light_Change(u16 light);
@@ -1455,6 +1538,18 @@ void Volume_Change(u8       id, u16 volume)
  	sys_write_vp(0x00a0,buf,2);
 }
 
+void Volume_Off(u8   id, u16 volume)
+{
+	u8 buf[4];
+
+	buf[0] = id;//id
+	buf[1] = 0x01;
+	buf[2] = volume;
+	buf[3] = 0x00;
+ 	sys_write_vp(0x00a0,buf,2);
+}
+
+
 void NumColor_Change(u8       id, u16 volume)
 {
 	u8 buf[4];
@@ -1492,6 +1587,7 @@ void Ascii_text(char* str, u16 add)
  	sys_write_vp(add,(u8*)str,len);
 }
 
+
 void Evnt_Ascii_Msg(u8 num)
 {
 	const u16 add = ERROR_EVENT_ADDR;
@@ -1502,7 +1598,7 @@ void Evnt_Ascii_Msg(u8 num)
 	case IDX_TEMP_LIMIT_UNDER:		  Ascii_text("TEMP_LIMIT_UNDER", add);	break;
 	case IDX_TEMP_LOW:				  Ascii_text("TEMP_LOW", add);	break;
 	case IDX_FLOW_LIMIT_UNDER:		  Ascii_text("FLOW_LIMIT_UNDER", add);	break;
-	case IDX_FLOW_ZERO_IDX: 		  Ascii_text("FLOW_ZERO_IDX", add);	 break;
+//	case IDX_FLOW_ZERO_IDX: 		  Ascii_text("FLOW_ZERO_IDX", add);	 break;
 	case IDX_LEVEL_LOW: 			  Ascii_text("LEVEL_LOW", add);	 break;
 	case IDX_AUTO_CAL_COMU_ERR: 	  Ascii_text("AUTO_CAL_COMU_ERR", add);	 break;
 	case IDX_BATTRY_LIMIT_OVER: 	  Ascii_text("BATTRY_LIMIT_OVER", add);	 break;
@@ -1529,6 +1625,48 @@ void Evnt_Ascii_Msg(u8 num)
   	case IDX_IS_TOTALJULE_RESET:	  Ascii_text("IS_TOTALJULE_RESET", add);	 break;
 
 	}
+}
+
+void Evnt_Msg_Up(u8 num)
+{
+	u16 msgIcon = 0;
+	switch (num)
+	{
+		case 0:						msgIcon = 	ICON_MSG_BLK;		  		break;
+		case IDX_TEMP_OUT:			msgIcon = 	ICON_MSG_TEMP_OUT;		  	break;
+		case IDX_TEMP_LIMIT_UNDER:	msgIcon = 	ICON_MSG_TEMP_LIMIT_UNDER;		  break;
+		case IDX_TEMP_LOW:			msgIcon = 	ICON_MSG_TEMP_LOW;		  		  break;
+		case IDX_FLOW_LIMIT_UNDER:	msgIcon = 	ICON_MSG_FLOW_LIMIT_UNDER;		  break;
+		case IDX_LEVEL_LOW: 		msgIcon = 	ICON_MSG_LEVEL_LOW;		  		  break;
+		case IDX_AUTO_CAL_COMU_ERR: msgIcon = 	ICON_MSG_AUTO_CAL_COMU_ERR;		  break;
+		case IDX_BATTRY_LIMIT_OVER:  msgIcon = 	ICON_MSG_BATTRY_LIMIT_OVER;		  break;
+		case IDX_BATTRY_LIMIT_UNDER: msgIcon = 	ICON_MSG_BATTRY_LIMIT_UNDER;	  break;
+		case IDX_BATTRY_LIMIT_LOW:	msgIcon = 	ICON_MSG_BATTRY_LIMIT_LOW;		  break;
+		case IDX_RTC_ERR:			msgIcon = 	ICON_MSG_RTC_ERR;		  		  break;
+		case IDX_PRE_COOL_ERR:		msgIcon = 	ICON_MSG_PRE_COOL_ERR;		  	  break;
+		case IDX_HAND_COMU_ERR: 	msgIcon = 	ICON_MSG_HAND_COMU_ERR;	      	  break;
+		case IDX_CATRIGE_I2C_ERR:	msgIcon = 	ICON_MSG_CATRIGE_I2C_ERR;		  break;
+		case IDX_CATRIGE_NEW_DETECT: msgIcon = 	ICON_MSG_CATRIGE_NEW_DETECT;	  break;
+		case IDX_CATRIGE_ID_ERR:	msgIcon = 	ICON_MSG_CATRIGE_ID_ERR;		  break;
+		case IDX_CATRIGE_MANU_ERR:	msgIcon = 	ICON_MSG_CATRIGE_MANU_ERR;		  break;
+		case IDX_CATRIGE_MANU_OVER_ERR: msgIcon = 	ICON_MSG_CATRIGE_MANU_OVER_ERR;	   break;
+		case IDX_CATRIGE_ISUE_ERR:		msgIcon = 	ICON_MSG_CATRIGE_ISUE_ERR;	  	   break;
+		case IDX_CATRIGE_ISUE_OVER_ERR:  msgIcon = 	ICON_MSG_CATRIGE_ISUE_OVER_ERR;	   break;
+		case IDX_CATRIGE_WATT_ERR:		msgIcon = 	ICON_MSG_CATRIGE_WATT_ERR;	  	   break;
+		case IDX_CATRIGE_FRQ_ERR:		msgIcon = 	ICON_MSG_CATRIGE_FRQ_ERR;	  	   break;
+		case IDX_CATRIGE_RESHOT_ERR:	msgIcon = 	ICON_MSG_CATRIGE_RESHOT_ERR;	  break;
+		case IDX_CATRIGE_RESHOT_LOW:	msgIcon = 	ICON_MSG_CATRIGE_RESHOT_LOW;	  break;
+		case IDX_CATRIGE_RESHOT_ZERO:	msgIcon = 	ICON_MSG_CATRIGE_RESHOT_ZERO;	  break;
+		case IDX_CATRIGE_DETECT:		msgIcon = 	ICON_MSG_CATRIGE_DETECT;	  	  break;
+		case IDX_CATRIGE_UN_DETECT: 	msgIcon = 	ICON_MSG_CATRIGE_UN_DETECT;	      break;
+		case IDX_RF_COMU_ERR:			msgIcon = 	ICON_MSG_RF_COMU_ERR;	  break;
+		case IDX_RF_STATUS_ERR: 		msgIcon = 	ICON_MSG_RF_STATUS_ERR;	  break;
+
+
+	}
+
+
+	sys_write_vp(EVNT_MSG_ADDR,(u8*)&msgIcon ,2);
 }
 
 
@@ -1604,7 +1742,9 @@ void Pulse_En_Dis(u8 enDisValue)
 void Event_PopUp(u16 eventData)
 {
 	u16 iconErrIcon= 0;
-	const u16 iconErrBack1= ICON_MAIN_POP, iconErrBack2= ICON_MAIN_POP_SELLEC , iconConnect = ICON_CONNET, iconDisConnect = ICON_DISCONNET; // 고정
+	const u16 iconErrBack1= ICON_MAIN_POP; // 고정
+	const u16 iconOk= ICON_OK_IDLE; // 고정
+	const u16 iconIcon= ICON_EVENT_INFO; // 고정
 	u16 iconErrCode= 0;
 	u16 iconErrMsg= 0;
 	u16 errData;//errEnDis;
@@ -1613,38 +1753,37 @@ void Event_PopUp(u16 eventData)
 	sysChkFlag = 0;
 	errData = eventData;
 
+//	switch (errData)
+//	{
+//		case IDX_IS_CURRNTSHOT_RESET:
+//		case IDX_IS_TOTALJULE_RESET:
+//		case IDX_CATRIGE_NEW:
+//		case IDX_CATRIGE_DETECT:
+//			popUpMode = POPUP_MODE_2;
+//			sys_write_vp(ERR_POPUP_BOX_ICON_ADDR, (u8*)&iconErrBack2,2);//backGround
+//		break;
 
+//		default:
+//			popUpMode = POPUP_MODE_1;
+//			sys_write_vp(ERR_POPUP_BOX_ICON_ADDR, (u8*)&iconErrBack1,2);//backGround
+//		break;
+//	}
 
 	popUpMode = POPUP_MODE_1;
+	sys_write_vp(ERR_POPUP_BOX_ICON_ADDR, (u8*)&iconErrBack1,2);//backGround
+//	sys_write_vp(EVNT_MSG_CENTER_OK_BTN_ADDR, (u8*)&iconOk,2);
+//	sys_write_vp(EVNT_MSG_ICON_ADDR, (u8*)&iconIcon,2);
 
-	switch (errData)
-	{
-		case IDX_IS_CURRNTSHOT_RESET:
-			popUpMode = POPUP_MODE_2;
-		break;
-
-		case IDX_IS_TOTALJULE_RESET:
-			popUpMode = POPUP_MODE_2;
-		break;
-
-		case IDX_CATRIGE_NEW:
-			popUpMode = POPUP_MODE_2;
-		break;
-
-
-
-	}
-
-	if(popUpMode == POPUP_MODE_1) sys_write_vp(ERR_POPUP_BOX_ICON_ADDR, (u8*)&iconErrBack1,2);//backGround
-	else if(popUpMode == POPUP_MODE_2) sys_write_vp(ERR_POPUP_BOX_ICON_ADDR, (u8*)&iconErrBack2,2);//backGround
-
-	Evnt_Ascii_Msg(errData);
+	Evnt_Msg_Up(errData);
 	Volume_Change(6, volumeLevel);
 }
 
 void Event_PopDown_Ok()
 {
 	const u16 iconErrBack= ICON_MAIN_EMPTY_POP; // 고정
+	const u16 iconOk= ICON_OK_BLANK; // 고정
+	const u16 iconIcon= ICON_EVENT_INFO_BLK; // 고정
+	popUpMode = 0;
 	if(errEvent)
 	{
 		switch (errEvent)
@@ -1657,14 +1796,18 @@ void Event_PopDown_Ok()
 				TX_Msg(CMD_TOTAL_JOULE, 0);
 			break;
 
-			case IDX_CATRIGE_NEW:
-				TX_Msg(CMD_CART_ALLOW, 1);
-			break;
+//			case IDX_CATRIGE_NEW:
+//			case IDX_CATRIGE_DETECT:
+//				TX_Msg(CMD_CART_ALLOW, 1);
+//			break;
+
 
 		}
 		errEvent = 0;
-		Ascii_Clear(ERROR_EVENT_ADDR);
-		sys_write_vp(ERR_POPUP_BOX_ICON_ADDR, (u8*)&iconErrBack,2);//backGround
+		Evnt_Msg_Up(0);
+		sys_write_vp(EVNT_MSG_CENTER_OK_BTN_ADDR, (u8*)&iconOk,2);
+//		sys_write_vp(EVNT_MSG_ICON_ADDR, (u8*)&iconIcon,2);
+//		sys_write_vp(ERR_POPUP_BOX_ICON_ADDR, (u8*)&iconErrBack,2);//backGround
 	}
 
 }
@@ -1672,10 +1815,11 @@ void Event_PopDown_Ok()
 void Event_PopDown_Cancel()
 {
 	const u16 iconErrBack= ICON_MAIN_EMPTY_POP; // 고정
+	popUpMode = 0;
 	if(errEvent)
 	{
 		errEvent = 0;
-		Ascii_Clear(ERROR_EVENT_ADDR);
+		Evnt_Msg_Up(0);
 		sys_write_vp(ERR_POPUP_BOX_ICON_ADDR, (u8*)&iconErrBack,2);//backGround
 	}
 
@@ -1757,6 +1901,17 @@ void Device_Satatus_Passing(u16 passingValue)
 			else sys_write_vp(DEBUG_STATUS_8_ADDR, (u8*)&iconSatusErr ,2);
 		break;
 
+		case IDX_DEBUG_INSERT_HP:
+			sys_write_vp(DEBUG_DATA_9_ADDR, (u8*)&statusData ,2);
+			if(statusData == 1) sys_write_vp(DEBUG_STATUS_9_ADDR, (u8*)&iconSatusOk ,2);
+			else sys_write_vp(DEBUG_STATUS_9_ADDR, (u8*)&iconSatusErr ,2);
+		break;
+
+		case IDX_DEBUG_DETECTE_CART:
+			sys_write_vp(DEBUG_DATA_10_ADDR, (u8*)&statusData ,2);
+			if(statusData == 0) sys_write_vp(DEBUG_STATUS_10_ADDR, (u8*)&iconSatusOk ,2);
+			else sys_write_vp(DEBUG_STATUS_10_ADDR, (u8*)&iconSatusErr ,2);
+		break;
 	}
 
 }
@@ -1777,9 +1932,10 @@ void RX_Parssing_Config()
 	u16 iconPulse = 0;
 	const u16 iconCalEmptyPoint = ICON_CALIB_EMPTY_POINT;
 	const u16 iconStandby = ICON_STANDBY_BOX, iconReady = ICON_READY_BOX;
-	const u16 iconConnect = ICON_CONNET, iconDisConnect = ICON_DISCONNET;
-	const u16 iconHideBlank = ICON_HIDE_BLANK;
-	const u16 iconHideBox = ICON_HIDE_BOX_1;
+	const u16 iconHandEn = ICON_HAND_EN;
+	const u16 iconHandDis = ICON_HAND_DIS;
+	const u16 iconFootEn = ICON_FOOT_EN;
+	const u16 iconFootDis = ICON_FOOT_DIS;
 	u16 iconVibeLv = ICON_VIBE_OFF;
 
 
@@ -1910,22 +2066,31 @@ void RX_Parssing_Config()
 			break;
 
 			case CMD_CATRIDGE_EVENT:
+
 				switch (value)
 				{
-					case CART_EVENT_EXPRATION:
-						Event_PopUp(IDX_CATRIGE_RESHOT_ZERO);
+					case CATRIGE_CHK_OK:
+						Event_PopUp(IDX_CATRIGE_DETECT);
 					break;
 
-					case CART_EVENT_DETECT_NEW:
+					case CATRIGE_CHK_NEW:
 						Event_PopUp(IDX_CATRIGE_NEW);
 					break;
 
-					case CART_EVENT_DETECT:
-						sys_write_vp(MAIN_CONNETION_ADDR, (u8*)&iconConnect,2);
+					case CATRIGE_CHK_I2C_READ_ERR:
+						Event_PopUp(IDX_CATRIGE_I2C_ERR);
 					break;
 
-					case CART_EVENT_UNDETECT:
-						sys_write_vp(MAIN_CONNETION_ADDR, (u8*)&iconDisConnect,2);
+					case CATRIGE_CHK_I2C_WRITE_ERR:
+						Event_PopUp(IDX_CATRIGE_I2C_ERR);
+					break;
+
+					case CATRIGE_CHK_REMIND_ZERO_ERR:
+						Event_PopUp(IDX_CATRIGE_RESHOT_ZERO);
+					break;
+
+					case CATRIGE_CHK_UN_DETECT:
+						Event_PopUp(IDX_CATRIGE_UN_DETECT);
 					break;
 				}
 			break;
@@ -2007,8 +2172,7 @@ void RX_Parssing_Config()
 
 			case CMD_LCD_STATUS:
 				rdyStnbyMode = value;
-				if(lcdPage == LCD_MODE_MAIN)
-				{
+
 					if(rdyStnbyMode == STATUS_STNBY)
 					{
 						sys_write_vp(CIRCLE_WATE_ADDR,(u8*)&iconStandby ,2);
@@ -2022,7 +2186,6 @@ void RX_Parssing_Config()
 					{
 						iconMove = ICON_CIRCLE_WATE0_BOX;
 					}
-				}
 			break;
 
 			case CMD_DO_ALL_LIVE:
@@ -2038,16 +2201,18 @@ void RX_Parssing_Config()
 				if(value == LCD_EXP_START)
 				{
 					expFlag = 1;
-//					Volume_Change(6, volumeLevel);
+//					Volume_Change(1, volumeLevel);
 				}
 				else if(value == LCD_EXP_END)
 				{
 					expFlag = 0;
-					Volume_Change(10, volumeLevel);
 					totaljouleSum += energy;
 					sys_write_vp(TOTAL_JOULE_NUM_ADDR,(u8*)&totaljouleSum ,2);
 					shotSum++;
 					sys_write_vp(CURRENT_SHOT_NUM_ADDR,(u8*)&shotSum ,2);
+					Volume_Change(4, volumeLevel);
+
+//					Volume_Off(1, 0);
 
 
 				}
@@ -2112,6 +2277,23 @@ void RX_Parssing_Config()
 			break;
 
 
+			case CMD_HAND_FOOT:
+				if (value == SWITCH_HAND)
+				{
+					sys_write_vp(HAND_EN_ADDR,(u8*)&iconHandEn ,2);
+					sys_write_vp(FOOT_EN_ADDR,(u8*)&iconFootDis ,2);
+
+				}
+				else if (value == SWITCH_FOOT)
+				{
+					sys_write_vp(FOOT_EN_ADDR,(u8*)&iconFootEn ,2);
+					sys_write_vp(HAND_EN_ADDR,(u8*)&iconHandDis ,2);
+				}
+			break;
+
+
+
+
 			default:
 				if(CMD_TRANDU1_FRQ <= cmd && cmd <=CMD_TRANDU7_FRQ)
 				{
@@ -2159,6 +2341,7 @@ idata u16 numTest =0;
 
 u8 Get_All_Catrige()
 {
+	const u16 iconMainEn = ICON_SYS_CHK_COOL_EN;
 	if(systemErr ||systemCartStatus)
 	{
 		return 0;
@@ -2166,10 +2349,14 @@ u8 Get_All_Catrige()
 	switch (getCartStep)
 	{
 		case STEP0:
+
+			sys_write_vp(SYSTEM_CHECK_COOL_ICON_ADDR, (u8*)&iconMainEn,2);
 			systemLive = ALL_DIE;
 			systemCartStatus = 0;
 			systemErr = 0;
 			TX_Msg(CMD_TEMP_DUTY_ON, 0);
+			TX_Msg(CMD_COOLING, 1);
+
 			TX_Rx_Msg(CMD_DO_ALL_LIVE, 0,&systemLive, 3000);
 
 			switch (systemLive)
@@ -2245,6 +2432,12 @@ u8 System_Err_Check()
 		sys_write_vp(SYSTEM_ICON_ADDR, (u8*)&iconSystemCircle,2);
 		if(sysChkFlag) iconSystemCircle++;
 
+//		if(iconSystemCircle == ICON_SYS_CHK_PER_10)
+//		{
+//			sys_write_vp(SYSTEM_CHECK_COOL_ICON_ADDR, (u8*)&iconMainEn,2);
+
+//		}
+
 		if(iconSystemCircle == ICON_SYS_CHK_PER_30)
 		{
 			chkOkBuff[0] = 0;
@@ -2298,6 +2491,8 @@ u8 System_Err_Check()
 			{
 				iconSystemCircle = ICON_SYS_CHK_PER_0;
 				TX_Msg(CMD_TEMP_DUTY_ON, 1);
+				TX_Msg(CMD_SYS_CHK, 1);
+
 				Page_Change(LCD_MODE_MAIN);
 				Area_Reset(1);
 				returnValue = LCD_MODE_MAIN;
@@ -2338,7 +2533,6 @@ void Touch_Pluse(u16 num)
 u8 Test_Config()
 {
 	u8 returnValue = 0;
-	static u32 timeStampQ = 0;
 	u16 btn =0;
 	int indData[4] ={0,};
 	int Tint =10100;
@@ -2564,6 +2758,7 @@ void Main_LongKey(u16 keyAddr, u16 cmd, u16 upDn, u16 agingTrg)
 //	Aging_Up_Button();
 	if(key || agingLongFlag == agingTrg)
 	{
+		Volume_Change(15, volumeLevel);
 		agingLongFlag = 0;
 		TX_Msg(cmd, upDn);
 		key= 0;
@@ -2665,6 +2860,23 @@ void Cartrige_Parts()//
 
 }
 
+
+void Shot_Sound_Play()
+{
+
+	if(expFlag)
+	{
+		if(delay_tickMy-timeStampShot >= 2000)
+		{
+
+			Volume_Change(10, volumeLevel);
+			timeStampShot = delay_tickMy;
+		}
+	}
+
+
+}
+
 u8 System_Check_Config()
 {
 	u8 returnValue = 0;
@@ -2727,6 +2939,7 @@ u8 Init_Config()
 
 			case 2: //test
 				TX_Msg(CMD_TEST_FORCE_PAGE_CHANGE, LCD_MODE_MAIN);
+				TX_Msg(CMD_SYS_CHK, 1);
 				Page_Change(LCD_MODE_MAIN);
 				engineerKey = 1;
 
@@ -2752,6 +2965,7 @@ u8 PassWard_Config()
 	sys_read_vp(PW_NUM_BUTTON_ADDR,(u8*)&btn,1);
 	if(btn)
 	{
+		Volume_Change(15, volumeLevel);
 		switch (btn)
 		{
 			case KEY_0:
@@ -2838,8 +3052,6 @@ u8 Main_Config()
 	int i =0;
 	u16 add = 0;
 	u32 zero = 0;
-	u16 iconHideBox = ICON_HIDE_BOX_1;
-	u16 iconBlankBox = ICON_HIDE_BOX_1;
 	returnValue = LCD_MODE_MAIN;
 
 
@@ -2847,6 +3059,7 @@ u8 Main_Config()
 	Aging_Button();
 	if(btnMain)
 	{
+		Volume_Change(15, volumeLevel);
 		switch (btnMain)
 		{
 			/*
@@ -2871,7 +3084,6 @@ u8 Main_Config()
 			*/
 			case BTN_MAIN_INTERVAL_UP:
 				TX_Msg(CMD_INTERVAL, BUTTON_UP);//
-				Area_Move(1,1);
 
 			break;
 			case BTN_MAIN_INTERVAL_DN:
@@ -2897,12 +3109,28 @@ u8 Main_Config()
 				returnValue = LCD_MODE_SETTING;
 			break;
 
-			case BTN_MAIN_ERR_OK:
-				if(errEvent)
+
+			case BTN_MAIN_ERR_OK_CENTER:
+				if(popUpMode == POPUP_MODE_1)
+				{
+					Event_PopDown_Cancel();
+				}
+			break;
+
+			case BTN_MAIN_ERR_OK_LEFT:
+				if(popUpMode == POPUP_MODE_2)
 				{
 					Event_PopDown_Ok();
 				}
 			break;
+
+			case BTN_MAIN_ERR_CANCEL_RIGHT:
+				if(popUpMode == POPUP_MODE_2)
+				{
+					Event_PopDown_Cancel();
+				}
+
+
 			case BTN_MAIN_ENGINIER:
 				if(engineerKey)
 				{
@@ -2934,15 +3162,14 @@ u8 Main_Config()
 					Area_Move(newAreaCnt, 0);
 				}
 
-
-//				iconHideBox = ICON_HIDE_BOX_1 + newAreaCnt;
-//				sys_write_vp(HIDE_BLOCK_ICON_ADDR,(u8*)&iconHideBox ,2);
 			break;
 
 			case BTN_MAIN_VIBE_LEVEL:
 				TX_Msg(CMD_VIBE_LEVEL, 1);
+			break;
 
-
+			case BTN_MAIN_HAND_FOOT:
+				TX_Msg(CMD_HAND_FOOT, 1);
 			break;
 
 
@@ -2961,12 +3188,9 @@ u8 Main_Config()
 	Main_LongKey(POST_DN_LONG_BTN_ADDR, CMD_POST_COOLING, BUTTON_DN, 36);
 
 	EXP_FreeCool_Motion();
-//	RX_MODE_MAIN_Parssing_Config();
-//	if(errEventFlag)
-//	{
-//		Page_Change(LCD_MODE_MAIN_POPUP);
-//		returnValue = LCD_MODE_MAIN_POPUP;
-//	}
+
+	Shot_Sound_Play();
+
 
 
 	return returnValue;
@@ -3027,7 +3251,7 @@ u8 Main_Max_Config()
 //				TX_Msg(CMD_TOTAL_JOULE, 0);//
 			break;
 
-			case BTN_MAIN_ERR_OK_CENTER:
+			case BTN_MAIN_ERR_OK_CENTER_N:
 				if(popUpMode == POPUP_MODE_1)
 				{
 					popUpMode = 0;
@@ -3035,7 +3259,7 @@ u8 Main_Max_Config()
 				}
 			break;
 
-			case BTN_MAIN_ERR_OK_LEFT:
+			case BTN_MAIN_ERR_OK_LEFT_N:
 				if(popUpMode == POPUP_MODE_2)
 				{
 					popUpMode = 0;
@@ -3043,7 +3267,7 @@ u8 Main_Max_Config()
 				}
 			break;
 
-			case BTN_MAIN_ERR_CANCEL_RIGHT:
+			case BTN_MAIN_ERR_CANCEL_RIGHT_N:
 				if(popUpMode == POPUP_MODE_2)
 				{
 					popUpMode = 0;
@@ -3777,6 +4001,7 @@ void Lcd_Init()//
 	btnUp = 0;
 	btnDn = 0;
 	btnSetting = 0;
+	timeStampShot = 0;
 
 	Flash_Read();
 
@@ -3854,7 +4079,7 @@ void Lcd_Init()//
 	testNum = 50;
 	testNum2 = 200;
 
-#if 0
+#if 1
 	lcdPage = LCD_MODE_INIT;
 
 #else //  시간단축 하이패스
