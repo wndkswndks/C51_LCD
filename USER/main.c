@@ -1888,13 +1888,13 @@ void Device_Satatus_Passing(u16 passingValue)
 
 		case IDX_DEBUG_RTC_BATTRY:
 			sys_write_vp(DEBUG_DATA_6_ADDR, (u8*)&statusData ,2);
-			if(2<=statusData && statusData<4) sys_write_vp(DEBUG_STATUS_6_ADDR, (u8*)&iconSatusOk ,2);
+			if(10<=statusData && statusData<40) sys_write_vp(DEBUG_STATUS_6_ADDR, (u8*)&iconSatusOk ,2);
 			else sys_write_vp(DEBUG_STATUS_6_ADDR, (u8*)&iconSatusErr ,2);
 		break;
 
 		case IDX_DEBUG_FLOW_SENSOR:
 			sys_write_vp(DEBUG_DATA_7_ADDR, (u8*)&statusData ,2);
-			if(6<=statusData && statusData<10) sys_write_vp(DEBUG_STATUS_7_ADDR, (u8*)&iconSatusOk ,2);
+			if(3<=statusData && statusData<35) sys_write_vp(DEBUG_STATUS_7_ADDR, (u8*)&iconSatusOk ,2);
 			else sys_write_vp(DEBUG_STATUS_7_ADDR, (u8*)&iconSatusErr ,2);
 		break;
 
