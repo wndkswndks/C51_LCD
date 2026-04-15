@@ -2199,7 +2199,7 @@ void RX_Parssing_Config()
 				if(value == LCD_EXP_START)
 				{
 					expFlag = 1;
-//					Volume_Change(1, volumeLevel);
+					Volume_Change(1, volumeLevel);
 				}
 				else if(value == LCD_EXP_END)
 				{
@@ -3182,7 +3182,7 @@ u8 Main_Config()
 
 	EXP_FreeCool_Motion();
 
-	Shot_Sound_Play();
+	//Shot_Sound_Play();
 
 
 
