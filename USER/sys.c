@@ -2,7 +2,7 @@
 
 
 static idata u16 delay_tick = 0; //用来实现精确延时的
-idata u16 delay_tickMy = 0;
+idata u32 delay_tickMy = 0;
 
 
 

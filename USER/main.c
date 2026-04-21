@@ -825,6 +825,8 @@ typedef enum
 	CMD_TTTEST = 199,
 
 	CMD_HP1_ADD = 200,
+	CMD_MAIN_RESET = 201,
+	CMD_HP_RESET = 202,
 
 
 	CMD_TRANDU_FRQ_BASE	= 90,
@@ -1226,7 +1228,7 @@ typedef enum
 	STEP12,
 } STEP_E;
 
-extern idata u16 delay_tickMy;
+extern idata u32 delay_tickMy;
 extern xdata u8  uartRxBuff[20];
 extern xdata u8  uartRxFlag;
 extern xdata u8  uartRxStep;
@@ -2199,7 +2201,7 @@ void RX_Parssing_Config()
 				if(value == LCD_EXP_START)
 				{
 					expFlag = 1;
-					Volume_Change(1, volumeLevel);
+//					Volume_Change(1, volumeLevel);
 				}
 				else if(value == LCD_EXP_END)
 				{
@@ -2836,12 +2838,12 @@ u8 System_Check_Config()
 					}
 					else if(systemLive == LIVE_RF_DETH)
 					{
-						Event_PopUp(ICON_MSG_RF_COMU_ERR);
+						Event_PopUp(IDX_RF_COMU_ERR);
 						TX_Msg(CMD_SYS_CHK_OK, 15);
 					}
 					else if(systemLive == 0)
 					{
-						Event_PopUp(ICON_MSG_RF_COMU_ERR);
+						Event_PopUp(IDX_RF_COMU_ERR);
 						TX_Msg(CMD_SYS_CHK_OK, 25);
 					}
 					TX_Msg(CMD_OK, ERR_CHK_RF);
@@ -3182,7 +3184,7 @@ u8 Main_Config()
 
 	EXP_FreeCool_Motion();
 
-	//Shot_Sound_Play();
+	Shot_Sound_Play();
 
 
 
