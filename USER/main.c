@@ -7,30 +7,46 @@
 
 #define NOR_FLASH_DATA_ADDR		0
 
-#define PW_NUM_BUTTON_ADDR		0x1000
-#define MAIN_BUTTON_ADDR	0x1002
-#define MAIN_MAX_BUTTON_ADDR	0x1020
-#define SETTING_BUTTON_ADDR		0x1040
-#define ENGINEER_BUTTON_ADDR	0x1060
-#define INFOMATION_BUTTON_ADDR	0x1080
-#define INFOMATION_TOUCH_ADDR	0x1082
-#define TEST_BUTTON_ADDR		0x1084
 
+
+
+
+
+
+
+
+
+
+
+
+//==================================================
+
+
+
+
+
+
+//==================================================
+
+
+
+
+
+
+
+
+//==================================================
+//page0 use btn
 #define INITIAL_BUTTON_ADDR  	0x10A0
-#define AUTOCAL_BUTTON_ADDR  	0x10C2
-#define START_TOUCH_BTN_ADDR	0x1100
-#define START_TOUCH_TEXT_ADDR	0x1120
-#define CAL_TOUCH_ENDIS_ADDR	0x1140
-#define CAL_TOUCH_FRQ_ADDR		0x1142
-#define CAL_TOUCH_TDU_ADDR		0x1144
-#define CARTRIGE_KEYPAD_ADDR	0x1146
-#define CARTRIGE_TOUCH_ADDR		0x1148
-#define SYSTEM_BUTTON_ADDR		0x1150
-#define DEVICE_STATUS_BUTTON_ADDR 	0x1152
-#define ERROR_EVENT_BUTTON_ADDR		  0x1154
-#define UP_LONG_BUTTON_ADDR	    0x1156
-#define DN_LONG_BUTTON_ADDR	    0x1158
 
+//==================================================
+
+
+//==================================================
+
+//page1 use btn
+
+#define MAIN_BUTTON_ADDR		0x1002
 #define ENERGY_UP_LONG_BTN_ADDR	    	0x115A
 #define ENERGY_DN_LONG_BTN_ADDR		    0x115C
 
@@ -40,76 +56,120 @@
 #define POST_UP_LONG_BTN_ADDR	    	0x1162
 #define POST_DN_LONG_BTN_ADDR	   	 	0x1164
 
+//page1 use icon
+#define ERR_POPUP_BOX_ICON_ADDR      0x2700//page1,2
+#define EVNT_MSG_ADDR   	   	   	0x2980//page1,2
+#define HAND_EN_ADDR				0x285E
+#define ERROR_EVENT_ADDR		 0x6010
+#define CALIV_PULSE_ICON_ADDR			0x2722
+#define VIBE_LEVEL_ICON_ADDR			0x2742
+#define CIRCLE_WATE_ADDR				0x274E
+//page1 use num
+
+#define ENERGY_NUM_ADDR 			0x2710
+#define PULSE_DURATION_NUM_ADDR 	0x2712
+#define POST_COOLING_NUM_ADDR 		0x2714
+#define INTERVAL_NUM_ADDR 			0x2716
+#define TOTAL_JOULE_NUM_ADDR 		0x2718//
+#define REMIND_SHOT_NUM_ADDR 		0x271C//
+#define CURRENT_SHOT_NUM_ADDR 		0x271E//
+
+#define CURRENT_SHOT1_NUM_ADDR			0x2724
+#define CURRENT_SHOT2_NUM_ADDR			0x2726
+#define CURRENT_SHOT3_NUM_ADDR			0x2728
+#define CURRENT_SHOT4_NUM_ADDR			0x272A
+#define CURRENT_SHOT5_NUM_ADDR			0x272C
+
+#define TOTAL_ENERGY1_NUM_ADDR		0x272E
+#define TOTAL_ENERGY2_NUM_ADDR		0x2730
+#define TOTAL_ENERGY3_NUM_ADDR		0x2732
+#define TOTAL_ENERGY4_NUM_ADDR		0x2734
+#define TOTAL_ENERGY5_NUM_ADDR		0x2736
+
+#define AVG_ENERGY1_NUM_ADDR			0x2738
+#define AVG_ENERGY2_NUM_ADDR			0x273A
+#define AVG_ENERGY3_NUM_ADDR			0x273C
+#define AVG_ENERGY4_NUM_ADDR			0x273E
+#define AVG_ENERGY5_NUM_ADDR			0x2740
 
 
-#define PW_ICON_ADDR				 0x1200
+#define AREA1_ICON_ADDR				0x2854
+#define AREA2_ICON_ADDR				0x2856
+#define AREA3_ICON_ADDR				0x2858
+#define AREA4_ICON_ADDR				0x285A
+#define AREA5_ICON_ADDR				0x285C
+
+
+
+//page1 SP use
+#define XY_SP_CURRENT_SHOT1_ADD  		0x5000
+#define XY_SP_CURRENT_SHOT2_ADD  		0x5020
+#define XY_SP_CURRENT_SHOT3_ADD  		0x5040
+#define XY_SP_CURRENT_SHOT4_ADD  		0x5060
+#define XY_SP_CURRENT_SHOT5_ADD  		0x5080
+
+#define XY_SP_TOTAL_ENERGY1_ADD  		0x50A0
+#define XY_SP_TOTAL_ENERGY2_ADD  		0x50C0
+#define XY_SP_TOTAL_ENERGY3_ADD  		0x50E0
+#define XY_SP_TOTAL_ENERGY4_ADD  		0x5100
+#define XY_SP_TOTAL_ENERGY5_ADD  		0x5120
+
+#define XY_SP_AGV_ENERGY1_ADD  		0x5140
+#define XY_SP_AGV_ENERGY2_ADD  		0x5160
+#define XY_SP_AGV_ENERGY3_ADD  		0x5180
+#define XY_SP_AGV_ENERGY4_ADD  		0x51A0
+#define XY_SP_AGV_ENERGY5_ADD  		0x51C0
+
+
+//page1 un use
+
+#define TEMP_DEBUG_NUM_ADDR			 0x2850
+#define DUTY_DEBUG_NUM_ADDR			 0x2852
+#define ERR_POPUP_LEVEL_ICON_ADDR    0x2702
+#define ERR_POPUP_CODE_ICON_ADDR     0x2704
+#define ERR_POPUP_MSG_ICON_ADDR      0x2706
+#define CURRENT_JOULE_NUM_ADDR 		 0x271A
+#define CALIV_PULSETIME_NUM_NUM_ADDR	0x2720
+
+//==================================================
+//page2 use btn
+#define SETTING_BUTTON_ADDR		0x1040
+
+//page2 use icon
+
+//page2 use num
+
+
+//page2 un use
+
+//==================================================
+//==================================================
+//page3 use btn
+#define SYSTEM_BUTTON_ADDR		0x1150
+
+//page3 use icon
 #define SYSTEM_ICON_ADDR			 0x1202
 #define SYSTEM_CHECK_CTRL_ICON_ADDR  0x1204
 #define SYSTEM_CHECK_GEN_ICON_ADDR	 0x1206
 #define SYSTEM_CHECK_HP_ICON_ADDR	 0x1208
 #define SYSTEM_CHECK_COOL_ICON_ADDR   0x120A
+//page3 use num
 
-#define EN_ICON_ADDR 	0x2200
+
+
+//page3 un use
+
+//==================================================
+//==================================================
+//page4 use btn
+#define START_TOUCH_BTN_ADDR	0x1100
+#define CAL_TOUCH_TDU_ADDR		0x1144
+
+//page4 use icon
 #define TRANDU_WATT_POINT_ADDR 		0x22D0
+#define TRANDU_WATT_POINT_END_ADDR 		0x2376
 
-
-
-//==================================================
-#define CART_POINT_SATAT_ADDR       0x2550
-#define CART_POINT_END_ADDR       	0x2570
-
-
-
-
-#define CART_VALUE_SATAT_ADDR       	0x2590
-#define CART_VALUE_CART_ID_ADDR       	0x2590
-#define CART_VALUE_MANUFAC_YY_ADDR       0x2592
-#define CART_VALUE_MANUFAC_MM_ADDR       0x2594
-#define CART_VALUE_MANUFAC_DD_ADDR       0x2596
-#define CART_VALUE_ISSUED_YY_ADDR       0x2598
-#define CART_VALUE_ISSUED_MM_ADDR       0x259A
-#define CART_VALUE_ISSUED_DD_ADDR       0x259C
-#define CART_VALUE_TRANDU1_ADDR       	0x259E
-#define CART_VALUE_TRANDU2_ADDR       	0x25A0
-#define CART_VALUE_TRANDU3_ADDR      	0x25A2
-#define CART_VALUE_TRANDU4_ADDR      	0x25A4
-#define CART_VALUE_TRANDU5_ADDR      	0x25A6
-#define CART_VALUE_TRANDU6_ADDR      	0x25A8
-#define CART_VALUE_TRANDU7_ADDR      	0x25AA
-#define CART_VALUE_REMIND_SHOT_ADDR      0x25AC
-#define CART_VALUE_STATUS_ADDR      	0x25AE
-#define CART_VALUE_END_ADDR       		0x25AE
-//==================================================
-#define INFO_POINT_SATAT_ADDR       0x25B2
-#define INFO_POINT_UI_DESING_ADDR   0x25B2
-#define INFO_POINT_UI_FW_ADDR     	0x25B4
-#define INFO_POINT_MAIN_FW_ADDR     0x25B6
-#define INFO_POINT_HP_FW_ADDR     	0x25B8
-#define INFO_POINT_RF_FW_ADDR     	0x25BA
-#define INFO_POINT_YY_ADDR     		0x25BC
-#define INFO_POINT_MM_ADDR     		0x25BE
-#define INFO_POINT_DD_ADDR     		0x25C0
-#define INFO_POINT_HOUR_ADDR     	0x25C2
-#define INFO_POINT_MIN_ADDR     	0x25C4
-#define INFO_POINT_SEC_ADDR     	0x25C6
-#define INFO_POINT_END_ADDR       	0x25C6
-
-#define INFO_NUM_SATAT_ADDR       	0x25D2
-#define INFO_NUM_UI_DESING_ADDR     0x25D2
-#define INFO_NUM_UI_FW_ADDR     	0x25D4
-#define INFO_NUM_MAIN_FW_ADDR     	0x25D6
-#define INFO_NUM_HP_FW_ADDR     	0x25D8
-#define INFO_NUM_RF_FW_ADDR     	0x25DA
-#define INFO_NUM_YY_ADDR     		0x25DC
-#define INFO_NUM_MM_ADDR     		0x25DE
-#define INFO_NUM_DD_ADDR     		0x25E0
-#define INFO_NUM_HOUR_ADDR     		0x25E2
-#define INFO_NUM_MIN_ADDR     		0x25E4
-#define INFO_NUM_SEC_ADDR     		0x25E6
-#define INFO_NUM_END_ADDR       	0x25E6
-
-
-
+//page4 use num
 
 
 
@@ -149,69 +209,242 @@
 #define TRANDU_WATT_EXP7_NUM_ADDR       	0x26B6
 
 
+//page4 un use
 
-#define ERR_POPUP_BOX_ICON_ADDR      0x2700
-#define ERR_POPUP_LEVEL_ICON_ADDR    0x2702
-#define ERR_POPUP_CODE_ICON_ADDR     0x2704
-#define ERR_POPUP_MSG_ICON_ADDR      0x2706
+//==================================================
+//==================================================
+//page9 use btn
+#define ENGINEER_BUTTON_ADDR	0x1060
 
-#define ENERGY_NUM_ADDR 			0x2710
-#define PULSE_DURATION_NUM_ADDR 	0x2712
-#define POST_COOLING_NUM_ADDR 		0x2714
-#define INTERVAL_NUM_ADDR 			0x2716
-#define TOTAL_JOULE_NUM_ADDR 		0x2718//
-#define CURRENT_JOULE_NUM_ADDR 		0x271A//
-#define REMIND_SHOT_NUM_ADDR 		0x271C//
-#define CURRENT_SHOT_NUM_ADDR 		0x271E//
-#define CALIV_PULSETIME_NUM_NUM_ADDR	0x2720
-#define CALIV_PULSE_ICON_ADDR			0x2722
+//page9 use icon
 
-#define CURRENT_SHOT1_NUM_ADDR			0x2724
-#define CURRENT_SHOT2_NUM_ADDR			0x2726
-#define CURRENT_SHOT3_NUM_ADDR			0x2728
-#define CURRENT_SHOT4_NUM_ADDR			0x272A
-#define CURRENT_SHOT5_NUM_ADDR			0x272C
+//page9 use num
 
-#define TOTAL_ENERGY1_NUM_ADDR		0x272E
-#define TOTAL_ENERGY2_NUM_ADDR		0x2730
-#define TOTAL_ENERGY3_NUM_ADDR		0x2732
-#define TOTAL_ENERGY4_NUM_ADDR		0x2734
-#define TOTAL_ENERGY5_NUM_ADDR		0x2736
 
-#define AVG_ENERGY1_NUM_ADDR			0x2738
-#define AVG_ENERGY2_NUM_ADDR			0x273A
-#define AVG_ENERGY3_NUM_ADDR			0x273C
-#define AVG_ENERGY4_NUM_ADDR			0x273E
-#define AVG_ENERGY5_NUM_ADDR			0x2740
 
-#define VIBE_LEVEL_ICON_ADDR			0x2742
-#define HIDE_BLOCK_ICON_ADDR			0x2744
+//page9 un use
+
+//==================================================
+//==================================================
+//page10 use btn
+#define INFOMATION_BUTTON_ADDR	0x1080
+#define INFOMATION_TOUCH_ADDR	0x1082
+
+
+//page10 use icon
+#define INFO_POINT_SATAT_ADDR       0x25B2
+#define INFO_POINT_UI_DESING_ADDR   0x25B2
+#define INFO_POINT_UI_FW_ADDR     	0x25B4
+#define INFO_POINT_MAIN_FW_ADDR     0x25B6
+#define INFO_POINT_HP_FW_ADDR     	0x25B8
+#define INFO_POINT_RF_FW_ADDR     	0x25BA
+#define INFO_POINT_YY_ADDR     		0x25BC
+#define INFO_POINT_MM_ADDR     		0x25BE
+#define INFO_POINT_DD_ADDR     		0x25C0
+#define INFO_POINT_HOUR_ADDR     	0x25C2
+#define INFO_POINT_MIN_ADDR     	0x25C4
+#define INFO_POINT_SEC_ADDR     	0x25C6
+#define INFO_POINT_END_ADDR       	0x25C6
+//page10 use num
+
+#define INFO_NUM_SATAT_ADDR       	0x25D2
+#define INFO_NUM_UI_DESING_ADDR     0x25D2
+#define INFO_NUM_UI_FW_ADDR     	0x25D4
+#define INFO_NUM_MAIN_FW_ADDR     	0x25D6
+#define INFO_NUM_HP_FW_ADDR     	0x25D8
+#define INFO_NUM_RF_FW_ADDR     	0x25DA
+#define INFO_NUM_YY_ADDR     		0x25DC
+#define INFO_NUM_MM_ADDR     		0x25DE
+#define INFO_NUM_DD_ADDR     		0x25E0
+#define INFO_NUM_HOUR_ADDR     		0x25E2
+#define INFO_NUM_MIN_ADDR     		0x25E4
+#define INFO_NUM_SEC_ADDR     		0x25E6
+#define INFO_NUM_END_ADDR       	0x25E6
+
+//page10 un use
+
+//==================================================
+//==================================================
+//page11 use btn
+#define PW_NUM_BUTTON_ADDR		0x1000
+
+//page11 use icon
+#define PW_ICON_ADDR				 0x1200
+//page11 use num
+
+
+
+//page11 un use
+
+//==================================================
+//==================================================
+//page12 use btn
+#define TEST_BUTTON_ADDR		0x1084
+//page12 use icon
+
+//page12 use num
 
 #define TEST_NUM_ADDR1					0x2746
 #define TEST_NUM_ADDR2					0x2748
 #define TEST_NUM_ADDR3					0x274A
 #define TEST_NUM_ADDR4					0x274C
 
+#define XY_SP_TEST_ADD1  		0x51E0
+#define XY_SP_TEST_ADD2  		0x5200
+#define XY_SP_TEST_ADD3  		0x5220
+#define XY_SP_TEST_ADD4  		0x5240
 
-#define CIRCLE_WATE_ADDR				0x274E
 
-
-
-
-#define TEMP_DEBUG_NUM_ADDR			0x2850
-#define DUTY_DEBUG_NUM_ADDR			0x2852
-
-#define AREA1_ICON_ADDR				0x2854
-#define AREA2_ICON_ADDR				0x2856
-#define AREA3_ICON_ADDR				0x2858
-#define AREA4_ICON_ADDR				0x285A
-#define AREA5_ICON_ADDR				0x285C
-
-#define HAND_EN_ADDR				0x285E
-
+//page12 un use
 
 //==================================================
 
+//==================================================
+//page14 use btn
+#define CARTRIGE_KEYPAD_ADDR	0x1146
+#define CARTRIGE_TOUCH_ADDR		0x1148
+
+//page14 use icon
+#define CART_POINT_SATAT_ADDR       0x2550
+#define CART_POINT_1_ADDR       0x2550
+#define CART_POINT_2_ADDR       0x2552
+#define CART_POINT_3_ADDR       0x2554
+#define CART_POINT_4_ADDR       0x2556
+#define CART_POINT_5_ADDR       0x2558
+#define CART_POINT_6_ADDR       0x255A
+#define CART_POINT_7_ADDR       0x255C
+#define CART_POINT_8_ADDR       0x255E
+#define CART_POINT_9_ADDR       0x2560
+#define CART_POINT_10_ADDR       0x2562
+#define CART_POINT_11_ADDR       0x2564
+#define CART_POINT_12_ADDR       0x2566
+#define CART_POINT_13_ADDR       0x2568
+#define CART_POINT_14_ADDR       0x256A
+#define CART_POINT_15_ADDR       0x256C
+#define CART_POINT_16_ADDR       0x256E
+#define CART_POINT_END_ADDR       	0x2570
+//page14 use num
+
+
+#define CART_VALUE_SATAT_ADDR       	0x2590
+#define CART_VALUE_CART_ID_ADDR       	0x2590
+#define CART_VALUE_MANUFAC_YY_ADDR       0x2592
+#define CART_VALUE_MANUFAC_MM_ADDR       0x2594
+#define CART_VALUE_MANUFAC_DD_ADDR       0x2596
+#define CART_VALUE_ISSUED_YY_ADDR       0x2598
+#define CART_VALUE_ISSUED_MM_ADDR       0x259A
+#define CART_VALUE_ISSUED_DD_ADDR       0x259C
+#define CART_VALUE_TRANDU1_ADDR       	0x259E
+#define CART_VALUE_TRANDU2_ADDR       	0x25A0
+#define CART_VALUE_TRANDU3_ADDR      	0x25A2
+#define CART_VALUE_TRANDU4_ADDR      	0x25A4
+#define CART_VALUE_TRANDU5_ADDR      	0x25A6
+#define CART_VALUE_TRANDU6_ADDR      	0x25A8
+#define CART_VALUE_TRANDU7_ADDR      	0x25AA
+#define CART_VALUE_REMIND_SHOT_ADDR      0x25AC
+#define CART_VALUE_STATUS_ADDR      	0x25AE
+#define CART_VALUE_END_ADDR       		0x25AE
+
+//page14 un use
+
+//==================================================
+//==================================================
+//page15 use btn
+#define DEVICE_STATUS_BUTTON_ADDR 	0x1152
+//page15 use icon
+#define DEBUG_STATUS_1_ADDR	 				0x28D0
+#define DEBUG_STATUS_2_ADDR	 				0x28D2
+#define DEBUG_STATUS_3_ADDR	 				0x28D4
+#define DEBUG_STATUS_4_ADDR	 				0x28D6
+#define DEBUG_STATUS_5_ADDR	 				0x28D8
+#define DEBUG_STATUS_6_ADDR	 				0x28DA
+#define DEBUG_STATUS_7_ADDR	 				0x28DC
+#define DEBUG_STATUS_8_ADDR	 				0x28DE
+#define DEBUG_STATUS_9_ADDR	 				0x28F0
+#define DEBUG_STATUS_10_ADDR	 			0x28F2
+//page15 use num
+
+#define DEBUG_DATA_1_ADDR	 				0x28F6
+#define DEBUG_DATA_2_ADDR	 				0x28F8
+#define DEBUG_DATA_3_ADDR	 				0x28FA
+#define DEBUG_DATA_4_ADDR	 				0x28FC
+#define DEBUG_DATA_5_ADDR	 				0x28FE
+#define DEBUG_DATA_6_ADDR	 				0x2900
+#define DEBUG_DATA_7_ADDR	 				0x2902
+#define DEBUG_DATA_8_ADDR	 				0x2904
+#define DEBUG_DATA_9_ADDR	 				0x2906
+#define DEBUG_DATA_10_ADDR	 				0x2908
+
+//page15 un use
+
+//==================================================
+//==================================================
+//page16 use btn
+#define ERROR_EVENT_BUTTON_ADDR		  0x1154
+//page16 use icon
+
+//page16 use num
+#define DEBUG_ERRCNT_1_ADDR   0x2910
+#define DEBUG_ERRCNT_2_ADDR   0x2912
+#define DEBUG_ERRCNT_3_ADDR   0x2914
+#define DEBUG_ERRCNT_4_ADDR   0x2916
+#define DEBUG_ERRCNT_5_ADDR   0x2918
+#define DEBUG_ERRCNT_6_ADDR   0x291A
+#define DEBUG_ERRCNT_7_ADDR   0x291C
+#define DEBUG_ERRCNT_8_ADDR   0x291E
+#define DEBUG_ERRCNT_9_ADDR   0x2920
+#define DEBUG_ERRCNT_10_ADDR   0x2922
+#define DEBUG_ERRCNT_11_ADDR   0x2924
+#define DEBUG_ERRCNT_12_ADDR   0x2926
+#define DEBUG_ERRCNT_13_ADDR   0x2928
+#define DEBUG_ERRCNT_14_ADDR   0x292A
+#define DEBUG_ERRCNT_15_ADDR   0x292C
+#define DEBUG_ERRCNT_16_ADDR   0x292E
+#define DEBUG_ERRCNT_17_ADDR   0x2930
+#define DEBUG_ERRCNT_18_ADDR   0x2932
+#define DEBUG_ERRCNT_19_ADDR   0x2934
+#define DEBUG_ERRCNT_20_ADDR   0x2936
+#define DEBUG_ERRCNT_21_ADDR   0x2938
+#define DEBUG_ERRCNT_22_ADDR   0x293A
+#define DEBUG_ERRCNT_23_ADDR   0x293C
+#define DEBUG_ERRCNT_24_ADDR   0x293E
+#define DEBUG_ERRCNT_25_ADDR   0x2940
+#define DEBUG_ERRCNT_26_ADDR   0x2942
+#define DEBUG_ERRCNT_27_ADDR   0x2944
+#define DEBUG_ERRCNT_28_ADDR   0x2946
+#define DEBUG_ERRCNT_29_ADDR   0x2948
+#define DEBUG_ERRCNT_30_ADDR   0x294A
+#define DEBUG_ERRCNT_31_ADDR   0x294C
+#define DEBUG_ERRCNT_32_ADDR   0x294E
+#define DEBUG_ERRCNT_33_ADDR   0x2950
+#define DEBUG_ERRCNT_34_ADDR   0x2952
+#define DEBUG_ERRCNT_35_ADDR   0x2954
+#define DEBUG_ERRCNT_36_ADDR   0x2956
+#define DEBUG_ERRCNT_37_ADDR   0x2958
+#define DEBUG_ERRCNT_38_ADDR   0x295A
+#define DEBUG_ERRCNT_39_ADDR   0x295C
+#define DEBUG_ERRCNT_40_ADDR   0x295E
+#define DEBUG_ERRCNT_41_ADDR   0x2960
+#define DEBUG_ERRCNT_42_ADDR   0x2962
+#define DEBUG_ERRCNT_43_ADDR   0x2964
+#define DEBUG_ERRCNT_44_ADDR   0x2966
+#define DEBUG_ERRCNT_45_ADDR   0x2968
+#define DEBUG_ERRCNT_46_ADDR   0x296A
+#define DEBUG_ERRCNT_47_ADDR   0x296C
+#define DEBUG_ERRCNT_48_ADDR   0x296E
+#define DEBUG_ERRCNT_49_ADDR   0x2970
+#define DEBUG_ERRCNT_50_ADDR   0x2972
+
+//page16 un use
+
+//==================================================
+//==================================================
+//page17 use btn
+#define MAIN_MAX_BUTTON_ADDR	0x1020
+
+//page17 use icon
+
+//page17 use num
 
 #define MAIN_P_START_ADDR			   0x2860
 #define MAIN_P1_WATT_ADDR			   0x2860
@@ -281,120 +514,32 @@
 
 #define MAIN_CONNETION_ADDR	 			0x28C8
 
-#define DEBUG_STATUS_1_ADDR	 				0x28D0
-#define DEBUG_STATUS_2_ADDR	 				0x28D2
-#define DEBUG_STATUS_3_ADDR	 				0x28D4
-#define DEBUG_STATUS_4_ADDR	 				0x28D6
-#define DEBUG_STATUS_5_ADDR	 				0x28D8
-#define DEBUG_STATUS_6_ADDR	 				0x28DA
-#define DEBUG_STATUS_7_ADDR	 				0x28DC
-#define DEBUG_STATUS_8_ADDR	 				0x28DE
-#define DEBUG_STATUS_9_ADDR	 				0x28F0
-#define DEBUG_STATUS_10_ADDR	 			0x28F2
+#define UP_LONG_BUTTON_ADDR	    0x1156
+#define DN_LONG_BUTTON_ADDR	    0x1158
 
-#define DEBUG_DATA_1_ADDR	 				0x28F6
-#define DEBUG_DATA_2_ADDR	 				0x28F8
-#define DEBUG_DATA_3_ADDR	 				0x28FA
-#define DEBUG_DATA_4_ADDR	 				0x28FC
-#define DEBUG_DATA_5_ADDR	 				0x28FE
-#define DEBUG_DATA_6_ADDR	 				0x2900
-#define DEBUG_DATA_7_ADDR	 				0x2902
-#define DEBUG_DATA_8_ADDR	 				0x2904
-#define DEBUG_DATA_9_ADDR	 				0x2906
-#define DEBUG_DATA_10_ADDR	 				0x2908
-
-#define DEBUG_ERRCNT_1_ADDR   0x2910
-#define DEBUG_ERRCNT_2_ADDR   0x2912
-#define DEBUG_ERRCNT_3_ADDR   0x2914
-#define DEBUG_ERRCNT_4_ADDR   0x2916
-#define DEBUG_ERRCNT_5_ADDR   0x2918
-#define DEBUG_ERRCNT_6_ADDR   0x291A
-#define DEBUG_ERRCNT_7_ADDR   0x291C
-#define DEBUG_ERRCNT_8_ADDR   0x291E
-#define DEBUG_ERRCNT_9_ADDR   0x2920
-#define DEBUG_ERRCNT_10_ADDR   0x2922
-#define DEBUG_ERRCNT_11_ADDR   0x2924
-#define DEBUG_ERRCNT_12_ADDR   0x2926
-#define DEBUG_ERRCNT_13_ADDR   0x2928
-#define DEBUG_ERRCNT_14_ADDR   0x292A
-#define DEBUG_ERRCNT_15_ADDR   0x292C
-#define DEBUG_ERRCNT_16_ADDR   0x292E
-#define DEBUG_ERRCNT_17_ADDR   0x2930
-#define DEBUG_ERRCNT_18_ADDR   0x2932
-#define DEBUG_ERRCNT_19_ADDR   0x2934
-#define DEBUG_ERRCNT_20_ADDR   0x2936
-#define DEBUG_ERRCNT_21_ADDR   0x2938
-#define DEBUG_ERRCNT_22_ADDR   0x293A
-#define DEBUG_ERRCNT_23_ADDR   0x293C
-#define DEBUG_ERRCNT_24_ADDR   0x293E
-#define DEBUG_ERRCNT_25_ADDR   0x2940
-#define DEBUG_ERRCNT_26_ADDR   0x2942
-#define DEBUG_ERRCNT_27_ADDR   0x2944
-#define DEBUG_ERRCNT_28_ADDR   0x2946
-#define DEBUG_ERRCNT_29_ADDR   0x2948
-#define DEBUG_ERRCNT_30_ADDR   0x294A
-#define DEBUG_ERRCNT_31_ADDR   0x294C
-#define DEBUG_ERRCNT_32_ADDR   0x294E
-#define DEBUG_ERRCNT_33_ADDR   0x2950
-#define DEBUG_ERRCNT_34_ADDR   0x2952
-#define DEBUG_ERRCNT_35_ADDR   0x2954
-#define DEBUG_ERRCNT_36_ADDR   0x2956
-#define DEBUG_ERRCNT_37_ADDR   0x2958
-#define DEBUG_ERRCNT_38_ADDR   0x295A
-#define DEBUG_ERRCNT_39_ADDR   0x295C
-#define DEBUG_ERRCNT_40_ADDR   0x295E
-#define DEBUG_ERRCNT_41_ADDR   0x2960
-#define DEBUG_ERRCNT_42_ADDR   0x2962
-#define DEBUG_ERRCNT_43_ADDR   0x2964
-#define DEBUG_ERRCNT_44_ADDR   0x2966
-#define DEBUG_ERRCNT_45_ADDR   0x2968
-#define DEBUG_ERRCNT_46_ADDR   0x296A
-#define DEBUG_ERRCNT_47_ADDR   0x296C
-#define DEBUG_ERRCNT_48_ADDR   0x296E
-#define DEBUG_ERRCNT_49_ADDR   0x2970
-#define DEBUG_ERRCNT_50_ADDR   0x2972
-
-
-#define EVNT_MSG_ADDR   	   	   			 0x2980
-#define EVNT_MSG_RIGHT_CANCLE_BTN_ADDR       0x2982
-#define EVNT_MSG_CENTER_OK_BTN_ADDR   	     0x2984
-#define EVNT_MSG_LEFT_OK_BTN_ADDR 	    	 0x2986
-#define EVNT_MSG_ICON_ADDR 	    	 		 0x2988
+//page17 un use
 
 //==================================================
 
-#define LIGHT_ICON_ADDR  		0x3000
-#define VOLRUME_ICON_ADDR  		0x3020
-
-
-#define XY_SP_CURRENT_SHOT1_ADD  		0x5000
-#define XY_SP_CURRENT_SHOT2_ADD  		0x5020
-#define XY_SP_CURRENT_SHOT3_ADD  		0x5040
-#define XY_SP_CURRENT_SHOT4_ADD  		0x5060
-#define XY_SP_CURRENT_SHOT5_ADD  		0x5080
-
-#define XY_SP_TOTAL_ENERGY1_ADD  		0x50A0
-#define XY_SP_TOTAL_ENERGY2_ADD  		0x50C0
-#define XY_SP_TOTAL_ENERGY3_ADD  		0x50E0
-#define XY_SP_TOTAL_ENERGY4_ADD  		0x5100
-#define XY_SP_TOTAL_ENERGY5_ADD  		0x5120
-
-#define XY_SP_AGV_ENERGY1_ADD  		0x5140
-#define XY_SP_AGV_ENERGY2_ADD  		0x5160
-#define XY_SP_AGV_ENERGY3_ADD  		0x5180
-#define XY_SP_AGV_ENERGY4_ADD  		0x51A0
-#define XY_SP_AGV_ENERGY5_ADD  		0x51C0
-
-#define XY_SP_TEST_ADD1  		0x51E0
-#define XY_SP_TEST_ADD2  		0x5200
-#define XY_SP_TEST_ADD3  		0x5220
-#define XY_SP_TEST_ADD4  		0x5240
 
 
 
-#define ERROR_EVENT_ADDR		 0x6010
-#define DEBUG_MSG1_ADDR		 	 0x6210
-#define DEBUG_MSG2_ADDR		 	 0x6310
+
+
+
+
+
+
+
+
+
+
+//==================================================
+
+
+
+
+
 
 
 
