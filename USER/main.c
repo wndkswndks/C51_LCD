@@ -66,6 +66,9 @@
 #define VIBE_LEVEL_ICON_ADDR		0x2118
 #define CIRCLE_WATE_ADDR			0x211A
 #define ERROR_EVENT_ADDR		 	0x211C
+#define EVENT_ICON_ADDR		 		0x211E
+#define EVENT_CODE_ADDR		 		0x2120
+
 //page1 use num
 
 #define ENERGY_NUM_ADDR 			0x2150
@@ -130,7 +133,6 @@
 #define ERR_POPUP_CODE_ICON_ADDR     0x2704
 #define ERR_POPUP_MSG_ICON_ADDR      0x2706
 #define CURRENT_JOULE_NUM_ADDR 		 0x271A
-#define CALIV_PULSETIME_NUM_NUM_ADDR 0x2720
 
 //==================================================
 //0x2200
@@ -176,6 +178,7 @@
 //page4 use num
 
 
+#define CALIV_PULSETIME_NUM_NUM_ADDR 	0x2478
 
 #define TRANDU_FREQ_NUM_START_ADDR       	0x2500
 #define TRANDU_FREQ_NUM_1_ADDR       		0x2500
@@ -640,7 +643,9 @@ typedef enum
 	LIVE_HP_DETH = 20,
 	LIVE_RF_DETH = 2,
 
-
+	ERR_ADDER = 0,
+	ALRAM_ADDER = 100,
+	INFO_ADDER = 200,
 } TOUCH_E;
 
 
@@ -845,11 +850,6 @@ typedef enum
 	CMD_WATT_CH5,
 	CMD_WATT_CH6	= 23,
 
-	CMD_PLUSE_NUM	= 24,
-	CMD_PLUSE_EN	= 25,
-	CMD_PLUSE_BTN_UP_DN = 26,
-	CMD_PLUSE_VALUE 	= 27,
-	CMD_CURRENT_JOULE = 28,
 	CMD_TEMP_OFFSET = 29,
 
 	CMD_CALIV_SHOT = 30,
@@ -1159,11 +1159,12 @@ typedef enum
 	ICON_MAIN_COOLING3,
 	ICON_MAIN_TREAT = 37,
 
-	ICON_EVENT_INFO_BLK,//38
-	ICON_EVENT_INFO,//39
+	ICON_EVENT_INFO_BLK = 38,//38
+	ICON_EVENT_ERR,
+	ICON_EVENT_ALRAM,
+	ICON_EVENT_INFO,
 
-	ICON_NO_USE8,//40
-	ICON_NO_USE9,//41
+
 
 	ICON_CALIB_EMPTY_POINT = 42,
 	ICON_CALIB_POINT = 43,
@@ -1267,6 +1268,47 @@ typedef enum
 	ICON_MSG_CATRIGE_UN_DETECT = 128,
 	ICON_MSG_RF_COMU_ERR = 129,
 	ICON_MSG_RF_STATUS_ERR = 130,
+	ICON_CODE_BLK = 131,
+	ICON_ERROR_CODE_1 = 132,
+	ICON_ERROR_CODE_2,
+	ICON_ERROR_CODE_3,
+	ICON_ERROR_CODE_4,
+	ICON_ERROR_CODE_5,
+	ICON_ERROR_CODE_6,
+	ICON_ERROR_CODE_7,
+	ICON_ERROR_CODE_8,
+	ICON_ERROR_CODE_9,
+	ICON_ERROR_CODE_10,
+	ICON_ERROR_CODE_11,
+	ICON_ERROR_CODE_12,
+	ICON_ERROR_CODE_13,
+	ICON_ERROR_CODE_14,
+	ICON_ERROR_CODE_15,
+	ICON_ERROR_CODE_16,
+	ICON_ERROR_CODE_17,
+	ICON_ERROR_CODE_18,
+	ICON_ERROR_CODE_19,
+	ICON_ERROR_CODE_20,
+	ICON_ERROR_CODE_21,
+	ICON_ERROR_CODE_22,
+	ICON_ERROR_CODE_23,
+	ICON_ERROR_CODE_24,
+	ICON_ERROR_CODE_25,
+	ICON_ERROR_CODE_26,
+	ICON_ALRAM_CODE_1 = 158,
+	ICON_ALRAM_CODE_2,
+	ICON_ALRAM_CODE_3,
+	ICON_ALRAM_CODE_4,
+	ICON_ALRAM_CODE_5,
+	ICON_ALRAM_CODE_6,
+	ICON_INFO_CODE_1 = 164,
+	ICON_INFO_CODE_2,
+	ICON_INFO_CODE_3,
+	ICON_INFO_CODE_4,
+	ICON_INFO_CODE_5,
+	ICON_INFO_CODE_6,
+	ICON_INFO_CODE_7 = 170,
+
 
 } ICON_E;
 
@@ -1357,10 +1399,6 @@ xdata u16 pwCnt;
 idata u8 lcdPage;
 xdata u8 lcdPageForceFlag;
 
-xdata u16 iconCircle;
-xdata u16 iconSystemCircle;
-
-idata u8 watt=0;
 
 idata u32 energy=0;
 idata u32 pulseDuration=0;
@@ -1377,10 +1415,9 @@ idata u32 peltierDuty=0;
 
 
 
-xdata u8 lcdOn,expFlag;
+xdata u8 expFlag;
 idata u32 dataBuff[10];
 xdata u8 flashBuff[174];
-xdata u32 mainDataBuff[9];
 
 
 ///옮기는 변수는 오직이거
@@ -1391,8 +1428,7 @@ xdata u16 textCartrigeBuff[25];
 xdata u16 textinfoBuff[20];
 xdata u16 cmdBuff[4][2];
 
-xdata u8 frqIdx = 0;
-xdata u8 wattIdxMain = 0, wattIdxSub = 0;
+xdata u8 wattIdxMain = 0;
 xdata u16 iconMove;
 
 
@@ -1402,7 +1438,6 @@ xdata u16 iconMove;
 idata u32 textNum=0;
 idata u32 onTimeCalv=0;
 
-xdata u8 edBuff[9] = {0,};
 ///옮기는 변수는 오직이거
 
 idata u8 egCnt = 0;
@@ -1466,17 +1501,7 @@ xdata u32 systemTimeTerm;
 
 xdata u16 systemLive;
 xdata u8 systemCartEnd;
-xdata u8 systemLiveStatus;
-xdata u8 systemCartStatus;
 
-xdata u8 systemErr;
-
-xdata u32 systemTimeStemp;
-xdata u8 systemNorsvCnt;
-xdata u16 pulseStrAddr;
-xdata u16 pulsePointAddr;
-
-xdata u16 pulseAddr;
 xdata u8 popUpMode;
 xdata u8 agingFlag;
 xdata u8 agingUpFlag;
@@ -1494,6 +1519,7 @@ xdata u16 yPointBuff[5];
 xdata u32 testNum;
 xdata u32 testNum2;
 xdata u32 timeStampShot;
+xdata u16 errCodeBuff[50];
 
 
 void Light_Change(u16 light);
@@ -1713,6 +1739,45 @@ void Ascii_text(char* str, u16 add)
  	sys_write_vp(add,(u8*)str,len);
 }
 
+void Err_Code_Select(u8 errNum)
+{
+	u16 eventCode = 0;
+	u16 eventCodeIcon = 0;
+	u16 eventNum = 0;
+	u16 eventNumIcon = 0;
+
+	eventCode = errCodeBuff[errNum]/100;
+	eventCodeIcon = ICON_EVENT_ERR + eventCode;
+	eventNum = errCodeBuff[errNum]%100;
+
+	sys_write_vp(EVENT_ICON_ADDR,(u8*)&eventCodeIcon ,2);
+
+	eventCode *= 100;
+	switch (eventCode)
+	{
+		case ERR_ADDER:
+			eventNumIcon = (ICON_ERROR_CODE_1-1) + eventNum;
+		break;
+
+		case ALRAM_ADDER:
+			eventNumIcon = (ICON_ALRAM_CODE_1-1) + eventNum;
+		break;
+
+		case INFO_ADDER:
+			eventNumIcon = (ICON_INFO_CODE_1-1) + eventNum;
+		break;
+	}
+	sys_write_vp(EVENT_CODE_ADDR,(u8*)&eventNumIcon ,2);
+}
+
+
+void Err_Code_Clear()
+{
+	u16 eventCodeIcon = ICON_EVENT_INFO_BLK;
+	u16 eventNumIcon = ICON_CODE_BLK;
+	sys_write_vp(EVENT_ICON_ADDR,(u8*)&eventCodeIcon ,2);
+	sys_write_vp(EVENT_CODE_ADDR,(u8*)&eventNumIcon ,2);
+}
 
 void Evnt_Ascii_Msg(u8 num)
 {
@@ -1856,6 +1921,7 @@ void Event_PopUp(u16 eventData)
 
 
 	Evnt_Msg_Up(errData);
+	Err_Code_Select(errData);
 	Volume_Change(6, volumeLevel);
 }
 
@@ -1880,6 +1946,7 @@ void Event_PopDown_Ok()
 #endif
 		errEvent = 0;
 		Evnt_Msg_Up(0);
+		Err_Code_Clear();
 		sys_write_vp(ERR_POPUP_BOX_ICON_ADDR, (u8*)&iconErrBack,2);//backGround
 	}
 
@@ -1893,6 +1960,7 @@ void Event_PopDown_Cancel()
 	{
 		errEvent = 0;
 		Evnt_Msg_Up(0);
+		Err_Code_Clear();
 		sys_write_vp(ERR_POPUP_BOX_ICON_ADDR, (u8*)&iconErrBack,2);//backGround
 	}
 
@@ -2214,10 +2282,6 @@ void RX_Parssing_Config()
 
 			break;
 
-			case CMD_CURRENT_JOULE:
-				currentJoule = value;
-				sys_write_vp(CURRENT_JOULE_NUM_ADDR,(u8*)&currentJoule ,2);
-			break;
 
 			case CMD_REMIND_SHOT:
 				remindShot = value;
@@ -2753,8 +2817,44 @@ void Shot_Sound_Play()
 
 
 }
+void ErrCode_Init()
+{
+	errCodeBuff[IDX_TEMP_OUT] = 5;
+	errCodeBuff[IDX_TEMP_LIMIT_UNDER] = 6;
+	errCodeBuff[IDX_TEMP_LOW] = ALRAM_ADDER + 1;//A
+	errCodeBuff[IDX_FLOW_LIMIT_UNDER] = 9;
+	errCodeBuff[IDX_LEVEL_LOW] = 7;
+	errCodeBuff[IDX_AUTO_CAL_COMU_ERR] = 12;
+	errCodeBuff[IDX_BATTRY_LIMIT_OVER] = 10;
+	errCodeBuff[IDX_BATTRY_LIMIT_UNDER] = 11;
+	errCodeBuff[IDX_BATTRY_LIMIT_LOW] = ALRAM_ADDER + 4;//A
+	errCodeBuff[IDX_RTC_ERR] = 23;
+	errCodeBuff[IDX_PRE_COOL_ERR] = 15;
+	errCodeBuff[IDX_HAND_COMU_ERR] = 4;
+	errCodeBuff[IDX_CATRIGE_I2C_ERR] = 22;
+	errCodeBuff[IDX_CATRIGE_NEW_DETECT ]= INFO_ADDER + 4;//I
+	errCodeBuff[IDX_CATRIGE_ID_ERR] = 24;
+	errCodeBuff[IDX_CATRIGE_MANU_ERR] = 16;
+	errCodeBuff[IDX_CATRIGE_MANU_OVER_ERR] = 26;
+	errCodeBuff[IDX_CATRIGE_ISUE_ERR] = 17;
+	errCodeBuff[IDX_CATRIGE_ISUE_OVER_ERR] = 25;
+	errCodeBuff[IDX_CATRIGE_WATT_ERR] = 19;
+	errCodeBuff[IDX_CATRIGE_FRQ_ERR] = 18;
+	errCodeBuff[IDX_CATRIGE_RESHOT_ERR] = 21;
+	errCodeBuff[IDX_CATRIGE_RESHOT_LOW] = INFO_ADDER + 1;//I
+	errCodeBuff[IDX_CATRIGE_RESHOT_ZERO] = ALRAM_ADDER + 6;//A
+	errCodeBuff[IDX_CATRIGE_DETECT] = INFO_ADDER + 5;//I
+	errCodeBuff[IDX_CATRIGE_UN_DETECT] = INFO_ADDER + 6;//I
+	errCodeBuff[IDX_RF_COMU_ERR] = 2;
+	errCodeBuff[IDX_RF_STATUS_ERR] = 1;
 
 
+}
+
+void System_Circle_Icon(u16 icon)
+{
+	sys_write_vp(SYSTEM_ICON_ADDR, (u8*)&icon,2);
+}
 u8 System_Check_Config()
 {
 	u8 returnValue = 0;
@@ -2771,8 +2871,6 @@ u8 System_Check_Config()
 
 		if(sysChkFlag)
 		{
-			sys_write_vp(SYSTEM_ICON_ADDR, (u8*)&iconSystemCircle,2);
-			if(iconSystemCircle<ICON_SYS_CHK_PER_100) iconSystemCircle++;
 			switch (systemStep)
 			{
 				case STEP0:
@@ -2780,6 +2878,7 @@ u8 System_Check_Config()
 					TX_Msg(CMD_COOLING, 1);
 					TX_Msg(CMD_OK, ERR_CHK_MAIN);
 					chkOkBuff[0] = 0;
+					System_Circle_Icon(ICON_SYS_CHK_PER_10);
 					systemStep = STEP1;
 				break;
 
@@ -2794,18 +2893,17 @@ u8 System_Check_Config()
 
 					}
 					sys_write_vp(SYSTEM_CHECK_COOL_ICON_ADDR, (u8*)&iconCoolEn,2);
+					System_Circle_Icon(ICON_SYS_CHK_PER_20);
 					systemStep = STEP2;
 
 				break;
 
 				case STEP2:
-					if(iconSystemCircle >=ICON_SYS_CHK_PER_30)
-					{
-						sys_write_vp(SYSTEM_CHECK_CTRL_ICON_ADDR, (u8*)&iconMainEn,2);
-						TX_Msg(CMD_DO_ALL_LIVE, LIVE_HP);
-						systemLive = 0;
-						systemStep = STEP3;
-					}
+					sys_write_vp(SYSTEM_CHECK_CTRL_ICON_ADDR, (u8*)&iconMainEn,2);
+					TX_Msg(CMD_DO_ALL_LIVE, LIVE_HP);
+					systemLive = 0;
+					System_Circle_Icon(ICON_SYS_CHK_PER_30);
+					systemStep = STEP3;
 				break;
 
 
@@ -2834,11 +2932,14 @@ u8 System_Check_Config()
 					if(systemCartEnd)
 					{
 						systemStep = STEP5;
+						System_Circle_Icon(ICON_SYS_CHK_PER_40);
 					}
 					if(delay_tickMy - systemTimeTerm > 8000)
 					{
 						systemStep = STEP5;
+						System_Circle_Icon(ICON_SYS_CHK_PER_40);
 					}
+
 				break;
 
 
@@ -2868,18 +2969,17 @@ u8 System_Check_Config()
 					{
 						TX_Msg(CMD_SYS_CHK_OK, 14);
 					}
+					System_Circle_Icon(ICON_SYS_CHK_PER_50);
 					systemStep = STEP7;
 
 				break;
 
 				case STEP7:
-					if(iconSystemCircle >=ICON_SYS_CHK_PER_60)
-					{
-						sys_write_vp(SYSTEM_CHECK_HP_ICON_ADDR, (u8*)&iconHpEn,2);
-						TX_Msg(CMD_DO_ALL_LIVE, LIVE_RF);
-						systemLive = 0;
-						systemStep = STEP8;
-					}
+					sys_write_vp(SYSTEM_CHECK_HP_ICON_ADDR, (u8*)&iconHpEn,2);
+					TX_Msg(CMD_DO_ALL_LIVE, LIVE_RF);
+					System_Circle_Icon(ICON_SYS_CHK_PER_60);
+					systemLive = 0;
+					systemStep = STEP8;
 				break;
 
 				case STEP8:
@@ -2899,6 +2999,7 @@ u8 System_Check_Config()
 					}
 					TX_Msg(CMD_OK, ERR_CHK_RF);
 					chkOkBuff[3] = 0;
+					System_Circle_Icon(ICON_SYS_CHK_PER_70);
 					systemStep = STEP9;
 				break;
 
@@ -2911,28 +3012,26 @@ u8 System_Check_Config()
 					{
 						TX_Msg(CMD_SYS_CHK_OK, 16);
 					}
+					System_Circle_Icon(ICON_SYS_CHK_PER_80);
 					systemStep = STEP10;
 				break;
 
 				case STEP10:
-					if(iconSystemCircle >=ICON_SYS_CHK_PER_90)
-					{
-						sys_write_vp(SYSTEM_CHECK_GEN_ICON_ADDR, (u8*)&iconGenEn,2);
-						systemStep = STEP11;
-					}
+					sys_write_vp(SYSTEM_CHECK_GEN_ICON_ADDR, (u8*)&iconGenEn,2);
+					System_Circle_Icon(ICON_SYS_CHK_PER_90);
+					systemStep = STEP11;
 				break;
 
 				case STEP11:
-					if(iconSystemCircle == ICON_SYS_CHK_PER_100)
-					{
-						TX_Msg(CMD_TEMP_DUTY_ON, 1);
-						TX_Msg(CMD_SYS_CHK, 1);
 
-						Page_Change(LCD_MODE_MAIN);
-						Area_Reset(1);
-						returnValue = LCD_MODE_MAIN;
-						systemStep = STEP0;
-					}
+					TX_Msg(CMD_TEMP_DUTY_ON, 1);
+					TX_Msg(CMD_SYS_CHK, 1);
+
+					Page_Change(LCD_MODE_MAIN);
+					Area_Reset(1);
+					returnValue = LCD_MODE_MAIN;
+					System_Circle_Icon(ICON_SYS_CHK_PER_100);
+					systemStep = STEP0;
 
 				break;
 
@@ -3327,7 +3426,7 @@ u8 Calibration_Config()//
 				}
 				else textNum = textNum*10 + btn;
 
-				if(textNum > 100) textNum = 100;
+				if(textNum > 400) textNum = 400;
 				else if(textNum < 0) textNum = 0;
 
 				textWattBuff[wattIdxMain] = textNum;
@@ -3840,13 +3939,12 @@ void Lcd_Init()//
 	const u16 iconStandby = ICON_STANDBY_BOX;//ICON_MAIN_STANDBY;
 	u32 defultWatt =0;
 
-	pwCnt = 0;
-	iconCircle = 0;
-	iconSystemCircle = ICON_SYS_CHK_PER_0;
+	System_Circle_Icon(ICON_SYS_CHK_PER_0);
 
 	sys_delay_ms(500);
 
 
+	pwCnt = 0;
 	expFlag = 0;
 
 	energy=0;
@@ -3866,9 +3964,7 @@ void Lcd_Init()//
 	autoCalIng = 0;
 	autoCalStart = 0;
 	calMode = 0;
-	frqIdx = 0;
 	wattIdxMain = 0;
-	wattIdxSub = 0;
 	prePointAddr = 0;
 	autoCalRcvCnt = 0;
 	calRcvCnt = 0;
@@ -3902,19 +3998,11 @@ void Lcd_Init()//
 	systemTimeStamp = 0;
 	systemTimeTerm = 0;
 	systemLive = 0;
-	systemLiveStatus = 0;
-	systemCartStatus = 0;
-	systemErr = 0;
-	systemTimeStemp = 0;
-	systemNorsvCnt = 0;
 	systemCartEnd = 0;
 	chkOk = 0;
 	temperature = 0;
 	peltierDuty = 0;
 	lcdPageForceFlag = 0;
-	pulseStrAddr = 0;
-	pulsePointAddr = 0;
-	pulseAddr = 0;
 	popUpMode = 0;
 
 	btn = 0;
@@ -3940,10 +4028,7 @@ void Lcd_Init()//
 	{
 		dataBuff[i] = 0;
 	}
-	for(i =0 ;i < 9;i++)
-	{
-		mainDataBuff[i] = 0;
-	}
+
 
 	for(i =0 ;i < 3;i++)
 	{
@@ -3962,17 +4047,13 @@ void Lcd_Init()//
 	Watt_All_Zero();
 	Watt_Exp_zero();
 
-	onTimeCalv = 5;
+	onTimeCalv = 7;
 	sys_write_vp(CALIV_PULSETIME_NUM_NUM_ADDR,(u8*)&onTimeCalv ,4);
 
 
 /////////////////////
 
 
-	for( i =0 ;i < 9;i++)
-	{
-		edBuff[i] = 0;
-	}
 	engineerKey = 0;
 
 	agingFlag = 0;
@@ -4002,6 +4083,8 @@ void Lcd_Init()//
 	yPointBuff[4] = POS_5_Y;
 	testNum = 50;
 	testNum2 = 200;
+
+	ErrCode_Init();
 
 #if 1
 	lcdPage = LCD_MODE_INIT;
