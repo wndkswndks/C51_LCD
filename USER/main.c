@@ -346,7 +346,7 @@
 #define CART_POINT_21_ADDR      0x2A38
 #define CART_POINT_22_ADDR      0x2A3A
 #define CART_POINT_23_ADDR      0x2A3C
-#define CART_POINT_END_ADDR     0x2A40
+#define CART_POINT_24_ADDR      0x2A3E
 //page14 use num
 
 
@@ -374,6 +374,7 @@
 #define CART_TEMP5_OFFSET_ADDR      	0x2A78
 #define CART_TEMP6_OFFSET_ADDR      	0x2A7A
 #define CART_TEMP7_OFFSET_ADDR      	0x2A7C
+#define CART_TEMP8_OFFSET_ADDR      	0x2A7E
 
 
 #define CART_VALUE_END_ADDR       		0x2A80
@@ -581,6 +582,7 @@ typedef enum
 	CART_IDX_TEMP_OFFS_5,
 	CART_IDX_TEMP_OFFS_6,
 	CART_IDX_TEMP_OFFS_7,
+	CART_IDX_TEMP_OFFS_8,
 	INFO_IDX_DUMY = 0,
 	INFO_IDX_UI_DESIGN,
 	INFO_IDX_UI_FW,
@@ -1272,40 +1274,40 @@ typedef enum
 {
   IDX_MAIN_EVENT_START = 1,
   IDX_TEMP_OUT = IDX_MAIN_EVENT_START,
-  IDX_TEMP_LIMIT_UNDER,//
-  IDX_TEMP_LOW,//
-  IDX_FLOW_LIMIT_UNDER,//
-  IDX_LEVEL_LOW,//
-  IDX_AUTO_CAL_COMU_ERR,//
-  IDX_BATTRY_LIMIT_OVER,//
-  IDX_BATTRY_LIMIT_UNDER,//
-  IDX_BATTRY_LIMIT_LOW,//
-  IDX_RTC_ERR,
-  IDX_MAIN_EVENT_END,//12
+  IDX_TEMP_LIMIT_UNDER =2,//
+  IDX_TEMP_LOW =3,//
+  IDX_FLOW_LIMIT_UNDER =4,//
+  IDX_LEVEL_LOW =5,//
+  IDX_AUTO_CAL_COMU_ERR =6,//
+  IDX_BATTRY_LIMIT_OVER =7,//
+  IDX_BATTRY_LIMIT_UNDER =8,//
+  IDX_BATTRY_LIMIT_LOW =9,//
+  IDX_RTC_ERR =10,
+  IDX_MAIN_EVENT_END =11,//~~~~~
 //------------------------------
-  IDX_HP_EVENT_START,//13
-  IDX_PRE_COOL_ERR = IDX_HP_EVENT_START,//13//
-  IDX_HAND_COMU_ERR,//
-  IDX_CATRIGE_I2C_ERR,//
-  IDX_CATRIGE_NEW_DETECT,//
-  IDX_CATRIGE_ID_ERR,//
-  IDX_CATRIGE_MANU_ERR,//
-  IDX_CATRIGE_MANU_OVER_ERR,//
-  IDX_CATRIGE_ISUE_ERR,//
-  IDX_CATRIGE_ISUE_OVER_ERR,//
-  IDX_CATRIGE_WATT_ERR,//
-  IDX_CATRIGE_FRQ_ERR,//
-  IDX_CATRIGE_RESHOT_ERR,//
-  IDX_CATRIGE_RESHOT_LOW,//
-  IDX_CATRIGE_RESHOT_ZERO,//
-  IDX_CATRIGE_DETECT,
-  IDX_CATRIGE_UN_DETECT,//
-  IDX_HP_EVENT_END,//
+  IDX_HP_EVENT_START =12,//
+  IDX_PRE_COOL_ERR = IDX_HP_EVENT_START,//
+  IDX_HAND_COMU_ERR =13,//
+  IDX_CATRIGE_I2C_ERR  =14,//
+  IDX_CATRIGE_NEW_DETECT= 15,//
+  IDX_CATRIGE_ID_ERR =16,//
+  IDX_CATRIGE_MANU_ERR =17,//
+  IDX_CATRIGE_MANU_OVER_ERR =18,//
+  IDX_CATRIGE_ISUE_ERR =19,//
+  IDX_CATRIGE_ISUE_OVER_ERR =20,//
+  IDX_CATRIGE_WATT_ERR =21,//
+  IDX_CATRIGE_FRQ_ERR =22,//
+  IDX_CATRIGE_RESHOT_ERR =23,//
+  IDX_CATRIGE_RESHOT_LOW =24,//
+  IDX_CATRIGE_RESHOT_ZERO =25,//
+  IDX_CATRIGE_DETECT =26,
+  IDX_CATRIGE_UN_DETECT =27,//
+  IDX_HP_EVENT_END =28,//~~~~~
 //------------------------------
-  IDX_RF_EVENT_START,
+  IDX_RF_EVENT_START =29,
   IDX_RF_COMU_ERR = IDX_RF_EVENT_START,
-  IDX_RF_STATUS_ERR,//30
-  IDX_RF_EVENT_END,
+  IDX_RF_STATUS_ERR =30,//
+  IDX_RF_EVENT_END =31,//~~~~~
 //------------------------------
 
   IDX_LCD_COMU_ERR,
@@ -2353,7 +2355,7 @@ void RX_Parssing_Config()
 				  ToffsetAdd = CART_TEMP1_OFFSET_ADDR + ToffsetIdx*2;
 				  ToffsetVal = value%100;
 				  textCartrigeBuff[CART_IDX_TEMP_OFFS_1+ToffsetIdx] = ToffsetVal;
-				  sys_write_vp(ToffsetAdd,(u8*)&value ,2);
+				  sys_write_vp(ToffsetAdd,(u8*)&ToffsetVal ,2);
 
 			break;
 
@@ -2483,7 +2485,7 @@ void Cartrige_Init()
 	u32 value =0;
 
 	int i;
-	for(i =1 ;i <23; i++)
+	for(i =1 ;i <25; i++)
 	{
 		add = (u16)(CART_VALUE_SATAT_ADDR + (i-1)*0x02);
 //		textCartrigeBuff[i] = i*10;
@@ -3492,7 +3494,7 @@ u8 Cartrige_Set_Config()//
 			break;
 
 			case KEY_CART13_SET:
-				for(i =0 ;i < 7;i++)
+				for(i =0 ;i < 8;i++)
 				{
 					tempOffsetVal = i*100 + textCartrigeBuff[CART_IDX_TEMP_OFFS_1+i];
 					TX_Msg(CMD_TEMP_OFFSET,tempOffsetVal);
