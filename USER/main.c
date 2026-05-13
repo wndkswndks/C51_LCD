@@ -2038,7 +2038,7 @@ void Device_Satatus_Passing(u16 passingValue)
 
 		case IDX_DEBUG_LEVEL_SENSOR:
 			sys_write_vp(DEBUG_DATA_8_ADDR, (u8*)&statusData ,2);
-			if(statusData == 1) sys_write_vp(DEBUG_STATUS_8_ADDR, (u8*)&iconSatusOk ,2);
+			if(statusData == 0) sys_write_vp(DEBUG_STATUS_8_ADDR, (u8*)&iconSatusOk ,2);
 			else sys_write_vp(DEBUG_STATUS_8_ADDR, (u8*)&iconSatusErr ,2);
 		break;
 
@@ -3417,13 +3417,12 @@ u8 Calibration_Config()//
 			case KEY_8:
 			case KEY_9:
 			case KEY_DEL:
+			case KEY_CLEAR:
 				if(calMode == 0) break;
 
 				if(btn==KEY_0) textNum = textNum*10 + 0;
-				else if(btn==KEY_DEL )
-				{
-					if(textNum !=0) textNum = textNum/10;
-				}
+				else if(btn==KEY_DEL && textNum) textNum = textNum/10;
+				else if(btn==KEY_CLEAR) textNum = 0;
 				else textNum = textNum*10 + btn;
 
 				if(textNum > 400) textNum = 400;
@@ -3523,13 +3522,12 @@ u8 Cartrige_Set_Config()//
 			case KEY_8:
 			case KEY_9:
 			case KEY_DEL:
+			case KEY_CLEAR:
 				if(cartTouch == 0) break;
 
 				if(btn==KEY_0) cartValue = cartValue*10 + 0;
-				else if(btn==KEY_DEL )
-				{
-					if(cartValue !=0) cartValue = cartValue/10;
-				}
+				else if(btn==KEY_DEL && cartValue) cartValue = cartValue/10;
+				else if(btn==KEY_CLEAR) cartValue = 0;
 				else cartValue = cartValue*10 + btn;
 
 				if(cartValue < 0) cartValue = 0;
@@ -3653,13 +3651,12 @@ u8 Information_Config()//
 				case KEY_8:
 				case KEY_9:
 				case KEY_DEL:
+				case KEY_CLEAR:
 					if(infoTouch == 0) break;
 
 					if(btn==KEY_0) infoValue = infoValue*10 + 0;
-					else if(btn==KEY_DEL )
-					{
-						if(infoValue !=0) infoValue = infoValue/10;
-					}
+					else if(btn==KEY_DEL && infoValue) infoValue = infoValue/10;
+					else if(btn == KEY_CLEAR) infoValue = 0;
 					else infoValue = infoValue*10 + btn;
 
 					if(infoValue < 0) infoValue = 0;
