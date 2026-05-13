@@ -6,7 +6,6 @@
 xdata u16 uart2_rx_sta;//bit15用于标志是否已接受到一个完整的数据包,bit[14:0]用于存储当前数据包的长度
 xdata u8  uart2_buf[UART2_PACKET_MAX_LEN+2];//留2个空字符的位置
 xdata u8  uart2_step;
-xdata u8  uartRxBuff[20];
 xdata u8  uartRxFlag;
 xdata u8  uartRxStartFlag;
 xdata u8  uartRxStep;

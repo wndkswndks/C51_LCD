@@ -1381,23 +1381,19 @@ typedef enum
 } STEP_E;
 
 extern idata u32 delay_tickMy;
-extern xdata u8  uartRxBuff[20];
 extern xdata u8  uartRxFlag;
 extern xdata u8  uartRxStep;
 extern xdata u8  uartCmdTemp;
 extern xdata u16  uartValueTemp;
 
 idata u32 textCpy=0;
-xdata u16 btn,btnMain,btnUp,btnDn,btnSetting;
+xdata u16 btn,btnMain,btnSetting;
 
-idata u32 sysTimeStamp;
 
 idata u8 toggle = 1;
 
 xdata u16 pwCnt;
-//xdata u16 pageNum;
 idata u8 lcdPage;
-xdata u8 lcdPageForceFlag;
 
 
 idata u32 energy=0;
@@ -1406,7 +1402,6 @@ idata u32 postCooling=0;
 idata u32 interval=0;
 idata u32 currentShot=0;
 idata u32 totalJoule=0;
-idata u32 currentJoule=0;
 
 idata u8 rdyStnbyMode=0;
 idata u32 remindShot=0;
@@ -1416,7 +1411,6 @@ idata u32 peltierDuty=0;
 
 
 xdata u8 expFlag;
-idata u32 dataBuff[10];
 xdata u8 flashBuff[174];
 
 
@@ -1447,15 +1441,9 @@ idata u16 volumeLevel;
 
 idata u8 btnLight[4];
 idata u8 btnVol[4];
-xdata u16 autoCalAdd;
-xdata u8 autoCalAddPre;
-xdata u8 autoCalStart;
 
-xdata u8 autoCalIng;
 xdata u8 calMode;
 xdata u16 prePointAddr;
-xdata u8 autoCalRcvCnt;
-xdata u8 calRcvCnt;
 
 xdata u8 cartId;
 xdata u16 manufacYY;
@@ -1469,17 +1457,14 @@ xdata u16 issuedMMDD;
 xdata u16 issuedMM;
 xdata u16 issuedDD;
 
-xdata u16 Rtc;
 
 xdata u8 sysChkFlag;
-xdata u8 sysChkStart;
-xdata u32 sysChkStartTime;
+
 
 xdata u8 errEvent;
 xdata u8 errCartEvent;
 
 xdata u16 chkOkBuff[3];
-xdata u8 chkOk;
 
 xdata u32 reTxTimeStamp;
 
@@ -1494,7 +1479,6 @@ xdata u32 infoValue;
 xdata u16 infoPrePointAddr;
 
 
-xdata u8 getCartStep;
 xdata u8 systemStep;
 xdata u32 systemTimeStamp;
 xdata u32 systemTimeTerm;
@@ -1504,8 +1488,7 @@ xdata u8 systemCartEnd;
 
 xdata u8 popUpMode;
 xdata u8 agingFlag;
-xdata u8 agingUpFlag;
-xdata u8 agingDnFlag;
+
 xdata u8 agingLongFlag;
 
 xdata u8 newAreaCnt;
@@ -1541,6 +1524,10 @@ void TX_Msg(u16 txCmd, u16 txData)
 
 	reTxTimeStamp = delay_tickMy;
 
+}
+void lcon_Printf(u16 addr, u16 icon)
+{
+	sys_write_vp(addr, (u8*)&icon,2);
 }
 
 void TX_Rx_Msg(u16 txCmd, u16 txData , u16* rxValue, u16 wateTime)
@@ -1870,16 +1857,10 @@ void EXP_FreeCool_Motion()
 
 	if(delay_tickMy-timeStamp >= 200)
 	{
-#if 0
-		sys_write_vp(READY_STANDBY_ICON_ADDR,(u8*)&iconMove ,2);
-		iconMove++;
-		if(iconMove>36)iconMove = 34;
-#else
+
 		sys_write_vp(CIRCLE_WATE_ADDR,(u8*)&iconMove ,2);
 		iconMove++;
 		if(iconMove>ICON_CIRCLE_WATE_FULL_BOX)iconMove = ICON_CIRCLE_WATE0_BOX;
-#endif
-
 
 		timeStamp = delay_tickMy;
 
@@ -2355,7 +2336,6 @@ void RX_Parssing_Config()
 			case CMD_TEST_FORCE_PAGE_CHANGE:
 				lcdPage = value;
 				Page_Change(value);
-				lcdPageForceFlag = 1;
 				engineerKey = 1;
 			break;
 
@@ -2673,23 +2653,6 @@ void Aging_Button()
 	{
 		btnMain = agingFlag;
 		agingFlag = 0;
-	}
-}
-void Aging_Up_Button()
-{
-	if(agingUpFlag)
-	{
-		btnUp = agingUpFlag;
-		agingUpFlag = 0;
-	}
-}
-
-void Aging_Dn_Button()
-{
-	if(agingDnFlag)
-	{
-		btnDn = agingDnFlag;
-		agingDnFlag = 0;
 	}
 }
 
@@ -3031,6 +2994,7 @@ u8 System_Check_Config()
 					Area_Reset(1);
 					returnValue = LCD_MODE_MAIN;
 					System_Circle_Icon(ICON_SYS_CHK_PER_100);
+					sys_delay_ms(2000);
 					systemStep = STEP0;
 
 				break;
@@ -3128,7 +3092,7 @@ u8 PassWard_Config()
 					if(btn == KEY_0) textCpy = textCpy*10 + 0;
 					else textCpy = textCpy*10 + btn;
 					pwCnt++;
-					sys_write_vp(PW_ICON_ADDR, (u8*)&pwCnt,2);
+					lcon_Printf(PW_ICON_ADDR,pwCnt);
 				}
 			break;
 
@@ -3137,14 +3101,14 @@ u8 PassWard_Config()
 				{
 					textCpy = textCpy/10;
 					pwCnt--;
-					sys_write_vp(PW_ICON_ADDR, (u8*)&pwCnt,2);
+					lcon_Printf(PW_ICON_ADDR,pwCnt);
 				}
 			break;
 
 			case KEY_CLEAR:
 				pwCnt = ICON_PASSWARD_0;
 				textCpy = 0;
-				sys_write_vp(PW_ICON_ADDR, (u8*)&pwCnt,2);
+				lcon_Printf(PW_ICON_ADDR,pwCnt);
 			break;
 
 
@@ -3159,11 +3123,10 @@ u8 PassWard_Config()
 				sys_delay_ms(300);
 				pwCnt = ICON_PASSWARD_0;
 				textCpy = 0;
-				sys_write_vp(PW_ICON_ADDR, (u8*)&pwCnt,2);
+				lcon_Printf(PW_ICON_ADDR,pwCnt);
 				returnValue = LCD_MODE_SYS_CHK;
 
 				Page_Change(LCD_MODE_SYS_CHK);
-				sysTimeStamp = delay_tickMy;
 			}
 			else
 			{
@@ -3171,12 +3134,12 @@ u8 PassWard_Config()
 				sys_delay_ms(300);
 
 				pwCnt = ICON_PASSWARD_ERR;
-				sys_write_vp(PW_ICON_ADDR, (u8*)&pwCnt,2);
+				lcon_Printf(PW_ICON_ADDR,pwCnt);
 				sys_delay_ms(1000);
 
 				pwCnt = ICON_PASSWARD_0;
 				textCpy = 0;
-				sys_write_vp(PW_ICON_ADDR, (u8*)&pwCnt,2);
+				lcon_Printf(PW_ICON_ADDR,pwCnt);
 			}
 
 		}
@@ -3950,21 +3913,15 @@ void Lcd_Init()//
 	interval=0;
 	currentShot=0;
 	totalJoule=0;
-	currentJoule=0;
 
 	rdyStnbyMode=0;
 	egCnt= 0;
 	onTimeCalv=0;
 	toggle = 1;
-	autoCalAdd = 0;
-	autoCalAddPre = 0;
-	autoCalIng = 0;
-	autoCalStart = 0;
 	calMode = 0;
 	wattIdxMain = 0;
 	prePointAddr = 0;
-	autoCalRcvCnt = 0;
-	calRcvCnt = 0;
+
 	iconMove = ICON_STANDBY_BOX;//ICON_MAIN_COOLING1;
 
 	manufacYY = 0;
@@ -3974,7 +3931,6 @@ void Lcd_Init()//
 	issuedMM = 0;
 	issuedDD = 0;
 	sysChkFlag = 1;
-	Rtc = 0;
 	reTxTimeStamp = 0;
 	cartTouch = 0;
 	cartIdx = 0;
@@ -3988,24 +3944,19 @@ void Lcd_Init()//
 
 	errEvent = 0;
 	errCartEvent = 0;
-	sysChkStart = 0;
-	sysChkStartTime = 0;
-	getCartStep = STEP0;
+
 	systemStep = STEP0;
 	systemTimeStamp = 0;
 	systemTimeTerm = 0;
 	systemLive = 0;
 	systemCartEnd = 0;
-	chkOk = 0;
 	temperature = 0;
 	peltierDuty = 0;
-	lcdPageForceFlag = 0;
 	popUpMode = 0;
 
 	btn = 0;
 	btnMain = 0;
-	btnUp = 0;
-	btnDn = 0;
+
 	btnSetting = 0;
 	timeStampShot = 0;
 
@@ -4018,13 +3969,8 @@ void Lcd_Init()//
 	uartRxStep = 0;
 	uartCmdTemp = 0;
 	uartValueTemp = 0;
-	for(i =0 ;i < 20;i++) uartRxBuff[i] = 0;
 
 	uartRxFlag = 0;
-	for(i =0 ;i < 10;i++)
-	{
-		dataBuff[i] = 0;
-	}
 
 
 	for(i =0 ;i < 3;i++)
@@ -4055,8 +4001,6 @@ void Lcd_Init()//
 
 	agingFlag = 0;
 	agingLongFlag = 0;
-	agingUpFlag = 0;
-	agingDnFlag = 0;
 	newAreaCnt = 0;
 
 
