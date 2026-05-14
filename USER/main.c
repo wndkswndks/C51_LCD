@@ -2987,14 +2987,14 @@ u8 System_Check_Config()
 
 				case STEP11:
 
+					System_Circle_Icon(ICON_SYS_CHK_PER_100);
+					sys_delay_ms(2000);
 					TX_Msg(CMD_TEMP_DUTY_ON, 1);
 					TX_Msg(CMD_SYS_CHK, 1);
 
 					Page_Change(LCD_MODE_MAIN);
 					Area_Reset(1);
 					returnValue = LCD_MODE_MAIN;
-					System_Circle_Icon(ICON_SYS_CHK_PER_100);
-					sys_delay_ms(2000);
 					systemStep = STEP0;
 
 				break;
