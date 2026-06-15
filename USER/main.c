@@ -69,6 +69,7 @@
 #define EVENT_ICON_ADDR		 		0x211E
 #define EVENT_CODE_ADDR		 		0x2120
 #define EVENT_OK_ADDR		 		0x2122
+#define EVENT_CANCLE_ADDR		 	0x2124
 
 //page1 use num
 
@@ -165,6 +166,7 @@
 #define SYS_EVENT_ICON_ADDR		 		0x2320
 #define SYS_EVENT_CODE_ADDR		 		0x2322
 #define SYS_EVENT_OK_ADDR		 		0x2324
+#define SYS_EVENT_CANCLE_ADDR		 	0x2326
 
 //page3 use num
 
@@ -726,6 +728,7 @@ typedef enum
 
 	//SYSTEM MODE
 	BTN_SYSTEM_ERROK = 1,
+	BTN_SYSTEM_ERRCANCLE = 2,
 
 	//SETTING MODE
 	BTN_SETTING_BACKHOME = 1,
@@ -809,6 +812,7 @@ typedef enum
 	KEY_CART12_SET,
 	KEY_CART13_SET,
 	KEY_CART_ROAD,
+	KEY_CART_UN_REGI,
 
 	//DEVICE_STATUS
 
@@ -1920,6 +1924,7 @@ void Event_PopUp(u16 eventData)
 	u16 iconErrIcon= 0;
 	const u16 iconErrBack1= ICON_MAIN_POP; // 고정
 	const u16 iconOk= ICON_OK_IDLE; // 고정
+	const u16 iconCancle= ICON_CANCLE_IDLE; // 고정
 	const u16 iconIcon= ICON_EVENT_INFO; // 고정
 	u16 iconErrCode= 0;
 	u16 iconErrMsg= 0;
@@ -1936,24 +1941,24 @@ void Event_PopUp(u16 eventData)
 	{
 		case IDX_CATRIGE_NEW:
 			popUpMode = POPUP_MODE_2;
-//			sys_write_vp(ERR_POPUP_BOX_ICON_ADDR, (u8*)&iconErrBack2,2);//backGround
 		break;
 
 		default:
 			popUpMode = POPUP_MODE_1;
-//			sys_write_vp(ERR_POPUP_BOX_ICON_ADDR, (u8*)&iconErrBack1,2);//backGround
 		break;
 	}
 
 	if(lcdPage == LCD_MODE_SYS_CHK)
 	{
-		sys_write_vp(SYS_ERR_POPUP_BOX_ICON_ADDR, (u8*)&iconErrBack1,2);//backGround
-		sys_write_vp(SYS_EVENT_OK_ADDR, (u8*)&iconOk,2);//backGround
+		sys_write_vp(SYS_ERR_POPUP_BOX_ICON_ADDR, (u8*)&iconErrBack1,2);
+		sys_write_vp(SYS_EVENT_OK_ADDR, (u8*)&iconOk,2);
+		if(popUpMode == POPUP_MODE_2) sys_write_vp(SYS_EVENT_CANCLE_ADDR, (u8*)&iconCancle,2);
 	}
 	else
 	{
-		sys_write_vp(ERR_POPUP_BOX_ICON_ADDR, (u8*)&iconErrBack1,2);//backGround
-		sys_write_vp(EVENT_OK_ADDR, (u8*)&iconOk,2);//backGround
+		sys_write_vp(ERR_POPUP_BOX_ICON_ADDR, (u8*)&iconErrBack1,2);
+		sys_write_vp(EVENT_OK_ADDR, (u8*)&iconOk,2);
+		if(popUpMode == POPUP_MODE_2) sys_write_vp(EVENT_CANCLE_ADDR, (u8*)&iconCancle,2);
 	}
 
 
@@ -1967,9 +1972,9 @@ void Event_PopUp(u16 eventData)
 void Event_PopDown_Ok()
 {
 	const u16 iconErrBack= ICON_MAIN_EMPTY_POP; // 고정
-	const u16 iconOk= ICON_OK_BLANK; // 고정
+	const u16 iconBt= ICON_OK_BLANK; // 고정
 	const u16 iconIcon= ICON_EVENT_INFO_BLK; // 고정
-	popUpMode = 0;
+
 	if(errEvent)
 	{
 #if 1
@@ -1988,15 +1993,18 @@ void Event_PopDown_Ok()
 
 		if (lcdPage == LCD_MODE_SYS_CHK)
 		{
-			sys_write_vp(SYS_ERR_POPUP_BOX_ICON_ADDR, (u8*)&iconErrBack,2);//backGround
-			sys_write_vp(SYS_EVENT_OK_ADDR, (u8*)&iconOk,2);//backGround
+			sys_write_vp(SYS_ERR_POPUP_BOX_ICON_ADDR, (u8*)&iconErrBack,2);
+			sys_write_vp(SYS_EVENT_OK_ADDR, (u8*)&iconBt,2);
+			if(popUpMode == POPUP_MODE_2)sys_write_vp(SYS_EVENT_CANCLE_ADDR, (u8*)&iconBt,2);
 		}
 		else
 		{
-			sys_write_vp(ERR_POPUP_BOX_ICON_ADDR, (u8*)&iconErrBack,2);//backGround
-			sys_write_vp(EVENT_OK_ADDR, (u8*)&iconOk,2);//backGround
+			sys_write_vp(ERR_POPUP_BOX_ICON_ADDR, (u8*)&iconErrBack,2);
+			sys_write_vp(EVENT_OK_ADDR, (u8*)&iconBt,2);
+			if(popUpMode == POPUP_MODE_2)sys_write_vp(EVENT_CANCLE_ADDR, (u8*)&iconBt,2);
 		}
 	}
+	popUpMode = 0;
 
 }
 
@@ -2025,87 +2033,9 @@ void Event_PopDown_Cancel()
 	}
 
 }
-void Event_PopUp_ORG(u16 eventData)
-{
-	u16 iconErrIcon= 0;
-	const u16 iconErrBack1= ICON_MAIN_POP; // 고정
-	const u16 iconOk= ICON_OK_IDLE; // 고정
-	const u16 iconIcon= ICON_EVENT_INFO; // 고정
-	u16 iconErrCode= 0;
-	u16 iconErrMsg= 0;
-	u16 errData;//errEnDis;
-
-	errEvent = eventData;
-	sysChkFlag = 0;
-	errData = eventData;
-
-//	switch (errData)
-//	{
-//		case IDX_CATRIGE_NEW:
-//		case IDX_CATRIGE_DETECT:
-//			popUpMode = POPUP_MODE_2;
-//			sys_write_vp(ERR_POPUP_BOX_ICON_ADDR, (u8*)&iconErrBack2,2);//backGround
-//		break;
-
-//		default:
-//			popUpMode = POPUP_MODE_1;
-//			sys_write_vp(ERR_POPUP_BOX_ICON_ADDR, (u8*)&iconErrBack1,2);//backGround
-//		break;
-//	}
-
-	popUpMode = POPUP_MODE_1;
-	sys_write_vp(ERR_POPUP_BOX_ICON_ADDR, (u8*)&iconErrBack1,2);//backGround
-	sys_write_vp(EVENT_OK_ADDR, (u8*)&iconOk,2);//backGround
 
 
-	Evnt_Msg_Up(errData);
-	Err_Code_Select(errData);
-	Volume_Change(6, volumeLevel);
-}
 
-void Event_PopDown_Ok_ORG()
-{
-	const u16 iconErrBack= ICON_MAIN_EMPTY_POP; // 고정
-	const u16 iconOk= ICON_OK_BLANK; // 고정
-	const u16 iconIcon= ICON_EVENT_INFO_BLK; // 고정
-	popUpMode = 0;
-	if(errEvent)
-	{
-#if 0
-		switch (errEvent)
-		{
-
-			case IDX_CATRIGE_NEW:
-			case IDX_CATRIGE_DETECT:
-				TX_Msg(CMD_CART_ALLOW, 1);
-			break;
-		}
-
-#endif
-		errEvent = 0;
-		Evnt_Msg_Up(0);
-		Err_Code_Clear();
-		sys_write_vp(ERR_POPUP_BOX_ICON_ADDR, (u8*)&iconErrBack,2);//backGround
-		sys_write_vp(EVENT_OK_ADDR, (u8*)&iconOk,2);//backGround
-	}
-
-}
-
-void Event_PopDown_Cancel_ORG()
-{
-	const u16 iconErrBack= ICON_MAIN_EMPTY_POP; // 고정
-	const u16 iconOk= ICON_OK_BLANK; // 고정
-	popUpMode = 0;
-	if(errEvent)
-	{
-		errEvent = 0;
-		Evnt_Msg_Up(0);
-		Err_Code_Clear();
-		sys_write_vp(ERR_POPUP_BOX_ICON_ADDR, (u8*)&iconErrBack,2);//backGround
-		sys_write_vp(EVENT_OK_ADDR, (u8*)&iconOk,2);//backGround
-	}
-
-}
 
 void SYS_CHK_OK(u16 device)
 {
@@ -2560,6 +2490,13 @@ void RX_Parssing_Config()
 				  ToffsetVal = value%100;
 				  textCartrigeBuff[CART_IDX_TEMP_OFFS_1+ToffsetIdx] = ToffsetVal;
 				  sys_write_vp(ToffsetAdd,(u8*)&ToffsetVal ,2);
+
+			break;
+
+			case CMD_CATRIDGE_STATUS:
+
+				textCartrigeBuff[CART_IDX_STATUS] = value;
+				sys_write_vp(CART_VALUE_STATUS_ADDR,(u8*)&value ,2);
 
 			break;
 
@@ -3171,11 +3108,19 @@ u8 System_Check_Config()
 		switch (btn)
 		{
 			case BTN_SYSTEM_ERROK:
-			if(errEvent)
-			{
-				sysChkFlag = 1;
-				Event_PopDown_Ok();
-			}
+				if(errEvent)
+				{
+					sysChkFlag = 1;
+					Event_PopDown_Ok();
+				}
+			break;
+
+			case BTN_SYSTEM_ERRCANCLE:
+				if(errEvent)
+				{
+					sysChkFlag = 1;
+					Event_PopDown_Cancel();
+				}
 			break;
 		}
 
@@ -3727,6 +3672,10 @@ u8 Cartrige_Set_Config()//
 				cartIdx = 0;
 				cartValue = 0;
 				TX_Msg(CMD_GET_ALL_CART, 0);
+			break;
+
+			case KEY_CART_UN_REGI:
+				TX_Msg(CMD_CART_ALLOW, 0);
 			break;
 
 
