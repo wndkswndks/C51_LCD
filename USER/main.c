@@ -154,11 +154,18 @@
 #define SYSTEM_BUTTON_ADDR			 0x2300
 
 //page3 use icon
-#define SYSTEM_ICON_ADDR			 0x2312
-#define SYSTEM_CHECK_CTRL_ICON_ADDR  0x2314
-#define SYSTEM_CHECK_GEN_ICON_ADDR	 0x2316
-#define SYSTEM_CHECK_HP_ICON_ADDR	 0x2318
-#define SYSTEM_CHECK_COOL_ICON_ADDR  0x231A
+#define SYSTEM_ICON_ADDR			 	0x2312
+#define SYSTEM_CHECK_CTRL_ICON_ADDR  	0x2314
+#define SYSTEM_CHECK_GEN_ICON_ADDR	 	0x2316
+#define SYSTEM_CHECK_HP_ICON_ADDR	 	0x2318
+#define SYSTEM_CHECK_COOL_ICON_ADDR  	0x231A
+
+#define SYS_ERR_POPUP_BOX_ICON_ADDR     0x231C//page1,2
+#define SYS_EVNT_MSG_ADDR   	   	   	0x231E//page1,2
+#define SYS_EVENT_ICON_ADDR		 		0x2320
+#define SYS_EVENT_CODE_ADDR		 		0x2322
+#define SYS_EVENT_OK_ADDR		 		0x2324
+
 //page3 use num
 
 
@@ -1749,7 +1756,6 @@ void Err_Code_Select(u8 errNum)
 	eventCodeIcon = ICON_EVENT_ERR + eventCode;
 	eventNum = errCodeBuff[errNum]%100;
 
-	sys_write_vp(EVENT_ICON_ADDR,(u8*)&eventCodeIcon ,2);
 
 	eventCode *= 100;
 	switch (eventCode)
@@ -1766,7 +1772,19 @@ void Err_Code_Select(u8 errNum)
 			eventNumIcon = (ICON_INFO_CODE_1-1) + eventNum;
 		break;
 	}
-	sys_write_vp(EVENT_CODE_ADDR,(u8*)&eventNumIcon ,2);
+
+	if(lcdPage == LCD_MODE_SYS_CHK)
+	{
+		sys_write_vp(SYS_EVENT_ICON_ADDR,(u8*)&eventCodeIcon ,2);
+		sys_write_vp(SYS_EVENT_CODE_ADDR,(u8*)&eventNumIcon ,2);
+
+	}
+	else
+	{
+		sys_write_vp(EVENT_ICON_ADDR,(u8*)&eventCodeIcon ,2);
+		sys_write_vp(EVENT_CODE_ADDR,(u8*)&eventNumIcon ,2);
+
+	}
 }
 
 
@@ -1774,8 +1792,18 @@ void Err_Code_Clear()
 {
 	u16 eventCodeIcon = ICON_EVENT_INFO_BLK;
 	u16 eventNumIcon = ICON_CODE_BLK;
-	sys_write_vp(EVENT_ICON_ADDR,(u8*)&eventCodeIcon ,2);
-	sys_write_vp(EVENT_CODE_ADDR,(u8*)&eventNumIcon ,2);
+
+	if (lcdPage == LCD_MODE_SYS_CHK)
+	{
+		sys_write_vp(SYS_EVENT_ICON_ADDR,(u8*)&eventCodeIcon ,2);
+		sys_write_vp(SYS_EVENT_CODE_ADDR,(u8*)&eventNumIcon ,2);
+
+	}
+	else
+	{
+		sys_write_vp(EVENT_ICON_ADDR,(u8*)&eventCodeIcon ,2);
+		sys_write_vp(EVENT_CODE_ADDR,(u8*)&eventNumIcon ,2);
+	}
 }
 
 void Evnt_Ascii_Msg(u8 num)
@@ -1855,8 +1883,14 @@ void Evnt_Msg_Up(u8 num)
 
 	}
 
-
-	sys_write_vp(EVNT_MSG_ADDR,(u8*)&msgIcon ,2);
+	if (lcdPage == LCD_MODE_SYS_CHK)
+	{
+		sys_write_vp(SYS_EVNT_MSG_ADDR,(u8*)&msgIcon ,2);
+	}
+	else
+	{
+		sys_write_vp(EVNT_MSG_ADDR,(u8*)&msgIcon ,2);
+	}
 }
 
 
@@ -1895,6 +1929,116 @@ void Event_PopUp(u16 eventData)
 	sysChkFlag = 0;
 	errData = eventData;
 
+
+//	popUpMode = POPUP_MODE_1;
+
+	switch (errData)
+	{
+		case IDX_CATRIGE_NEW:
+			popUpMode = POPUP_MODE_2;
+//			sys_write_vp(ERR_POPUP_BOX_ICON_ADDR, (u8*)&iconErrBack2,2);//backGround
+		break;
+
+		default:
+			popUpMode = POPUP_MODE_1;
+//			sys_write_vp(ERR_POPUP_BOX_ICON_ADDR, (u8*)&iconErrBack1,2);//backGround
+		break;
+	}
+
+	if(lcdPage == LCD_MODE_SYS_CHK)
+	{
+		sys_write_vp(SYS_ERR_POPUP_BOX_ICON_ADDR, (u8*)&iconErrBack1,2);//backGround
+		sys_write_vp(SYS_EVENT_OK_ADDR, (u8*)&iconOk,2);//backGround
+	}
+	else
+	{
+		sys_write_vp(ERR_POPUP_BOX_ICON_ADDR, (u8*)&iconErrBack1,2);//backGround
+		sys_write_vp(EVENT_OK_ADDR, (u8*)&iconOk,2);//backGround
+	}
+
+
+
+
+	Evnt_Msg_Up(errData);
+	Err_Code_Select(errData);
+	Volume_Change(6, volumeLevel);
+}
+
+void Event_PopDown_Ok()
+{
+	const u16 iconErrBack= ICON_MAIN_EMPTY_POP; // 고정
+	const u16 iconOk= ICON_OK_BLANK; // 고정
+	const u16 iconIcon= ICON_EVENT_INFO_BLK; // 고정
+	popUpMode = 0;
+	if(errEvent)
+	{
+#if 1
+		switch (errEvent)
+		{
+
+			case IDX_CATRIGE_NEW:
+				TX_Msg(CMD_CART_ALLOW, 1);
+			break;
+		}
+
+#endif
+		errEvent = 0;
+		Evnt_Msg_Up(0);
+		Err_Code_Clear();
+
+		if (lcdPage == LCD_MODE_SYS_CHK)
+		{
+			sys_write_vp(SYS_ERR_POPUP_BOX_ICON_ADDR, (u8*)&iconErrBack,2);//backGround
+			sys_write_vp(SYS_EVENT_OK_ADDR, (u8*)&iconOk,2);//backGround
+		}
+		else
+		{
+			sys_write_vp(ERR_POPUP_BOX_ICON_ADDR, (u8*)&iconErrBack,2);//backGround
+			sys_write_vp(EVENT_OK_ADDR, (u8*)&iconOk,2);//backGround
+		}
+	}
+
+}
+
+void Event_PopDown_Cancel()
+{
+	const u16 iconErrBack= ICON_MAIN_EMPTY_POP; // 고정
+	const u16 iconOk= ICON_OK_BLANK; // 고정
+	popUpMode = 0;
+	if(errEvent)
+	{
+		errEvent = 0;
+		Evnt_Msg_Up(0);
+		Err_Code_Clear();
+
+		if (lcdPage == LCD_MODE_SYS_CHK)
+		{
+			sys_write_vp(SYS_ERR_POPUP_BOX_ICON_ADDR, (u8*)&iconErrBack,2);//backGround
+			sys_write_vp(SYS_EVENT_OK_ADDR, (u8*)&iconOk,2);//backGround
+		}
+		else
+		{
+			sys_write_vp(ERR_POPUP_BOX_ICON_ADDR, (u8*)&iconErrBack,2);//backGround
+			sys_write_vp(EVENT_OK_ADDR, (u8*)&iconOk,2);//backGround
+
+		}
+	}
+
+}
+void Event_PopUp_ORG(u16 eventData)
+{
+	u16 iconErrIcon= 0;
+	const u16 iconErrBack1= ICON_MAIN_POP; // 고정
+	const u16 iconOk= ICON_OK_IDLE; // 고정
+	const u16 iconIcon= ICON_EVENT_INFO; // 고정
+	u16 iconErrCode= 0;
+	u16 iconErrMsg= 0;
+	u16 errData;//errEnDis;
+
+	errEvent = eventData;
+	sysChkFlag = 0;
+	errData = eventData;
+
 //	switch (errData)
 //	{
 //		case IDX_CATRIGE_NEW:
@@ -1919,7 +2063,7 @@ void Event_PopUp(u16 eventData)
 	Volume_Change(6, volumeLevel);
 }
 
-void Event_PopDown_Ok()
+void Event_PopDown_Ok_ORG()
 {
 	const u16 iconErrBack= ICON_MAIN_EMPTY_POP; // 고정
 	const u16 iconOk= ICON_OK_BLANK; // 고정
@@ -1947,7 +2091,7 @@ void Event_PopDown_Ok()
 
 }
 
-void Event_PopDown_Cancel()
+void Event_PopDown_Cancel_ORG()
 {
 	const u16 iconErrBack= ICON_MAIN_EMPTY_POP; // 고정
 	const u16 iconOk= ICON_OK_BLANK; // 고정
@@ -2077,7 +2221,7 @@ void RX_Parssing_Config()
 	u16 ToffsetAdd = 0;
 	u16 ToffsetIdx = 0;
 	u32 ToffsetVal = 0;
-
+	int i = 0;
 	//if(uartRxFlag)
 	if(cmdRxRingCnt > cmdPassingRingCnt)
 	{
@@ -2323,6 +2467,7 @@ void RX_Parssing_Config()
 			break;
 
 			case CMD_GET_ALL_CART_END:
+
 				systemCartEnd = value;
 			break;
 
@@ -2912,7 +3057,7 @@ u8 System_Check_Config()
 						systemStep = STEP5;
 						System_Circle_Icon(ICON_SYS_CHK_PER_40);
 					}
-					if(delay_tickMy - systemTimeTerm > 8000)
+					if(delay_tickMy - systemTimeTerm > 15000)
 					{
 						systemStep = STEP5;
 						System_Circle_Icon(ICON_SYS_CHK_PER_40);
