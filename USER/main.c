@@ -68,6 +68,7 @@
 #define ERROR_EVENT_ADDR		 	0x211C
 #define EVENT_ICON_ADDR		 		0x211E
 #define EVENT_CODE_ADDR		 		0x2120
+#define EVENT_OK_ADDR		 		0x2122
 
 //page1 use num
 
@@ -350,6 +351,17 @@
 #define CART_POINT_22_ADDR      0x2A3A
 #define CART_POINT_23_ADDR      0x2A3C
 #define CART_POINT_24_ADDR      0x2A3E
+
+#define CART_MINUS_1_ADDR      0x2A40
+#define CART_MINUS_2_ADDR      0x2A42
+#define CART_MINUS_3_ADDR      0x2A44
+#define CART_MINUS_4_ADDR      0x2A46
+#define CART_MINUS_5_ADDR      0x2A48
+#define CART_MINUS_6_ADDR      0x2A4A
+#define CART_MINUS_7_ADDR      0x2A4C
+#define CART_MINUS_8_ADDR      0x2A4E
+
+
 //page14 use num
 
 
@@ -1183,8 +1195,8 @@ typedef enum
 	ICON_PULSE_BLOCK_ENABLE = 52,
 	ICON_PULSE_BLOCK_DISABLE,
 
-	ICON_FOOT_EN = 54,
-	ICON_FOOT_DIS,
+	ICON_PLUSE_EMPTY = 54,
+	ICON_MINUS,
 
 	ICON_STATUS_OK = 56,
 	ICON_STATUS_ERR = 57,
@@ -1836,7 +1848,7 @@ void Evnt_Msg_Up(u8 num)
 		case IDX_CATRIGE_RESHOT_LOW:	msgIcon = 	ICON_MSG_CATRIGE_RESHOT_LOW;	  break;
 		case IDX_CATRIGE_RESHOT_ZERO:	msgIcon = 	ICON_MSG_CATRIGE_RESHOT_ZERO;	  break;
 		case IDX_CATRIGE_DETECT:		msgIcon = 	ICON_MSG_CATRIGE_DETECT;	  	  break;
-		case IDX_CATRIGE_UN_DETECT: 	msgIcon = 	ICON_MSG_CATRIGE_UN_DETECT;	      break;
+		case IDX_CATRIGE_UN_DETECT: 	msgIcon = 	ICON_MSG_CATRIGE_DETECT;	      break;
 		case IDX_RF_COMU_ERR:			msgIcon = 	ICON_MSG_RF_COMU_ERR;	  break;
 		case IDX_RF_STATUS_ERR: 		msgIcon = 	ICON_MSG_RF_STATUS_ERR;	  break;
 
@@ -1899,6 +1911,7 @@ void Event_PopUp(u16 eventData)
 
 	popUpMode = POPUP_MODE_1;
 	sys_write_vp(ERR_POPUP_BOX_ICON_ADDR, (u8*)&iconErrBack1,2);//backGround
+	sys_write_vp(EVENT_OK_ADDR, (u8*)&iconOk,2);//backGround
 
 
 	Evnt_Msg_Up(errData);
@@ -1929,6 +1942,7 @@ void Event_PopDown_Ok()
 		Evnt_Msg_Up(0);
 		Err_Code_Clear();
 		sys_write_vp(ERR_POPUP_BOX_ICON_ADDR, (u8*)&iconErrBack,2);//backGround
+		sys_write_vp(EVENT_OK_ADDR, (u8*)&iconOk,2);//backGround
 	}
 
 }
@@ -1936,6 +1950,7 @@ void Event_PopDown_Ok()
 void Event_PopDown_Cancel()
 {
 	const u16 iconErrBack= ICON_MAIN_EMPTY_POP; // 고정
+	const u16 iconOk= ICON_OK_BLANK; // 고정
 	popUpMode = 0;
 	if(errEvent)
 	{
@@ -1943,6 +1958,7 @@ void Event_PopDown_Cancel()
 		Evnt_Msg_Up(0);
 		Err_Code_Clear();
 		sys_write_vp(ERR_POPUP_BOX_ICON_ADDR, (u8*)&iconErrBack,2);//backGround
+		sys_write_vp(EVENT_OK_ADDR, (u8*)&iconOk,2);//backGround
 	}
 
 }
@@ -2056,8 +2072,7 @@ void RX_Parssing_Config()
 	const u16 iconStandby = ICON_STANDBY_BOX, iconReady = ICON_READY_BOX;
 	const u16 iconHandEn = ICON_HAND_EN;
 	const u16 iconHandDis = ICON_HAND_DIS;
-	const u16 iconFootEn = ICON_FOOT_EN;
-	const u16 iconFootDis = ICON_FOOT_DIS;
+
 	u16 iconVibeLv = ICON_VIBE_OFF;
 	u16 ToffsetAdd = 0;
 	u16 ToffsetIdx = 0;
