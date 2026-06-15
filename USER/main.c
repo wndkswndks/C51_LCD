@@ -1935,18 +1935,8 @@ void Event_PopUp(u16 eventData)
 	errData = eventData;
 
 
-//	popUpMode = POPUP_MODE_1;
-
-	switch (errData)
-	{
-		case IDX_CATRIGE_NEW:
-			popUpMode = POPUP_MODE_2;
-		break;
-
-		default:
-			popUpMode = POPUP_MODE_1;
-		break;
-	}
+	if (errData==IDX_CATRIGE_NEW) popUpMode = POPUP_MODE_2;
+	else popUpMode = POPUP_MODE_1;
 
 	if(lcdPage == LCD_MODE_SYS_CHK)
 	{
@@ -1977,16 +1967,8 @@ void Event_PopDown_Ok()
 
 	if(errEvent)
 	{
-#if 1
-		switch (errEvent)
-		{
+		if(errEvent==IDX_CATRIGE_NEW) TX_Msg(CMD_CART_ALLOW, 1);
 
-			case IDX_CATRIGE_NEW:
-				TX_Msg(CMD_CART_ALLOW, 1);
-			break;
-		}
-
-#endif
 		errEvent = 0;
 		Evnt_Msg_Up(0);
 		Err_Code_Clear();
@@ -3324,25 +3306,16 @@ u8 Main_Config()
 
 
 			case BTN_MAIN_ERR_OK_CENTER:
-				if(popUpMode == POPUP_MODE_1)
-				{
-					Event_PopDown_Cancel();
-				}
+					Event_PopDown_Ok();
 			break;
 
-			case BTN_MAIN_ERR_OK_LEFT:
-				if(popUpMode == POPUP_MODE_2)
-				{
-					Event_PopDown_Ok();
-				}
-			break;
 
 			case BTN_MAIN_ERR_CANCEL_RIGHT:
 				if(popUpMode == POPUP_MODE_2)
 				{
 					Event_PopDown_Cancel();
 				}
-
+			break;
 
 			case BTN_MAIN_ENGINIER:
 				if(engineerKey)
