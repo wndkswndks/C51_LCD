@@ -774,6 +774,10 @@ typedef enum
 	KEY_CAL_UP = 19,
 	KEY_CAL_DN = 20,
 	KEY_CAL_SHOT = 21,
+	KEY_CAL_PELT_ON = 22,
+	KEY_CAL_PELT_OFF = 23,
+	KEY_CAL_CHIL_ON = 24,
+	KEY_CAL_CHIL_OFF = 25,
 
 
 	EN_1 = 1,
@@ -1935,7 +1939,7 @@ void Event_PopUp(u16 eventData)
 	errData = eventData;
 
 
-	if (errData==IDX_CATRIGE_NEW) popUpMode = POPUP_MODE_2;
+	if (errData==IDX_CATRIGE_NEW_DETECT) popUpMode = POPUP_MODE_2;
 	else popUpMode = POPUP_MODE_1;
 
 	if(lcdPage == LCD_MODE_SYS_CHK)
@@ -1967,7 +1971,7 @@ void Event_PopDown_Ok()
 
 	if(errEvent)
 	{
-		if(errEvent==IDX_CATRIGE_NEW) TX_Msg(CMD_CART_ALLOW, 1);
+		if(errEvent==IDX_CATRIGE_NEW_DETECT) TX_Msg(CMD_CART_ALLOW, 1);
 
 		errEvent = 0;
 		Evnt_Msg_Up(0);
@@ -1994,7 +1998,7 @@ void Event_PopDown_Cancel()
 {
 	const u16 iconErrBack= ICON_MAIN_EMPTY_POP; // 고정
 	const u16 iconOk= ICON_OK_BLANK; // 고정
-	popUpMode = 0;
+
 	if(errEvent)
 	{
 		errEvent = 0;
@@ -2005,14 +2009,17 @@ void Event_PopDown_Cancel()
 		{
 			sys_write_vp(SYS_ERR_POPUP_BOX_ICON_ADDR, (u8*)&iconErrBack,2);//backGround
 			sys_write_vp(SYS_EVENT_OK_ADDR, (u8*)&iconOk,2);//backGround
+			if(popUpMode == POPUP_MODE_2)sys_write_vp(SYS_EVENT_CANCLE_ADDR, (u8*)&iconOk,2);
 		}
 		else
 		{
 			sys_write_vp(ERR_POPUP_BOX_ICON_ADDR, (u8*)&iconErrBack,2);//backGround
 			sys_write_vp(EVENT_OK_ADDR, (u8*)&iconOk,2);//backGround
+			if(popUpMode == POPUP_MODE_2)sys_write_vp(EVENT_CANCLE_ADDR, (u8*)&iconOk,2);
 
 		}
 	}
+	popUpMode = 0;
 
 }
 
@@ -2264,7 +2271,7 @@ void RX_Parssing_Config()
 					break;
 
 					case CATRIGE_CHK_NEW:
-						Event_PopUp(IDX_CATRIGE_NEW);
+						Event_PopUp(IDX_CATRIGE_NEW_DETECT);
 					break;
 
 					case CATRIGE_CHK_I2C_READ_ERR:
@@ -2379,7 +2386,20 @@ void RX_Parssing_Config()
 			break;
 
 			case CMD_GET_ALL_CART_END:
-
+//				for(i =1 ;i <= 7;i++)
+//				{
+//					if(textFrqBuff[i]==0)
+//					{
+//						TX_Msg(CMD_TRANDU_FRQ_BASE+i, REQ_DATA);//
+//					}
+//				}
+//				for(i =1 ;i <= 77;i++)
+//				{
+//					if(textWattBuff[i]==0)
+//					{
+//						TX_Msg(CMD_TRANDU_WATT_BASE+i, REQ_DATA);//
+//					}
+//				}
 				systemCartEnd = value;
 			break;
 
@@ -3321,7 +3341,7 @@ u8 Main_Config()
 				if(engineerKey)
 				{
 					egCnt++;
-					if(egCnt==1)
+					if(egCnt==3)
 					{
 						egCnt = 0;
 						Page_Change(LCD_MODE_ENGINIEER);
@@ -3518,6 +3538,29 @@ u8 Calibration_Config()//
 			case KEY_CAL_SHOT:
 				Calv_Tx_Msg();
 			break;
+
+			case KEY_CAL_PELT_ON:
+				TX_Msg(CMD_DEBUG_PUMP, 1);
+				TX_Msg(CMD_DEBUG_CHILLER, 1);
+				TX_Msg(CMD_DEBUG_PELTIER, 1);
+			break;
+
+			case KEY_CAL_PELT_OFF:
+				TX_Msg(CMD_DEBUG_PELTIER, 2);
+			break;
+
+			case KEY_CAL_CHIL_ON:
+				TX_Msg(CMD_DEBUG_PUMP, 1);
+				TX_Msg(CMD_DEBUG_CHILLER, 1);
+			break;
+
+			case KEY_CAL_CHIL_OFF:
+				TX_Msg(CMD_DEBUG_CHILLER, 0);
+				TX_Msg(CMD_DEBUG_PUMP, 0);
+				TX_Msg(CMD_DEBUG_PELTIER, 2);
+			break;
+
+
 
 		}
 		btn= 0;
