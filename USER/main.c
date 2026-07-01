@@ -317,6 +317,9 @@
 #define TEST_NUM_ADDR2			0x2952
 #define TEST_NUM_ADDR3			0x2954
 #define TEST_NUM_ADDR4			0x2956
+#define TEST_NUM_ADDR5			0x2958
+#define TEST_NUM_ADDR6			0x295A
+#define TEST_NUM_ADDR7			0x295C
 
 #define XY_SP_TEST_ADD1  		0x51E0
 #define XY_SP_TEST_ADD2  		0x5200
@@ -361,14 +364,7 @@
 #define CART_POINT_23_ADDR      0x2A3C
 #define CART_POINT_24_ADDR      0x2A3E
 
-#define CART_MINUS_1_ADDR      0x2A40
-#define CART_MINUS_2_ADDR      0x2A42
-#define CART_MINUS_3_ADDR      0x2A44
-#define CART_MINUS_4_ADDR      0x2A46
-#define CART_MINUS_5_ADDR      0x2A48
-#define CART_MINUS_6_ADDR      0x2A4A
-#define CART_MINUS_7_ADDR      0x2A4C
-#define CART_MINUS_8_ADDR      0x2A4E
+
 
 
 //page14 use num
@@ -391,14 +387,14 @@
 #define CART_VALUE_TRANDU7_ADDR      	0x2A6A
 #define CART_VALUE_REMIND_SHOT_ADDR     0x2A6C
 #define CART_VALUE_STATUS_ADDR      	0x2A6E
-#define CART_TEMP1_OFFSET_ADDR      	0x2A70
-#define CART_TEMP2_OFFSET_ADDR      	0x2A72
-#define CART_TEMP3_OFFSET_ADDR      	0x2A74
-#define CART_TEMP4_OFFSET_ADDR      	0x2A76
-#define CART_TEMP5_OFFSET_ADDR      	0x2A78
-#define CART_TEMP6_OFFSET_ADDR      	0x2A7A
-#define CART_TEMP7_OFFSET_ADDR      	0x2A7C
-#define CART_TEMP8_OFFSET_ADDR      	0x2A7E
+#define CART_TEMP1_OFFSET_ADDR      	0x2A70//17
+#define CART_TEMP2_OFFSET_ADDR      	0x2A72//18
+#define CART_TEMP3_OFFSET_ADDR      	0x2A74//19
+#define CART_TEMP4_OFFSET_ADDR      	0x2A76//20
+#define CART_TEMP5_OFFSET_ADDR      	0x2A78//21
+#define CART_TEMP6_OFFSET_ADDR      	0x2A7A//22
+#define CART_TEMP7_OFFSET_ADDR      	0x2A7C//23
+#define CART_TEMP8_OFFSET_ADDR      	0x2A7E//24
 
 
 #define CART_VALUE_END_ADDR       		0x2A80
@@ -646,7 +642,7 @@ typedef enum
 
 
 	IDX_DEBUG_TEMP 			= 1,
-	IDX_DEBUG_MAIN_COMMU = 2,
+	IDX_DEBUG_PWM_DUTY = 2,
 	IDX_DEBUG_HAND_COMMU = 3,
 	IDX_DEBUG_RF_COMMU 		= 4,
 	IDX_DEBUG_RF_STATUS 	= 5,
@@ -1483,6 +1479,7 @@ xdata u16 issuedYY;
 xdata u16 issuedMMDD;
 xdata u16 issuedMM;
 xdata u16 issuedDD;
+xdata u16 cartStatus;
 
 
 xdata u8 sysChkFlag;
@@ -1530,6 +1527,7 @@ xdata u32 testNum;
 xdata u32 testNum2;
 xdata u32 timeStampShot;
 xdata u16 errCodeBuff[50];
+xdata u8 catridgeRxErrCnt;
 
 
 void Light_Change(u16 light);
@@ -2043,6 +2041,60 @@ void SYS_CHK_OK(u16 device)
 		break;
 	}
 }
+void HP_Cmd_Recall(u8 cmd, u32 rxData, u8 status)
+{
+	if (status)
+	{
+		if(rxData == 0)
+		{
+			TX_Msg(cmd, REQ_DATA);
+			catridgeRxErrCnt++;
+		}
+	}
+	else
+	{
+		if(rxData)
+		{
+			TX_Msg(cmd, REQ_DATA);
+			catridgeRxErrCnt++;
+		}
+	}
+}
+void Check_CartAllData(u8 status)
+{
+	int i = 0;
+	HP_Cmd_Recall(CMD_CART_ID, cartId, status);
+	HP_Cmd_Recall(CMD_MANUFAC_YY, manufacYY, status);
+	HP_Cmd_Recall(CMD_MANUFAC_MM, manufacMM, status);
+	HP_Cmd_Recall(CMD_MANUFAC_DD, manufacDD, status);
+	HP_Cmd_Recall(CMD_ISSUED_YY, issuedYY, status);
+	HP_Cmd_Recall(CMD_ISSUED_MM, issuedMM, status);
+	HP_Cmd_Recall(CMD_ISSUED_DD, issuedDD, status);
+
+	if(catridgeRxErrCnt >= 6)
+	{
+		catridgeRxErrCnt = 0;
+		return;
+	}
+	for(i =1 ;i <= 7;i++)
+	{
+		HP_Cmd_Recall(CMD_TRANDU_FRQ_BASE + i, textFrqBuff[i], status);
+	}
+	for(i =1 ;i <= 77;i++)
+	{
+		HP_Cmd_Recall(CMD_TRANDU_WATT_BASE + i, textWattBuff[i], status);
+	}
+
+	HP_Cmd_Recall(CMD_REMIND_SHOT, remindShot, status);
+	HP_Cmd_Recall(CMD_CATRIDGE_STATUS, cartStatus, status);
+
+
+
+	TX_Msg(CMD_GET_ALL_CART_END, status);
+
+	catridgeRxErrCnt = 0;
+
+}
 
 void Device_Satatus_Passing(u16 passingValue)
 {
@@ -2060,9 +2112,9 @@ void Device_Satatus_Passing(u16 passingValue)
 
 		break;
 
-		case IDX_DEBUG_MAIN_COMMU:
+		case IDX_DEBUG_PWM_DUTY:
 			sys_write_vp(DEBUG_DATA_2_ADDR, (u8*)&statusData ,2);
-			if(0<=statusData && statusData<5) sys_write_vp(DEBUG_STATUS_2_ADDR, (u8*)&iconSatusOk ,2);
+			if(0<=statusData && statusData<101) sys_write_vp(DEBUG_STATUS_2_ADDR, (u8*)&iconSatusOk ,2);
 			else sys_write_vp(DEBUG_STATUS_2_ADDR, (u8*)&iconSatusErr ,2);
 		break;
 
@@ -2386,21 +2438,8 @@ void RX_Parssing_Config()
 			break;
 
 			case CMD_GET_ALL_CART_END:
-//				for(i =1 ;i <= 7;i++)
-//				{
-//					if(textFrqBuff[i]==0)
-//					{
-//						TX_Msg(CMD_TRANDU_FRQ_BASE+i, REQ_DATA);//
-//					}
-//				}
-//				for(i =1 ;i <= 77;i++)
-//				{
-//					if(textWattBuff[i]==0)
-//					{
-//						TX_Msg(CMD_TRANDU_WATT_BASE+i, REQ_DATA);//
-//					}
-//				}
 				systemCartEnd = value;
+				Check_CartAllData(value);
 			break;
 
 
@@ -2496,7 +2535,7 @@ void RX_Parssing_Config()
 			break;
 
 			case CMD_CATRIDGE_STATUS:
-
+				cartStatus = value;
 				textCartrigeBuff[CART_IDX_STATUS] = value;
 				sys_write_vp(CART_VALUE_STATUS_ADDR,(u8*)&value ,2);
 
@@ -2560,8 +2599,15 @@ u8 Test_Config()
 	u8 Tu8 =120;
 	u16 Tu16 =13130;
 	u32 Tu32 =14140;
+	int statusData1 = -10000;
+	int statusData2 = -77;
+	int statusData3 = 13000;
 
-	returnValue = LCD_MODE_TEST;
+	sys_write_vp(TEST_NUM_ADDR5, (u8*)&statusData1 ,2);
+	sys_write_vp(TEST_NUM_ADDR6, (u8*)&statusData2 ,2);
+	sys_write_vp(TEST_NUM_ADDR7, (u8*)&statusData3 ,2);
+
+		returnValue = LCD_MODE_TEST;
 #if 0
 		if(delay_tickMy-timeStampQ >= 3000)
 		{
@@ -2574,42 +2620,11 @@ u8 Test_Config()
 		}
 
 #endif
+
+
 	sys_read_vp(TEST_BUTTON_ADDR,(u8*)&btn,1);
 	if(btn)
 	{
-		switch (btn)
-		{
-			case 1:
-				testNum += 200;
-				if(testNum>2500) testNum = 50;
-				XY_Change(XY_SP_TEST_ADD1 , (u16)testNum, (u16)testNum2);
-				XY_Change(XY_SP_TEST_ADD2 , (u16)testNum+10, (u16)testNum2+10);
-				XY_Change(XY_SP_TEST_ADD3 , (u16)testNum+20, (u16)testNum2+20);
-				XY_Change(XY_SP_TEST_ADD4 , (u16)testNum+30, (u16)testNum2+30);
-
-				sys_write_vp(TEST_NUM_ADDR1,(u8*)&testNum ,2);
-				sys_write_vp(TEST_NUM_ADDR2,(u8*)&testNum ,2);
-				sys_write_vp(TEST_NUM_ADDR3,(u8*)&testNum ,2);
-				sys_write_vp(TEST_NUM_ADDR4,(u8*)&testNum ,2);
-			break;
-
-			case 2:
-				testNum2 += 200;
-				if(testNum2>1200) testNum2 = 50;
-				XY_Change(XY_SP_TEST_ADD1 , (u16)testNum, (u16)testNum2);
-				XY_Change(XY_SP_TEST_ADD2 , (u16)testNum+10, (u16)testNum2+10);
-				XY_Change(XY_SP_TEST_ADD3 , (u16)testNum+20, (u16)testNum2+20);
-				XY_Change(XY_SP_TEST_ADD4 , (u16)testNum+30, (u16)testNum2+30);
-
-				sys_write_vp(TEST_NUM_ADDR1,(u8*)&testNum2 ,2);
-				sys_write_vp(TEST_NUM_ADDR2,(u8*)&testNum2 ,2);
-				sys_write_vp(TEST_NUM_ADDR3,(u8*)&testNum2 ,2);
-				sys_write_vp(TEST_NUM_ADDR4,(u8*)&testNum2 ,2);
-
-			break;
-
-
-		}
 
 		btn= 0;
 		sys_write_vp(TEST_BUTTON_ADDR,(u8*)&btn,2);
@@ -2985,13 +3000,13 @@ u8 System_Check_Config()
 						TX_Msg(CMD_SYS_CHK_OK, 22);
 					}
 					TX_Msg(CMD_GET_ALL_CART, 0);
-					systemCartEnd = 0;
+					systemCartEnd = 2;
 					systemTimeTerm = delay_tickMy;
 					systemStep = STEP4;
 				break;
 
 				case STEP4:
-					if(systemCartEnd)
+					if(systemCartEnd == 0 || systemCartEnd == 1)
 					{
 						systemStep = STEP5;
 						System_Circle_Icon(ICON_SYS_CHK_PER_40);
@@ -3006,7 +3021,7 @@ u8 System_Check_Config()
 
 
 				case STEP5:
-					if(systemCartEnd)
+					if(systemCartEnd == 0 || systemCartEnd == 1)
 					{
 						TX_Msg(CMD_GET_ALL_CART_END, 55);
 						TX_Msg(CMD_SYS_CHK_OK, 3);
@@ -4055,6 +4070,7 @@ void Lcd_Init()//
 	issuedYY=0;
 	issuedMM = 0;
 	issuedDD = 0;
+	cartStatus = 0;
 	sysChkFlag = 1;
 	reTxTimeStamp = 0;
 	cartTouch = 0;
@@ -4150,12 +4166,15 @@ void Lcd_Init()//
 	testNum = 50;
 	testNum2 = 200;
 
+	catridgeRxErrCnt = 0;
+
 	ErrCode_Init();
 
-#if 1
+#if 0
 	lcdPage = LCD_MODE_INIT;
 
 #else //  시간단축 하이패스
+	//LCD_MODE_TEST
 	lcdPage = LCD_MODE_TEST;
 
 	Page_Change(LCD_MODE_TEST);
