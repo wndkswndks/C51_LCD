@@ -595,14 +595,14 @@ typedef enum
 	CART_IDX_TRANDU7_FRQ,
 	CART_IDX_REMIND_SHOT,
 	CART_IDX_STATUS,
-	CART_IDX_TEMP_OFFS_1,
+	CART_IDX_TEMP_OFFS_1 = 17,
 	CART_IDX_TEMP_OFFS_2,
 	CART_IDX_TEMP_OFFS_3,
 	CART_IDX_TEMP_OFFS_4,
 	CART_IDX_TEMP_OFFS_5,
 	CART_IDX_TEMP_OFFS_6,
 	CART_IDX_TEMP_OFFS_7,
-	CART_IDX_TEMP_OFFS_8,
+	CART_IDX_TEMP_OFFS_8 = 24,
 	INFO_IDX_DUMY = 0,
 	INFO_IDX_UI_DESIGN,
 	INFO_IDX_UI_FW,
@@ -813,6 +813,7 @@ typedef enum
 	KEY_CART13_SET,
 	KEY_CART_ROAD,
 	KEY_CART_UN_REGI,
+	KEY_CART_MINUS = 0x1D,
 
 	//DEVICE_STATUS
 
@@ -1441,7 +1442,8 @@ xdata u8 flashBuff[174];
 
 xdata u16 textFrqBuff[8];
 xdata u16 textWattBuff[85];
-xdata u16 textCartrigeBuff[25];
+xdata int textCartrigeBuff[25];
+//xdata u16 textCartrigeBuff[25];
 xdata u16 textinfoBuff[20];
 xdata u16 cmdBuff[4][2];
 
@@ -1468,18 +1470,16 @@ idata u8 btnVol[4];
 xdata u8 calMode;
 xdata u16 prePointAddr;
 
-xdata u8 cartId;
-xdata u16 manufacYY;
-xdata u16 manufacMMDD;
-xdata u16 manufacMM;
-xdata u16 manufacDD;
+xdata int cartId;
+xdata int manufacYY;
+xdata int manufacMM;
+xdata int manufacDD;
 
 
-xdata u16 issuedYY;
-xdata u16 issuedMMDD;
-xdata u16 issuedMM;
-xdata u16 issuedDD;
-xdata u16 cartStatus;
+xdata int issuedYY;
+xdata int issuedMM;
+xdata int issuedDD;
+xdata int cartStatus;
 
 
 xdata u8 sysChkFlag;
@@ -1494,7 +1494,8 @@ xdata u32 reTxTimeStamp;
 
 xdata u8 cartTouch;
 xdata u8 cartIdx;
-xdata u32 cartValue;
+xdata int cartValue;
+//xdata u32 cartValue;
 xdata u16 cartPrePointAddr;
 
 xdata u8 infoTouch;
@@ -2191,8 +2192,9 @@ void RX_Parssing_Config()
 	u16 iconVibeLv = ICON_VIBE_OFF;
 	u16 ToffsetAdd = 0;
 	u16 ToffsetIdx = 0;
-	u32 ToffsetVal = 0;
+	int ToffsetVal = 0;
 	int i = 0;
+	int frq = 0;
 	//if(uartRxFlag)
 	if(cmdRxRingCnt > cmdPassingRingCnt)
 	{
@@ -2220,42 +2222,42 @@ void RX_Parssing_Config()
 			case CMD_CART_ID:
 				cartId = value;
 				textCartrigeBuff[CART_IDX_CART_ID] = value;
-				sys_write_vp(CART_VALUE_CART_ID_ADDR,(u8*)&value ,2);
+				sys_write_vp(CART_VALUE_CART_ID_ADDR,(u8*)&cartId ,2);
 			break;
 
 			case CMD_MANUFAC_YY:
 				manufacYY = value;
-				textCartrigeBuff[CART_IDX_MANUFAC_YY] = value;
-				sys_write_vp(CART_VALUE_MANUFAC_YY_ADDR,(u8*)&value ,2);
+				textCartrigeBuff[CART_IDX_MANUFAC_YY] = manufacYY;
+				sys_write_vp(CART_VALUE_MANUFAC_YY_ADDR,(u8*)&manufacYY ,2);
 			break;
 
 			case CMD_MANUFAC_MM:
 				manufacMM = value;
-				textCartrigeBuff[CART_IDX_MANUFAC_MM] = value;
-				sys_write_vp(CART_VALUE_MANUFAC_MM_ADDR,(u8*)&value ,2);
+				textCartrigeBuff[CART_IDX_MANUFAC_MM] = manufacMM;
+				sys_write_vp(CART_VALUE_MANUFAC_MM_ADDR,(u8*)&manufacMM ,2);
 			break;
 
 			case CMD_MANUFAC_DD:
 				manufacDD = value;
-				textCartrigeBuff[CART_IDX_MANUFAC_DD] = value;
-				sys_write_vp(CART_VALUE_MANUFAC_DD_ADDR,(u8*)&value ,2);
+				textCartrigeBuff[CART_IDX_MANUFAC_DD] = manufacDD;
+				sys_write_vp(CART_VALUE_MANUFAC_DD_ADDR,(u8*)&manufacDD ,2);
 			break;
 
 			case CMD_ISSUED_YY:
 				issuedYY=value;
-				textCartrigeBuff[CART_IDX_ISSUED_YY] = value;
-				sys_write_vp(CART_VALUE_ISSUED_YY_ADDR,(u8*)&value ,2);
+				textCartrigeBuff[CART_IDX_ISSUED_YY] = issuedYY;
+				sys_write_vp(CART_VALUE_ISSUED_YY_ADDR,(u8*)&issuedYY ,2);
 			break;
 			case CMD_ISSUED_MM:
 				issuedMM = value;
-				textCartrigeBuff[CART_IDX_ISSUED_MM] = value;
-				sys_write_vp(CART_VALUE_ISSUED_MM_ADDR,(u8*)&value ,2);
+				textCartrigeBuff[CART_IDX_ISSUED_MM] = issuedMM;
+				sys_write_vp(CART_VALUE_ISSUED_MM_ADDR,(u8*)&issuedMM ,2);
 			break;
 
 			case CMD_ISSUED_DD:
 				issuedDD = value;
-				textCartrigeBuff[CART_IDX_ISSUED_DD] = value;
-				sys_write_vp(CART_VALUE_ISSUED_DD_ADDR,(u8*)&value ,2);
+				textCartrigeBuff[CART_IDX_ISSUED_DD] = issuedDD;
+				sys_write_vp(CART_VALUE_ISSUED_DD_ADDR,(u8*)&issuedDD ,2);
 			break;
 
 
@@ -2537,7 +2539,7 @@ void RX_Parssing_Config()
 			case CMD_CATRIDGE_STATUS:
 				cartStatus = value;
 				textCartrigeBuff[CART_IDX_STATUS] = value;
-				sys_write_vp(CART_VALUE_STATUS_ADDR,(u8*)&value ,2);
+				sys_write_vp(CART_VALUE_STATUS_ADDR,(u8*)&cartStatus ,2);
 
 			break;
 
@@ -2548,8 +2550,9 @@ void RX_Parssing_Config()
 					cmd  = cmd-90;
 					textFrqBuff[cmd] = value;
 					textCartrigeBuff[(CART_IDX_TRANDU1_FRQ-1)+cmd] = value;
+					frq = value;
 					add = (u16)(CART_VALUE_TRANDU1_ADDR + (cmd-1)*0x02);
-					sys_write_vp(add,(u8*)&value ,2);
+					sys_write_vp(add,(u8*)&frq ,2);
 
 					add = (u16)(TRANDU_FREQ_NUM_START_ADDR + (cmd-1)*0x02);
 					sys_write_vp(add,(u8*)&value ,2);
@@ -2640,7 +2643,8 @@ u8 Test_Config()
 void Cartrige_Init()
 {
 	u16 add =0;
-	u32 value =0;
+//	u32 value =0;
+	int value =0;
 
 	int i;
 	for(i =1 ;i <25; i++)
@@ -3709,6 +3713,16 @@ u8 Cartrige_Set_Config()//
 				TX_Msg(CMD_CART_ALLOW, 0);
 			break;
 
+			case KEY_CART_MINUS:
+				if((CART_IDX_TEMP_OFFS_1 <=cartIdx)&&(cartIdx<=CART_IDX_TEMP_OFFS_8 ))
+				{
+					cartValue *= -1;
+					textCartrigeBuff[cartIdx] = cartValue;
+					add = (u16)(CART_VALUE_SATAT_ADDR + (cartIdx-1)*0x02);
+					sys_write_vp(add,(u8*)&cartValue,2);
+				}
+			break;
+
 
 
 			case KEY_CAL_BACK_MAIN:
@@ -4170,14 +4184,15 @@ void Lcd_Init()//
 
 	ErrCode_Init();
 
-#if 0
+#if 1
 	lcdPage = LCD_MODE_INIT;
 
 #else //  시간단축 하이패스
 	//LCD_MODE_TEST
-	lcdPage = LCD_MODE_TEST;
+	//LCD_MODE_CART_SETTING
+	lcdPage = LCD_MODE_CART_SETTING;
 
-	Page_Change(LCD_MODE_TEST);
+	Page_Change(LCD_MODE_CART_SETTING);
 
 
 
