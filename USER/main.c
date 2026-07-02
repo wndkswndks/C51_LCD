@@ -902,6 +902,7 @@ typedef enum
 	CMD_CART_ALLOW = 51,
 	CMD_VIBE_LEVEL = 52,
 	CMD_DEBUG_VIBE = 53,
+	CMD_TEST_DEBUG = 54,
 
 
 	CMD_CATRIDGE_STATUS    = 56,
@@ -961,6 +962,7 @@ typedef enum
 	CMD_HP1_ADD = 200,
 	CMD_MAIN_RESET = 201,
 	CMD_HP_RESET = 202,
+	CMD_HP_RF_ALL_SAND = 203,
 
 
 	CMD_TRANDU_FRQ_BASE	= 90,
@@ -1428,7 +1430,7 @@ idata u32 currentShot=0;
 idata u32 totalJoule=0;
 
 idata u8 rdyStnbyMode=0;
-idata u32 remindShot=0;
+idata int remindShot=0;
 idata u32 temperature=0;
 idata u32 peltierDuty=0;
 
@@ -2192,6 +2194,7 @@ void RX_Parssing_Config()
 	u16 iconVibeLv = ICON_VIBE_OFF;
 	u16 ToffsetAdd = 0;
 	u16 ToffsetIdx = 0;
+	u8 sing = 0;
 	int ToffsetVal = 0;
 	int i = 0;
 	int frq = 0;
@@ -2528,9 +2531,16 @@ void RX_Parssing_Config()
 			break;
 
 			case CMD_TEMP_OFFSET:
-				  ToffsetIdx = (value/100);
+				  sing = value/1000;
+				  ToffsetIdx = (value/100)%10;
 				  ToffsetAdd = CART_TEMP1_OFFSET_ADDR + ToffsetIdx*2;
 				  ToffsetVal = value%100;
+				  if(sing)
+				  {
+					  ToffsetVal *= -1;
+				  }
+
+
 				  textCartrigeBuff[CART_IDX_TEMP_OFFS_1+ToffsetIdx] = ToffsetVal;
 				  sys_write_vp(ToffsetAdd,(u8*)&ToffsetVal ,2);
 
@@ -3607,6 +3617,7 @@ u8 Cartrige_Set_Config()//
 	const u16 iconEmptyPoint = ICON_CALIB_EMPTY_POINT;
 	u16 btn;
 	u16 tempOffsetVal = 0;
+	int tempOffset;
 
 	returnValue = LCD_MODE_CART_SETTING;
 	sys_read_vp(CARTRIGE_KEYPAD_ADDR,(u8*)&btn,1);
@@ -3696,7 +3707,16 @@ u8 Cartrige_Set_Config()//
 			case KEY_CART13_SET:
 				for(i =0 ;i < 8;i++)
 				{
-					tempOffsetVal = i*100 + textCartrigeBuff[CART_IDX_TEMP_OFFS_1+i];
+					tempOffset = textCartrigeBuff[CART_IDX_TEMP_OFFS_1+i];
+					if (tempOffset<0)
+					{
+						tempOffsetVal = i*100 + tempOffset*(-1) + 1000;
+					}
+					else
+					{
+						tempOffsetVal = i*100 + tempOffset;
+					}
+
 					TX_Msg(CMD_TEMP_OFFSET,tempOffsetVal);
 				}
 			break;
