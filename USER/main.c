@@ -814,6 +814,7 @@ typedef enum
 	KEY_CART_ROAD,
 	KEY_CART_UN_REGI,
 	KEY_CART_MINUS = 0x1D,
+	KEY_CART_SET_REGI,
 
 	//DEVICE_STATUS
 
@@ -2402,8 +2403,8 @@ void RX_Parssing_Config()
 			case CMD_REMIND_SHOT:
 				remindShot = value;
 				textCartrigeBuff[CART_IDX_REMIND_SHOT] = value;
-				sys_write_vp(REMIND_SHOT_NUM_ADDR,(u8*)&remindShot ,2);
-				sys_write_vp(CART_VALUE_REMIND_SHOT_ADDR,(u8*)&value ,2);
+				sys_write_vp(REMIND_SHOT_NUM_ADDR,(u8*)&value ,2);
+				sys_write_vp(CART_VALUE_REMIND_SHOT_ADDR,(u8*)&remindShot ,2);
 
 			break;
 
@@ -3732,6 +3733,11 @@ u8 Cartrige_Set_Config()//
 			case KEY_CART_UN_REGI:
 				TX_Msg(CMD_CART_ALLOW, 0);
 			break;
+
+			case KEY_CART_SET_REGI:
+				TX_Msg(CMD_CART_ALLOW, 1);
+			break;
+
 
 			case KEY_CART_MINUS:
 				if((CART_IDX_TEMP_OFFS_1 <=cartIdx)&&(cartIdx<=CART_IDX_TEMP_OFFS_8 ))
