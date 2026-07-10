@@ -498,6 +498,12 @@
 //==================================================
 
 
+//page17 un use
+
+//==================================================
+#define OVERLAY_BUTTON_ADDR		0x2D00
+
+//==================================================
 
 
 
@@ -531,6 +537,9 @@ typedef enum
 	CURRENT_SHOT_POS_X	= 641,
 	TOTAL_ENERGY_POS_X	= 	967,
 	AGV_ENERGY_POS_X =   1300,
+
+	POPUP_POS_X	= 230,
+	POPUP_POS_Y	= 690,
 	HIDE_NUM_X	 = 2000,
 
 	POS_1_Y = 630,
@@ -838,7 +847,7 @@ typedef enum
 	LCD_MODE_CART_SETTING  = 14,
 	LCD_MODE_DEVICE_STATUS = 15,
 	LCD_MODE_ERROR_EVENT = 	 16,
-	LCD_MODE_MAIN_MAX = 	 17,
+	LCD_MODE_OVERLAY = 	 17,
 
 
 } PAGE_E;
@@ -1755,6 +1764,24 @@ void Ascii_text(char* str, u16 add)
  	sys_write_vp(add,(u8*)str,len);
 }
 
+void OverLay_On(u8 pageID)
+{
+	u8 buf[4];
+	buf[0] = 0x5A;
+	buf[1] = 0x01;
+	buf[2] = 0x00;
+	buf[3] = pageID;
+ 	sys_write_vp(0x00E8,buf,2);
+}
+void OverLay_Off()
+{
+	u8 buf[2];
+	buf[0] = 0x00;
+	buf[1] = 0x00;
+ 	sys_write_vp(0x00E8,buf,1);
+}
+
+
 void Err_Code_Select(u8 errNum)
 {
 	u16 eventCode = 0;
@@ -2608,28 +2635,14 @@ u8 Test_Config()
 {
 	u8 returnValue = 0;
 	u16 btn =0;
-	int indData[4] ={0,};
-	int Tint =10100;
-	u8 Tu8 =120;
-	u16 Tu16 =13130;
-	u32 Tu32 =14140;
-	int statusData1 = -10000;
-	int statusData2 = -77;
-	int statusData3 = 13000;
 
-	sys_write_vp(TEST_NUM_ADDR5, (u8*)&statusData1 ,2);
-	sys_write_vp(TEST_NUM_ADDR6, (u8*)&statusData2 ,2);
-	sys_write_vp(TEST_NUM_ADDR7, (u8*)&statusData3 ,2);
+
 
 		returnValue = LCD_MODE_TEST;
 #if 0
 		if(delay_tickMy-timeStampQ >= 3000)
 		{
-	//		TX_Msg(111, Tint);
-	//		TX_Msg(222, Tu8);
-	//		TX_Msg(333, Tu16);
-	//		TX_Msg(444, Tu32);
-
+			TX_Msg(444, Tu32);
 			timeStampQ = delay_tickMy;
 		}
 
@@ -2639,7 +2652,18 @@ u8 Test_Config()
 	sys_read_vp(TEST_BUTTON_ADDR,(u8*)&btn,1);
 	if(btn)
 	{
+		switch (btn)
+		{
+			case 1:
+				//XY_Change(XY_SP_TEST_ADD1 , POPUP_POS_X, POPUP_POS_Y);
+				OverLay_On(17);
+			break;
 
+			case 2:
+				//XY_Change(XY_SP_TEST_ADD1 , HIDE_NUM_X, POPUP_POS_Y);
+//				OverLay_Off();
+			break;
+		}
 		btn= 0;
 		sys_write_vp(TEST_BUTTON_ADDR,(u8*)&btn,2);
 	}
@@ -2650,7 +2674,30 @@ u8 Test_Config()
 	return LCD_MODE_TEST;
 }
 
+u8 Overay_Config()
+{
+	u16 btn =0;
+	u8 returnValue = 0;
 
+	returnValue = LCD_MODE_OVERLAY;
+	sys_read_vp(OVERLAY_BUTTON_ADDR,(u8*)&btn,1);
+	if(btn)
+	{
+		switch (btn)
+		{
+
+			case 2:
+				//XY_Change(XY_SP_TEST_ADD1 , HIDE_NUM_X, POPUP_POS_Y);
+				OverLay_Off();
+//				returnValue = LCD_MODE_TEST;
+//				Page_Change(LCD_MODE_TEST);
+			break;
+		}
+		btn= 0;
+		sys_write_vp(OVERLAY_BUTTON_ADDR,(u8*)&btn,2);
+	}
+	return returnValue;
+}
 void Cartrige_Init()
 {
 	u16 add =0;
@@ -4054,9 +4101,9 @@ void Mode_Config()//
 		break;
 
 
-//		case LCD_MODE_MAIN_POPUP:
-//			lcdPage = Pop_Main_Config();
-//		break;
+		case LCD_MODE_OVERLAY:
+			lcdPage = Overay_Config();
+		break;
 
 //		case LCD_MODE_SYS_CHK_POPUP:
 //			lcdPage = Pop_System_Chk_Config();
@@ -4216,9 +4263,9 @@ void Lcd_Init()//
 #else //  시간단축 하이패스
 	//LCD_MODE_TEST
 	//LCD_MODE_CART_SETTING
-	lcdPage = LCD_MODE_CART_SETTING;
+	lcdPage = LCD_MODE_TEST;
 
-	Page_Change(LCD_MODE_CART_SETTING);
+	Page_Change(LCD_MODE_TEST);
 
 
 
