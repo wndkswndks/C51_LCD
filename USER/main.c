@@ -69,7 +69,8 @@
 #define EVENT_ICON_ADDR		 		0x211E
 #define EVENT_CODE_ADDR		 		0x2120
 #define EVENT_OK_ADDR		 		0x2122
-#define EVENT_CANCLE_ADDR		 	0x2124
+#define EVENT_CANCLE_R_ADDR		 	0x2124
+#define EVENT_OK_L_ADDR		 		0x2126
 
 //page1 use num
 
@@ -125,6 +126,12 @@
 #define XY_SP_AGV_ENERGY3_ADD  		0x5180
 #define XY_SP_AGV_ENERGY4_ADD  		0x51A0
 #define XY_SP_AGV_ENERGY5_ADD  		0x51C0
+#define XY_SP_POPUP_BOX 			0x5260
+#define XY_SP_POPUP_ICON 			0x5280
+#define XY_SP_POPUP_MSG 			0x52A0
+#define XY_SP_POPUP_C_OK 			0x52C0
+#define XY_SP_POPUP_R_CANCEL 		0x52E0
+#define XY_SP_POPUP_L_OK 			0x5300
 
 
 //page1 un use
@@ -184,11 +191,15 @@
 //page4 use icon
 #define TRANDU_WATT_POINT_ADDR 		0x23D0
 #define TRANDU_WATT_POINT_END_ADDR 	0x2476
+#define PELTIER_BTN 				0x2478
+#define CHILLER_BTN 				0x247A
+
+
 
 //page4 use num
 
 
-#define CALIV_PULSETIME_NUM_NUM_ADDR 	0x2478
+#define CALIV_PULSETIME_NUM_NUM_ADDR 	0x2490
 
 #define TRANDU_FREQ_NUM_START_ADDR       	0x2500
 #define TRANDU_FREQ_NUM_1_ADDR       		0x2500
@@ -417,6 +428,13 @@
 #define DEBUG_STATUS_8_ADDR	 		0x2B1E
 #define DEBUG_STATUS_9_ADDR	 		0x2B20
 #define DEBUG_STATUS_10_ADDR	 	0x2B22
+#define DEBUG_STATUS_11_ADDR	 	0x2B24
+#define DEBUG_STATUS_12_ADDR	 	0x2B26
+#define DEBUG_STATUS_13_ADDR	 	0x2B28
+#define DEBUG_STATUS_14_ADDR	 	0x2B2A
+#define DEBUG_STATUS_15_ADDR	 	0x2B2C
+#define DEBUG_STATUS_16_ADDR	 	0x2B2E
+
 //page15 use num
 
 #define DEBUG_DATA_1_ADDR	 		0x2B50
@@ -429,6 +447,14 @@
 #define DEBUG_DATA_8_ADDR	 		0x2B5E
 #define DEBUG_DATA_9_ADDR	 		0x2B60
 #define DEBUG_DATA_10_ADDR	 		0x2B62
+#define DEBUG_DATA_11_ADDR	 		0x2B64
+#define DEBUG_DATA_12_ADDR	 		0x2B66
+#define DEBUG_DATA_13_ADDR	 		0x2B68
+#define DEBUG_DATA_14_ADDR	 		0x2B6A
+#define DEBUG_DATA_15_ADDR	 		0x2B6C
+#define DEBUG_DATA_16_ADDR	 		0x2B6E
+
+
 
 //page15 un use
 
@@ -538,8 +564,28 @@ typedef enum
 	TOTAL_ENERGY_POS_X	= 	967,
 	AGV_ENERGY_POS_X =   1300,
 
-	POPUP_POS_X	= 230,
-	POPUP_POS_Y	= 690,
+//	POPUP_POS_X	= 230,
+//	POPUP_POS_Y	= 690,
+	POPUP_POS_X	= 442,
+	POPUP_POS_Y	= 282,
+
+	POPUP_ICON_POS_X = 933,
+	POPUP_ICON_POS_Y = 344,
+
+	POPUP_MSG_POS_X = 583,
+	POPUP_MSG_POS_Y = 538,
+
+	POPUP_C_OK_POS_X = 897,
+	POPUP_C_OK_POS_Y = 691,
+
+	POPUP_L_OK_POS_X = 722,
+	POPUP_L_OK_POS_Y = 691,
+
+	POPUP_R_CANCLE_POS_X = 1070,
+	POPUP_R_CANCLE_POS_Y = 691,
+
+
+
 	HIDE_NUM_X	 = 2000,
 
 	POS_1_Y = 630,
@@ -651,15 +697,21 @@ typedef enum
 
 
 	IDX_DEBUG_TEMP 			= 1,
-	IDX_DEBUG_PWM_DUTY = 2,
+	IDX_DEBUG_PWM_DUTY 		= 2,
 	IDX_DEBUG_HAND_COMMU = 3,
 	IDX_DEBUG_RF_COMMU 		= 4,
-	IDX_DEBUG_RF_STATUS 	= 5,
+	IDX_DEBUG_SOL_STATUS 	= 5,
 	IDX_DEBUG_RTC_BATTRY 	= 6,
 	IDX_DEBUG_FLOW_SENSOR   = 7,
 	IDX_DEBUG_LEVEL_SENSOR  = 8,
-	IDX_DEBUG_INSERT_HP	= 9,
+	IDX_DEBUG_INSERT_HP		= 9,
 	IDX_DEBUG_DETECTE_CART = 10,
+	IDX_DEBUG_RF_STATUS 	= 11,
+	IDX_DEBUG_RF_TEMP 		= 12,
+	IDX_DEBUG_RF_ERR_NO 	= 13,
+	IDX_DEBUG_PTR_STATUS 	= 14,
+	IDX_DEBUG_PUMP_STATUS 	= 15,
+	IDX_DEBUG_CHIL_STATUS 	= 16,
 
 	SWITCH_HAND = 0,
 	SWITCH_FOOT = 1,
@@ -973,6 +1025,10 @@ typedef enum
 	CMD_MAIN_RESET = 201,
 	CMD_HP_RESET = 202,
 	CMD_HP_RF_ALL_SAND = 203,
+	CMD_AUTOCAL_TD_NO = 204,
+	CMD_AUTOCAL_DA = 205,
+	CMD_DEBUG_NO_VIEW = 206,
+	CMD_DEBUG_CART_AGING = 207,
 
 
 	CMD_TRANDU_FRQ_BASE	= 90,
@@ -1212,12 +1268,12 @@ typedef enum
 	ICON_MAIN_POP = 47,
 	ICON_MAIN_POP_SELLEC = 48,
 
-	ICON_PULSE_BOX_ENABLE = 49,
-	ICON_PULSE_BOX_DISABLE,
-	ICON_PULSE_4_BOX_DISABLE,
+	ICON_PELTIER_OFF = 49,
+	ICON_PELTIER_ON,
+	ICON_CHILLER_OFF,
+	ICON_CHILLER_ON,
 
-	ICON_PULSE_BLOCK_ENABLE = 52,
-	ICON_PULSE_BLOCK_DISABLE,
+	ICON_PULSE_BLOCK_DISABLE = 53,
 
 	ICON_PLUSE_EMPTY = 54,
 	ICON_MINUS,
@@ -1812,8 +1868,8 @@ void Err_Code_Select(u8 errNum)
 
 	if(lcdPage == LCD_MODE_SYS_CHK)
 	{
-		sys_write_vp(SYS_EVENT_ICON_ADDR,(u8*)&eventCodeIcon ,2);
-		sys_write_vp(SYS_EVENT_CODE_ADDR,(u8*)&eventNumIcon ,2);
+		sys_write_vp(EVENT_ICON_ADDR,(u8*)&eventCodeIcon ,2);
+		sys_write_vp(EVENT_CODE_ADDR,(u8*)&eventNumIcon ,2);
 
 	}
 	else
@@ -1832,8 +1888,8 @@ void Err_Code_Clear()
 
 	if (lcdPage == LCD_MODE_SYS_CHK)
 	{
-		sys_write_vp(SYS_EVENT_ICON_ADDR,(u8*)&eventCodeIcon ,2);
-		sys_write_vp(SYS_EVENT_CODE_ADDR,(u8*)&eventNumIcon ,2);
+		sys_write_vp(EVENT_ICON_ADDR,(u8*)&eventCodeIcon ,2);
+		sys_write_vp(EVENT_CODE_ADDR,(u8*)&eventNumIcon ,2);
 
 	}
 	else
@@ -1922,7 +1978,7 @@ void Evnt_Msg_Up(u8 num)
 
 	if (lcdPage == LCD_MODE_SYS_CHK)
 	{
-		sys_write_vp(SYS_EVNT_MSG_ADDR,(u8*)&msgIcon ,2);
+		sys_write_vp(EVNT_MSG_ADDR,(u8*)&msgIcon ,2);
 	}
 	else
 	{
@@ -1951,7 +2007,36 @@ void EXP_FreeCool_Motion()
 
 }
 
+void XY_Pop(u8 en)
+{
+	if (en)
+	{
+		XY_Change(XY_SP_POPUP_BOX , POPUP_POS_X, POPUP_POS_Y);
+		XY_Change(XY_SP_POPUP_ICON , POPUP_ICON_POS_X, POPUP_ICON_POS_Y);
+		XY_Change(XY_SP_POPUP_MSG , POPUP_MSG_POS_X, POPUP_MSG_POS_Y);
 
+		if (errEvent == IDX_CATRIGE_NEW_DETECT)
+		{
+			XY_Change(XY_SP_POPUP_R_CANCEL , POPUP_R_CANCLE_POS_X, POPUP_R_CANCLE_POS_Y);
+			XY_Change(XY_SP_POPUP_L_OK , POPUP_L_OK_POS_X, POPUP_L_OK_POS_Y);
+		}
+		else
+		{
+			XY_Change(XY_SP_POPUP_C_OK , POPUP_C_OK_POS_X, POPUP_C_OK_POS_Y);
+		}
+
+	}
+	else
+	{
+		XY_Change(XY_SP_POPUP_BOX , HIDE_NUM_X, POPUP_POS_Y);
+		XY_Change(XY_SP_POPUP_ICON , HIDE_NUM_X, POPUP_ICON_POS_Y);
+		XY_Change(XY_SP_POPUP_MSG , HIDE_NUM_X, POPUP_MSG_POS_Y);
+		XY_Change(XY_SP_POPUP_C_OK , HIDE_NUM_X, POPUP_C_OK_POS_Y);
+		XY_Change(XY_SP_POPUP_R_CANCEL , HIDE_NUM_X, POPUP_R_CANCLE_POS_Y);
+		XY_Change(XY_SP_POPUP_L_OK , HIDE_NUM_X, POPUP_L_OK_POS_Y);
+	}
+
+}
 void Event_PopUp(u16 eventData)
 {
 	u16 iconErrIcon= 0;
@@ -1966,23 +2051,24 @@ void Event_PopUp(u16 eventData)
 	errEvent = eventData;
 	sysChkFlag = 0;
 	errData = eventData;
+	XY_Pop(1);
 
 
 	if (errData==IDX_CATRIGE_NEW_DETECT) popUpMode = POPUP_MODE_2;
 	else popUpMode = POPUP_MODE_1;
 
-	if(lcdPage == LCD_MODE_SYS_CHK)
-	{
-		sys_write_vp(SYS_ERR_POPUP_BOX_ICON_ADDR, (u8*)&iconErrBack1,2);
-		sys_write_vp(SYS_EVENT_OK_ADDR, (u8*)&iconOk,2);
-		if(popUpMode == POPUP_MODE_2) sys_write_vp(SYS_EVENT_CANCLE_ADDR, (u8*)&iconCancle,2);
-	}
-	else
-	{
-		sys_write_vp(ERR_POPUP_BOX_ICON_ADDR, (u8*)&iconErrBack1,2);
-		sys_write_vp(EVENT_OK_ADDR, (u8*)&iconOk,2);
-		if(popUpMode == POPUP_MODE_2) sys_write_vp(EVENT_CANCLE_ADDR, (u8*)&iconCancle,2);
-	}
+//	if(lcdPage == LCD_MODE_SYS_CHK)
+//	{
+//		sys_write_vp(SYS_ERR_POPUP_BOX_ICON_ADDR, (u8*)&iconErrBack1,2);
+//		sys_write_vp(SYS_EVENT_OK_ADDR, (u8*)&iconOk,2);
+//		if(popUpMode == POPUP_MODE_2) sys_write_vp(SYS_EVENT_CANCLE_ADDR, (u8*)&iconCancle,2);
+//	}
+//	else
+//	{
+//		sys_write_vp(ERR_POPUP_BOX_ICON_ADDR, (u8*)&iconErrBack1,2);
+//		sys_write_vp(EVENT_OK_ADDR, (u8*)&iconOk,2);
+//		if(popUpMode == POPUP_MODE_2) sys_write_vp(EVENT_CANCLE_R_ADDR, (u8*)&iconCancle,2);
+//	}
 
 
 
@@ -2002,22 +2088,23 @@ void Event_PopDown_Ok()
 	{
 		if(errEvent==IDX_CATRIGE_NEW_DETECT) TX_Msg(CMD_CART_ALLOW, 1);
 
+		XY_Pop(0);
 		errEvent = 0;
 		Evnt_Msg_Up(0);
 		Err_Code_Clear();
 
-		if (lcdPage == LCD_MODE_SYS_CHK)
-		{
-			sys_write_vp(SYS_ERR_POPUP_BOX_ICON_ADDR, (u8*)&iconErrBack,2);
-			sys_write_vp(SYS_EVENT_OK_ADDR, (u8*)&iconBt,2);
-			if(popUpMode == POPUP_MODE_2)sys_write_vp(SYS_EVENT_CANCLE_ADDR, (u8*)&iconBt,2);
-		}
-		else
-		{
-			sys_write_vp(ERR_POPUP_BOX_ICON_ADDR, (u8*)&iconErrBack,2);
-			sys_write_vp(EVENT_OK_ADDR, (u8*)&iconBt,2);
-			if(popUpMode == POPUP_MODE_2)sys_write_vp(EVENT_CANCLE_ADDR, (u8*)&iconBt,2);
-		}
+//		if (lcdPage == LCD_MODE_SYS_CHK)
+//		{
+//			sys_write_vp(SYS_ERR_POPUP_BOX_ICON_ADDR, (u8*)&iconErrBack,2);
+//			sys_write_vp(SYS_EVENT_OK_ADDR, (u8*)&iconBt,2);
+//			if(popUpMode == POPUP_MODE_2)sys_write_vp(SYS_EVENT_CANCLE_ADDR, (u8*)&iconBt,2);
+//		}
+//		else
+//		{
+//			sys_write_vp(ERR_POPUP_BOX_ICON_ADDR, (u8*)&iconErrBack,2);
+//			sys_write_vp(EVENT_OK_ADDR, (u8*)&iconBt,2);
+//			if(popUpMode == POPUP_MODE_2)sys_write_vp(EVENT_CANCLE_R_ADDR, (u8*)&iconBt,2);
+//		}
 	}
 	popUpMode = 0;
 
@@ -2031,22 +2118,23 @@ void Event_PopDown_Cancel()
 	if(errEvent)
 	{
 		errEvent = 0;
+		XY_Pop(0);
 		Evnt_Msg_Up(0);
 		Err_Code_Clear();
 
-		if (lcdPage == LCD_MODE_SYS_CHK)
-		{
-			sys_write_vp(SYS_ERR_POPUP_BOX_ICON_ADDR, (u8*)&iconErrBack,2);//backGround
-			sys_write_vp(SYS_EVENT_OK_ADDR, (u8*)&iconOk,2);//backGround
-			if(popUpMode == POPUP_MODE_2)sys_write_vp(SYS_EVENT_CANCLE_ADDR, (u8*)&iconOk,2);
-		}
-		else
-		{
-			sys_write_vp(ERR_POPUP_BOX_ICON_ADDR, (u8*)&iconErrBack,2);//backGround
-			sys_write_vp(EVENT_OK_ADDR, (u8*)&iconOk,2);//backGround
-			if(popUpMode == POPUP_MODE_2)sys_write_vp(EVENT_CANCLE_ADDR, (u8*)&iconOk,2);
+//		if (lcdPage == LCD_MODE_SYS_CHK)
+//		{
+//			sys_write_vp(SYS_ERR_POPUP_BOX_ICON_ADDR, (u8*)&iconErrBack,2);//backGround
+//			sys_write_vp(SYS_EVENT_OK_ADDR, (u8*)&iconOk,2);//backGround
+//			if(popUpMode == POPUP_MODE_2)sys_write_vp(SYS_EVENT_CANCLE_ADDR, (u8*)&iconOk,2);
+//		}
+//		else
+//		{
+//			sys_write_vp(ERR_POPUP_BOX_ICON_ADDR, (u8*)&iconErrBack,2);//backGround
+//			sys_write_vp(EVENT_OK_ADDR, (u8*)&iconOk,2);//backGround
+//			if(popUpMode == POPUP_MODE_2)sys_write_vp(EVENT_CANCLE_R_ADDR, (u8*)&iconOk,2);
 
-		}
+//		}
 	}
 	popUpMode = 0;
 
@@ -2161,9 +2249,9 @@ void Device_Satatus_Passing(u16 passingValue)
 			else sys_write_vp(DEBUG_STATUS_4_ADDR, (u8*)&iconSatusErr ,2);
 		break;
 
-		case IDX_DEBUG_RF_STATUS:
+		case IDX_DEBUG_SOL_STATUS:
 			sys_write_vp(DEBUG_DATA_5_ADDR, (u8*)&statusData ,2);
-			if(0<=statusData && statusData<1) sys_write_vp(DEBUG_STATUS_5_ADDR, (u8*)&iconSatusOk ,2);
+			if(0<=statusData && statusData<=1) sys_write_vp(DEBUG_STATUS_5_ADDR, (u8*)&iconSatusOk ,2);
 			else sys_write_vp(DEBUG_STATUS_5_ADDR, (u8*)&iconSatusErr ,2);
 		break;
 
@@ -2196,6 +2284,44 @@ void Device_Satatus_Passing(u16 passingValue)
 			if(statusData == 0) sys_write_vp(DEBUG_STATUS_10_ADDR, (u8*)&iconSatusOk ,2);
 			else sys_write_vp(DEBUG_STATUS_10_ADDR, (u8*)&iconSatusErr ,2);
 		break;
+
+		case IDX_DEBUG_RF_STATUS:
+			sys_write_vp(DEBUG_DATA_11_ADDR, (u8*)&statusData ,2);
+			if(statusData == 1) sys_write_vp(DEBUG_STATUS_11_ADDR, (u8*)&iconSatusOk ,2);
+			else sys_write_vp(DEBUG_STATUS_11_ADDR, (u8*)&iconSatusErr ,2);
+		break;
+
+		case IDX_DEBUG_RF_TEMP:
+			sys_write_vp(DEBUG_DATA_12_ADDR, (u8*)&statusData ,2);
+			if(10<=statusData && statusData<60) sys_write_vp(DEBUG_STATUS_12_ADDR, (u8*)&iconSatusOk ,2);
+			else sys_write_vp(DEBUG_STATUS_12_ADDR, (u8*)&iconSatusErr ,2);
+		break;
+
+		case IDX_DEBUG_RF_ERR_NO:
+			sys_write_vp(DEBUG_DATA_13_ADDR, (u8*)&statusData ,2);
+			if(statusData == 0) sys_write_vp(DEBUG_STATUS_13_ADDR, (u8*)&iconSatusOk ,2);
+			else sys_write_vp(DEBUG_STATUS_13_ADDR, (u8*)&iconSatusErr ,2);
+		break;
+
+		case IDX_DEBUG_PTR_STATUS:
+			sys_write_vp(DEBUG_DATA_14_ADDR, (u8*)&statusData ,2);
+			if(statusData == 1) sys_write_vp(DEBUG_STATUS_14_ADDR, (u8*)&iconSatusOk ,2);
+			else sys_write_vp(DEBUG_STATUS_14_ADDR, (u8*)&iconSatusErr ,2);
+		break;
+
+		case IDX_DEBUG_PUMP_STATUS:
+			sys_write_vp(DEBUG_DATA_15_ADDR, (u8*)&statusData ,2);
+			if(statusData == 1) sys_write_vp(DEBUG_STATUS_15_ADDR, (u8*)&iconSatusOk ,2);
+			else sys_write_vp(DEBUG_STATUS_15_ADDR, (u8*)&iconSatusErr ,2);
+		break;
+
+		case IDX_DEBUG_CHIL_STATUS:
+			sys_write_vp(DEBUG_DATA_16_ADDR, (u8*)&statusData ,2);
+			if(statusData == 1) sys_write_vp(DEBUG_STATUS_16_ADDR, (u8*)&iconSatusOk ,2);
+			else sys_write_vp(DEBUG_STATUS_16_ADDR, (u8*)&iconSatusErr ,2);
+		break;
+
+
 	}
 
 }
@@ -2655,12 +2781,12 @@ u8 Test_Config()
 		switch (btn)
 		{
 			case 1:
-				//XY_Change(XY_SP_TEST_ADD1 , POPUP_POS_X, POPUP_POS_Y);
+				XY_Change(XY_SP_TEST_ADD1 , POPUP_POS_X, POPUP_POS_Y);
 				OverLay_On(17);
 			break;
 
 			case 2:
-				//XY_Change(XY_SP_TEST_ADD1 , HIDE_NUM_X, POPUP_POS_Y);
+				XY_Change(XY_SP_TEST_ADD1 , HIDE_NUM_X, POPUP_POS_Y);
 //				OverLay_Off();
 			break;
 		}
@@ -3403,6 +3529,7 @@ u8 Main_Config()
 
 
 			case BTN_MAIN_ERR_OK_CENTER:
+			case BTN_MAIN_ERR_OK_LEFT:
 					Event_PopDown_Ok();
 			break;
 
@@ -3418,7 +3545,7 @@ u8 Main_Config()
 				if(engineerKey)
 				{
 					egCnt++;
-					if(egCnt==3)
+					if(egCnt==1)
 					{
 						egCnt = 0;
 						Page_Change(LCD_MODE_ENGINIEER);
@@ -3620,21 +3747,26 @@ u8 Calibration_Config()//
 				TX_Msg(CMD_DEBUG_PUMP, 1);
 				TX_Msg(CMD_DEBUG_CHILLER, 1);
 				TX_Msg(CMD_DEBUG_PELTIER, 1);
+				lcon_Printf(PELTIER_BTN, ICON_PELTIER_ON);
 			break;
 
 			case KEY_CAL_PELT_OFF:
 				TX_Msg(CMD_DEBUG_PELTIER, 2);
+				lcon_Printf(PELTIER_BTN, ICON_PELTIER_OFF);
 			break;
 
 			case KEY_CAL_CHIL_ON:
 				TX_Msg(CMD_DEBUG_PUMP, 1);
 				TX_Msg(CMD_DEBUG_CHILLER, 1);
+				lcon_Printf(CHILLER_BTN, ICON_CHILLER_ON);
+
 			break;
 
 			case KEY_CAL_CHIL_OFF:
 				TX_Msg(CMD_DEBUG_CHILLER, 0);
 				TX_Msg(CMD_DEBUG_PUMP, 0);
 				TX_Msg(CMD_DEBUG_PELTIER, 2);
+				lcon_Printf(CHILLER_BTN, ICON_CHILLER_OFF);
 			break;
 
 
@@ -4220,6 +4352,12 @@ void Lcd_Init()//
 
 	onTimeCalv = 7;
 	sys_write_vp(CALIV_PULSETIME_NUM_NUM_ADDR,(u8*)&onTimeCalv ,4);
+	XY_Change(XY_SP_POPUP_BOX , HIDE_NUM_X, POPUP_POS_Y);
+	XY_Change(XY_SP_POPUP_ICON , HIDE_NUM_X, POPUP_ICON_POS_Y);
+	XY_Change(XY_SP_POPUP_MSG , HIDE_NUM_X, POPUP_MSG_POS_Y);
+	XY_Change(XY_SP_POPUP_C_OK , HIDE_NUM_X, POPUP_C_OK_POS_Y);
+	XY_Change(XY_SP_POPUP_L_OK , HIDE_NUM_X, POPUP_L_OK_POS_Y);
+	XY_Pop(0);
 
 
 /////////////////////
