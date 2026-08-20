@@ -1953,35 +1953,35 @@ void Evnt_Msg_Up(u8 num)
 	u16 msgIcon = 0;
 	switch (num)
 	{
-		case 0:						msgIcon = 	ICON_MSG_BLK;		  		break;
-		case IDX_TEMP_OUT:			msgIcon = 	ICON_MSG_TEMP_OUT;		  	break;
-		case IDX_TEMP_LIMIT_UNDER:	msgIcon = 	ICON_MSG_TEMP_LIMIT_UNDER;		  break;
-		case IDX_TEMP_LOW:			msgIcon = 	ICON_MSG_TEMP_LOW;		  		  break;
-		case IDX_FLOW_LIMIT_UNDER:	msgIcon = 	ICON_MSG_FLOW_LIMIT_UNDER;		  break;
-		case IDX_LEVEL_LOW: 		msgIcon = 	ICON_MSG_LEVEL_LOW;		  		  break;
-		case IDX_AUTO_CAL_COMU_ERR: msgIcon = 	ICON_MSG_AUTO_CAL_COMU_ERR;		  break;
-		case IDX_BATTRY_LIMIT_OVER:  msgIcon = 	ICON_MSG_BATTRY_LIMIT_OVER;		  break;
-		case IDX_BATTRY_LIMIT_UNDER: msgIcon = 	ICON_MSG_BATTRY_LIMIT_UNDER;	  break;
-		case IDX_BATTRY_LIMIT_LOW:	msgIcon = 	ICON_MSG_BATTRY_LIMIT_LOW;		  break;
-		case IDX_RTC_ERR:			msgIcon = 	ICON_MSG_RTC_ERR;		  		  break;
-		case IDX_PRE_COOL_ERR:		msgIcon = 	ICON_MSG_PRE_COOL_ERR;		  	  break;
-		case IDX_HAND_COMU_ERR: 	msgIcon = 	ICON_MSG_HAND_COMU_ERR;	      	  break;
-		case IDX_CATRIGE_I2C_ERR:	msgIcon = 	ICON_MSG_CATRIGE_I2C_ERR;		  break;
-		case IDX_CATRIGE_NEW_DETECT: msgIcon = 	ICON_MSG_CATRIGE_NEW_DETECT;	  break;
-		case IDX_CATRIGE_ID_ERR:	msgIcon = 	ICON_MSG_CATRIGE_ID_ERR;		  break;
-		case IDX_CATRIGE_MANU_ERR:	msgIcon = 	ICON_MSG_CATRIGE_MANU_ERR;		  break;
-		case IDX_CATRIGE_MANU_OVER_ERR: msgIcon = 	ICON_MSG_CATRIGE_MANU_OVER_ERR;	   break;
-		case IDX_CATRIGE_ISUE_ERR:		msgIcon = 	ICON_MSG_CATRIGE_ISUE_ERR;	  	   break;
-		case IDX_CATRIGE_ISUE_OVER_ERR:  msgIcon = 	ICON_MSG_CATRIGE_ISUE_OVER_ERR;	   break;
-		case IDX_CATRIGE_WATT_ERR:		msgIcon = 	ICON_MSG_CATRIGE_WATT_ERR;	  	   break;
-		case IDX_CATRIGE_FRQ_ERR:		msgIcon = 	ICON_MSG_CATRIGE_FRQ_ERR;	  	   break;
-		case IDX_CATRIGE_RESHOT_ERR:	msgIcon = 	ICON_MSG_CATRIGE_RESHOT_ERR;	  break;
-		case IDX_CATRIGE_RESHOT_LOW:	msgIcon = 	ICON_MSG_CATRIGE_RESHOT_LOW;	  break;
-		case IDX_CATRIGE_RESHOT_ZERO:	msgIcon = 	ICON_MSG_CATRIGE_RESHOT_ZERO;	  break;
-		case IDX_CATRIGE_DETECT:		msgIcon = 	ICON_MSG_CATRIGE_DETECT;	  	  break;
-		case IDX_CATRIGE_UN_DETECT: 	msgIcon = 	ICON_MSG_CATRIGE_DETECT;	      break;
-		case IDX_RF_COMU_ERR:			msgIcon = 	ICON_MSG_RF_COMU_ERR;	  break;
-		case IDX_RF_STATUS_ERR: 		msgIcon = 	ICON_MSG_RF_STATUS_ERR;	  break;
+		case 0:						msgIcon = 	ICON_MSG_BLK;		  			break;//102
+		case IDX_TEMP_OUT:			msgIcon = 	ICON_MSG_TEMP_OUT;		  		break;//103
+		case IDX_TEMP_LIMIT_UNDER:	msgIcon = 	ICON_MSG_TEMP_LIMIT_UNDER;		  break;//104
+		case IDX_TEMP_LOW:			msgIcon = 	ICON_MSG_TEMP_LOW;		  		  break;//105
+		case IDX_FLOW_LIMIT_UNDER:	msgIcon = 	ICON_MSG_FLOW_LIMIT_UNDER;		  break;//106
+		case IDX_LEVEL_LOW: 		msgIcon = 	ICON_MSG_LEVEL_LOW;		  		  break;//107
+		case IDX_AUTO_CAL_COMU_ERR: msgIcon = 	ICON_MSG_AUTO_CAL_COMU_ERR;		  break;//108
+		case IDX_BATTRY_LIMIT_OVER:  msgIcon = 	ICON_MSG_BATTRY_LIMIT_OVER;		  break;//109
+		case IDX_BATTRY_LIMIT_UNDER: msgIcon = 	ICON_MSG_BATTRY_LIMIT_UNDER;	  break;//110
+		case IDX_BATTRY_LIMIT_LOW:	msgIcon = 	ICON_MSG_BATTRY_LIMIT_LOW;		  break;//111
+		case IDX_RTC_ERR:			msgIcon = 	ICON_MSG_RTC_ERR;		  		  break;//112
+		case IDX_PRE_COOL_ERR:		msgIcon = 	ICON_MSG_PRE_COOL_ERR;		  	  break;//113
+		case IDX_HAND_COMU_ERR: 	msgIcon = 	ICON_MSG_HAND_COMU_ERR;	      	  break;//114
+		case IDX_CATRIGE_I2C_ERR:	msgIcon = 	ICON_MSG_CATRIGE_I2C_ERR;		  break;//115
+		case IDX_CATRIGE_NEW_DETECT: msgIcon = 	ICON_MSG_CATRIGE_NEW_DETECT;	  break;//116
+		case IDX_CATRIGE_ID_ERR:	msgIcon = 	ICON_MSG_CATRIGE_ID_ERR;		  break;//117
+		case IDX_CATRIGE_MANU_ERR:	msgIcon = 	ICON_MSG_CATRIGE_MANU_ERR;		  break;//118
+		case IDX_CATRIGE_MANU_OVER_ERR: msgIcon = 	ICON_MSG_CATRIGE_MANU_OVER_ERR;	   break;//119
+		case IDX_CATRIGE_ISUE_ERR:		msgIcon = 	ICON_MSG_CATRIGE_ISUE_ERR;	  	   break;//120
+		case IDX_CATRIGE_ISUE_OVER_ERR:  msgIcon = 	ICON_MSG_CATRIGE_ISUE_OVER_ERR;	   break;//121
+		case IDX_CATRIGE_WATT_ERR:		msgIcon = 	ICON_MSG_CATRIGE_WATT_ERR;	  	   break;//122
+		case IDX_CATRIGE_FRQ_ERR:		msgIcon = 	ICON_MSG_CATRIGE_FRQ_ERR;	  	   break;//123
+		case IDX_CATRIGE_RESHOT_ERR:	msgIcon = 	ICON_MSG_CATRIGE_RESHOT_ERR;	  break;//124
+		case IDX_CATRIGE_RESHOT_LOW:	msgIcon = 	ICON_MSG_CATRIGE_RESHOT_LOW;	  break;//125
+		case IDX_CATRIGE_RESHOT_ZERO:	msgIcon = 	ICON_MSG_CATRIGE_RESHOT_ZERO;	  break;//126
+		case IDX_CATRIGE_DETECT:		msgIcon = 	ICON_MSG_CATRIGE_DETECT;	  	  break;//127
+		case IDX_CATRIGE_UN_DETECT: 	msgIcon = 	ICON_MSG_CATRIGE_DETECT;	      break;//127
+		case IDX_RF_COMU_ERR:			msgIcon = 	ICON_MSG_RF_COMU_ERR;	  break;//129
+		case IDX_RF_STATUS_ERR: 		msgIcon = 	ICON_MSG_RF_STATUS_ERR;	  break;//130
 
 
 	}
