@@ -374,6 +374,7 @@
 #define CART_POINT_22_ADDR      0x2A3A
 #define CART_POINT_23_ADDR      0x2A3C
 #define CART_POINT_24_ADDR      0x2A3E
+#define CART_POINT_25_ADDR      0x2A40
 
 
 
@@ -406,6 +407,7 @@
 #define CART_TEMP6_OFFSET_ADDR      	0x2A7A//22
 #define CART_TEMP7_OFFSET_ADDR      	0x2A7C//23
 #define CART_TEMP8_OFFSET_ADDR      	0x2A7E//24
+#define CART_VALUE_MAX_REMIND_SHOT_ADDR      	0x2A80//25
 
 
 #define CART_VALUE_END_ADDR       		0x2A80
@@ -658,6 +660,7 @@ typedef enum
 	CART_IDX_TEMP_OFFS_6,
 	CART_IDX_TEMP_OFFS_7,
 	CART_IDX_TEMP_OFFS_8 = 24,
+	CART_IDX_REMIND_SHOT_MAX = 25,
 	INFO_IDX_DUMY = 0,
 	INFO_IDX_UI_DESIGN,
 	INFO_IDX_UI_FW,
@@ -921,6 +924,7 @@ typedef enum
 	CMD_REMIND_SHOT = 7,
 	CMD_TEMPERATURE_SHOT  = 8,
 	CMD_PELTIER_DUTY =9,
+	CMD_REMIND_SHOT_MAX = 10,
 
 
 	CMD_WATT_CH0	= 17,
@@ -1513,6 +1517,8 @@ idata u32 totalJoule=0;
 
 idata u8 rdyStnbyMode=0;
 idata int remindShot=0;
+idata int remindShotMax=0;
+
 idata u32 temperature=0;
 idata u32 peltierDuty=0;
 
@@ -1526,7 +1532,7 @@ xdata u8 flashBuff[174];
 
 xdata u16 textFrqBuff[8];
 xdata u16 textWattBuff[85];
-xdata int textCartrigeBuff[25];
+xdata int textCartrigeBuff[26];
 //xdata u16 textCartrigeBuff[25];
 xdata u16 textinfoBuff[20];
 xdata u16 cmdBuff[4][2];
@@ -2188,6 +2194,7 @@ void Check_CartAllData(u8 status)
 	}
 
 	HP_Cmd_Recall(CMD_REMIND_SHOT, remindShot, status);
+	HP_Cmd_Recall(CMD_REMIND_SHOT_MAX, remindShotMax, status);
 	HP_Cmd_Recall(CMD_CATRIDGE_STATUS, cartStatus, status);
 
 
@@ -2543,6 +2550,13 @@ void RX_Parssing_Config()
 
 			break;
 
+			case CMD_REMIND_SHOT_MAX:
+				remindShotMax = value;
+				textCartrigeBuff[CART_IDX_REMIND_SHOT_MAX] = value;
+				sys_write_vp(CART_VALUE_MAX_REMIND_SHOT_ADDR,(u8*)&remindShotMax ,2);
+
+			break;
+
 			case CMD_TEMPERATURE_SHOT:
 				temperature = value;
 				sys_write_vp(TEMP_DEBUG_NUM_ADDR,(u8*)&temperature ,2);
@@ -2778,7 +2792,7 @@ void Cartrige_Init()
 	int value =0;
 
 	int i;
-	for(i =1 ;i <25; i++)
+	for(i =1 ;i <26; i++)
 	{
 		add = (u16)(CART_VALUE_SATAT_ADDR + (i-1)*0x02);
 //		textCartrigeBuff[i] = i*10;
@@ -3889,8 +3903,9 @@ u8 Cartrige_Set_Config()//
 			case KEY_CART11_SET:
 				TX_Msg(CMD_REMIND_SHOT, textCartrigeBuff[CART_IDX_REMIND_SHOT]);
 			break;
-			case KEY_CART12_SET:
 
+			case KEY_CART12_SET:
+				TX_Msg(CMD_REMIND_SHOT_MAX, textCartrigeBuff[CART_IDX_REMIND_SHOT_MAX]);
 			break;
 
 			case KEY_CART13_SET:
@@ -4347,7 +4362,7 @@ void Lcd_Init()//
 		chkOkBuff[i] = 0;
 	}
 
-	for(i =1 ;i <25; i++)
+	for(i =1 ;i <26; i++)
 	{
 		textCartrigeBuff[i] = 0;
 	}
@@ -4403,6 +4418,8 @@ void Lcd_Init()//
 
 	catridgeRxErrCnt = 0;
 	popupYpos = 290;
+	remindShotMax = 0;
+	remindShot = 0;
 
 	ErrCode_Init();
 
