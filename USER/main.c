@@ -57,6 +57,7 @@
 
 #define POST_UP_LONG_BTN_ADDR	    	0x210A
 #define POST_DN_LONG_BTN_ADDR	   	 	0x210C
+#define MAIN_BUTTON_POP_GARD_ADDR		0x210E
 
 //page1 use icon
 #define ERR_POPUP_BOX_ICON_ADDR     0x2110//page1,2
@@ -1756,6 +1757,7 @@ void XY_Change(u16 spAddr, u16 Xpoint, u16 Ypoint)
 	buf[2] = (Ypoint>>8)&0xff;
 	buf[3] = Ypoint&0xff;
  	sys_write_vp(spAddr+1,buf,2);
+ 	sys_delay_ms(5);
 }
 
 
@@ -1999,14 +2001,7 @@ void Evnt_Msg_Up(u8 num)
 
 	}
 
-	if (lcdPage == LCD_MODE_SYS_CHK)
-	{
-		sys_write_vp(EVNT_MSG_ADDR,(u8*)&msgIcon ,2);
-	}
-	else
-	{
-		sys_write_vp(EVNT_MSG_ADDR,(u8*)&msgIcon ,2);
-	}
+	sys_write_vp(EVNT_MSG_ADDR,(u8*)&msgIcon ,2);
 }
 
 
@@ -2029,9 +2024,58 @@ void EXP_FreeCool_Motion()
 	}
 
 }
+u8 Popup_SP_Ok(u16 sp, u16 vp, u16 vmin, u16 vmax)//팝업박스 없어지는 문제 생겨서 넣었음
+{
+	xdata u16 d[8];
+
+	sys_read_vp(sp, (u8*)d, 8);
+
+	if ((d[0] >> 8) == 0xFF) return 0;
+	if (d[0] != vp) return 0;
+	if (d[3] != vmin) return 0;
+	if (d[4] != vmax) return 0;
+	if (d[5] != vmin) return 0;
+	if (d[6] != vmax) return 0;
+	return 1;
+}
+
+void Repair_VarIcon_SP(u16 sp, u16 vp, u16 vmin, u16 vmax)//팝업박스 없어지는 문제 생겨서 넣었음
+{
+	xdata u16 d[7];
+
+	sys_read_vp(sp, (u8*)d, 7);
+	d[0] = vp;
+	d[3] = vmin;
+	d[4] = vmax;
+	d[5] = vmin;
+	d[6] = vmax;
+	sys_write_vp(sp, (u8*)d, 7);
+}
+
+void Popup_SP_Check_Repair(void)// 팝업박스 없어지는 문제 생겨서 넣었음
+{
+	if (!Popup_SP_Ok(XY_SP_POPUP_BOX, ERR_POPUP_BOX_ICON_ADDR, ICON_MAIN_POP, ICON_MAIN_POP_SELLEC))
+		Repair_VarIcon_SP(XY_SP_POPUP_BOX, ERR_POPUP_BOX_ICON_ADDR, ICON_MAIN_POP, ICON_MAIN_POP_SELLEC);
+
+	if (!Popup_SP_Ok(XY_SP_POPUP_ICON, EVENT_ICON_ADDR, ICON_EVENT_INFO_BLK, ICON_EVENT_INFO))
+		Repair_VarIcon_SP(XY_SP_POPUP_ICON, EVENT_ICON_ADDR, ICON_EVENT_INFO_BLK, ICON_EVENT_INFO);
+
+	if (!Popup_SP_Ok(XY_SP_POPUP_MSG, EVNT_MSG_ADDR, ICON_MSG_BLK, ICON_MSG_RF_STATUS_ERR))
+		Repair_VarIcon_SP(XY_SP_POPUP_MSG, EVNT_MSG_ADDR, ICON_MSG_BLK, ICON_MSG_RF_STATUS_ERR);
+
+	if (!Popup_SP_Ok(XY_SP_POPUP_C_OK, EVENT_OK_ADDR, ICON_OK_IDLE, ICON_OK_IDLE))
+		Repair_VarIcon_SP(XY_SP_POPUP_C_OK, EVENT_OK_ADDR, ICON_OK_IDLE, ICON_OK_IDLE);
+
+	if (!Popup_SP_Ok(XY_SP_POPUP_R_CANCEL, EVENT_CANCLE_R_ADDR, ICON_CANCLE_IDLE, ICON_CANCLE_IDLE))
+		Repair_VarIcon_SP(XY_SP_POPUP_R_CANCEL, EVENT_CANCLE_R_ADDR, ICON_CANCLE_IDLE, ICON_CANCLE_IDLE);
+
+	if (!Popup_SP_Ok(XY_SP_POPUP_L_OK, EVENT_OK_L_ADDR, ICON_OK_IDLE, ICON_OK_IDLE))
+		Repair_VarIcon_SP(XY_SP_POPUP_L_OK, EVENT_OK_L_ADDR, ICON_OK_IDLE, ICON_OK_IDLE);
+}
 
 void XY_Pop(u8 en)
 {
+	Popup_SP_Check_Repair();
 	if (en)
 	{
 		XY_Change(XY_SP_POPUP_BOX , POPUP_POS_X, popupYpos);
@@ -2065,6 +2109,72 @@ void XY_Pop(u8 en)
 	}
 
 }
+
+void Touch_Ctrl(u16 page, u8 id, u8 tpcode, u8 on)
+{
+	u8 buf[8];
+
+	buf[0] = 0x5A;
+	buf[1] = 0xA5;
+	buf[2] = (u8)(page >> 8);
+	buf[3] = (u8)page;
+	buf[4] = id;
+	buf[5] = tpcode;
+	buf[6] = 0x00;
+	buf[7] = on ? 0x01 : 0x00;
+	sys_write_vp(0x00B0, buf, 4);
+	sys_delay_ms(100);
+}
+
+#define TP_MASK_ID   19    /* 가림막 序? */
+#define TP_MASK_CODE 0x05  /* Return Key code */
+
+void Popup_Touch_Mask(u8 en)
+{
+	Touch_Ctrl(LCD_MODE_MAIN, TP_MASK_ID, TP_MASK_CODE, en);
+}
+
+void LongKey_Clear(void)
+{
+	u16 z = 0;
+//	sys_write_vp(ENERGY_UP_LONG_BTN_ADDR, (u8*)&z, 1);
+//	sys_write_vp(ENERGY_DN_LONG_BTN_ADDR, (u8*)&z, 1);
+	sys_write_vp(DURATION_UP_LONG_BTN_ADDR, (u8*)&z, 1);
+	sys_write_vp(DURATION_DN_LONG_BTN_ADDR, (u8*)&z, 1);
+	sys_write_vp(POST_UP_LONG_BTN_ADDR, (u8*)&z, 1);
+	sys_write_vp(POST_DN_LONG_BTN_ADDR, (u8*)&z, 1);
+}
+
+void Popup_LongKey_Lock(u8 lock)
+{
+	u8 on = lock ? 0 : 1;
+	u16 page = LCD_MODE_MAIN;
+
+	/* id는 Controls-Touch 목록 번호로 바꾸십시오 */
+
+//	Touch_Ctrl(page, 0, 0x05, on);  // 210C POST ▼
+//	Touch_Ctrl(page, 1, 0x05, on);  // 210C POST ▼
+//	Touch_Ctrl(page, 2, 0x05, on);	// 210C POST ▼
+//	Touch_Ctrl(page, 3, 0x05, on);  // 210C POST ▼
+//	Touch_Ctrl(page, 4, 0x05, on);  // 210C POST ▼
+//	Touch_Ctrl(page, 5, 0x05, on);  // 210C POST ▼
+//	Touch_Ctrl(page, 6, 0x05, on);  // 210C POST ▼
+//	Touch_Ctrl(page, 7, 0x05, on);  // 210C POST ▼
+//	Touch_Ctrl(page, 8, 0x05, on);  // 210C POST ▼
+//	Touch_Ctrl(page, 15, 0x05, on);  // 210C POST ▼
+
+//	Touch_Ctrl(page, 9, 0x02, on);	// ENERGY ▲  VP 2102
+//	Touch_Ctrl(page, 10, 0x02, on);	// ENERGY ▲  VP 2102
+	Touch_Ctrl(page, 11, 0x02, on);	// ENERGY ▲  VP 2102
+	Touch_Ctrl(page, 12, 0x02, on);	// ENERGY ▲  VP 2102
+	Touch_Ctrl(page, 13, 0x02, on);	// ENERGY ▲  VP 2102
+	Touch_Ctrl(page, 14, 0x02, on);	// ENERGY ▲  VP 2102
+
+
+	if (lock) LongKey_Clear();
+}
+
+
 void Event_PopUp(u16 eventData)
 {
 	u16 iconErrIcon= 0;
@@ -2086,6 +2196,8 @@ void Event_PopUp(u16 eventData)
 
 
 	XY_Pop(1);
+//	Popup_Touch_Mask(1);
+
 
 
 	if (errData==IDX_CATRIGE_NEW_DETECT) popUpMode = POPUP_MODE_2;
@@ -2106,6 +2218,8 @@ void Event_PopDown_Ok()
 
 		errEvent = 0;
 		XY_Pop(0);
+//		Popup_Touch_Mask(0);
+
 		Evnt_Msg_Up(0);
 		Err_Code_Clear();
 
@@ -2121,6 +2235,7 @@ void Event_PopDown_Cancel()
 	{
 		errEvent = 0;
 		XY_Pop(0);
+//		Popup_Touch_Mask(0);
 		Evnt_Msg_Up(0);
 		Err_Code_Clear();
 
@@ -4376,13 +4491,9 @@ void Lcd_Init()//
 
 	onTimeCalv = 7;
 	sys_write_vp(CALIV_PULSETIME_NUM_NUM_ADDR,(u8*)&onTimeCalv ,4);
-//	XY_Change(XY_SP_POPUP_BOX , HIDE_NUM_X, POPUP_POS_Y);
-//	XY_Change(XY_SP_POPUP_ICON , HIDE_NUM_X, POPUP_ICON_POS_Y);
-//	XY_Change(XY_SP_POPUP_MSG , HIDE_NUM_X, POPUP_MSG_POS_Y);
-//	XY_Change(XY_SP_POPUP_C_OK , HIDE_NUM_X, POPUP_C_OK_POS_Y);
-//	XY_Change(XY_SP_POPUP_L_OK , HIDE_NUM_X, POPUP_L_OK_POS_Y);
 	XY_Pop(0);
 	lcon_Printf(ERR_POPUP_BOX_ICON_ADDR,ICON_MAIN_POP_SELLEC);
+//	Popup_Touch_Mask(0);
 
 
 /////////////////////
