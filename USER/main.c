@@ -2228,22 +2228,6 @@ void Event_PopDown_Ok()
 
 }
 
-void Event_PopDown_Cancel()
-{
-
-	if(errEvent)
-	{
-		errEvent = 0;
-		XY_Pop(0);
-//		Popup_Touch_Mask(0);
-		Evnt_Msg_Up(0);
-		Err_Code_Clear();
-
-	}
-	popUpMode = 0;
-
-}
-
 
 
 
@@ -3439,24 +3423,9 @@ u8 System_Check_Config()
 				if(errEvent && popUpMode == POPUP_MODE_1)
 				{
 					sysChkFlag = 1;
-					Event_PopDown_Cancel();
+					Event_PopDown_Ok();
 				}
 			break;
-//			case BTN_SYSTEM_ERR_OK_L:
-//				if(errEvent && popUpMode == POPUP_MODE_2)
-//				{
-//					sysChkFlag = 1;
-//					Event_PopDown_Ok();
-//				}
-//			break;
-
-//			case BTN_SYSTEM_ERR_CANCLE_R:
-//				if(errEvent && popUpMode == POPUP_MODE_2)
-//				{
-//					sysChkFlag = 1;
-//					Event_PopDown_Cancel();
-//				}
-//			break;
 		}
 
 		btn= 0;
@@ -3653,27 +3622,18 @@ u8 Main_Config()
 
 
 			case BTN_MAIN_ERR_OK_CENTER:
-				if(popUpMode == POPUP_MODE_1)
-				{
-					Event_PopDown_Cancel();
-				}
+				if(popUpMode == POPUP_MODE_1) Event_PopDown_Ok();
 				else mute = 1;
 			break;
 
 			case BTN_MAIN_ERR_OK_LEFT:
-				if(popUpMode == POPUP_MODE_2)
-				{
-					Event_PopDown_Ok();
-				}
+				if(popUpMode == POPUP_MODE_2) Event_PopDown_Ok();
 				else mute = 1;
 			break;
 
 
 			case BTN_MAIN_ERR_CANCEL_RIGHT:
-				if(popUpMode == POPUP_MODE_2)
-				{
-					Event_PopDown_Cancel();
-				}
+				if(popUpMode == POPUP_MODE_2)Event_PopDown_Ok();
 				else mute = 1;
 			break;
 
