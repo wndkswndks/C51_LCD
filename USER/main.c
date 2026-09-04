@@ -110,6 +110,12 @@
 
 
 //page1 SP use
+#define XY_SP_CURRENT_AREA1_ADD  	0x4F60
+#define XY_SP_CURRENT_AREA2_ADD  	0x4F80
+#define XY_SP_CURRENT_AREA3_ADD  	0x4FA0
+#define XY_SP_CURRENT_AREA4_ADD  	0x4FC0
+#define XY_SP_CURRENT_AREA5_ADD  	0x4FE0
+
 #define XY_SP_CURRENT_SHOT1_ADD  	0x5000
 #define XY_SP_CURRENT_SHOT2_ADD  	0x5020
 #define XY_SP_CURRENT_SHOT3_ADD  	0x5040
@@ -562,7 +568,6 @@
 
 typedef enum
 {
-
 	CURRENT_SHOT_POS_X	= 641,
 	TOTAL_ENERGY_POS_X	= 	967,
 	AGV_ENERGY_POS_X =   1300,
@@ -796,7 +801,8 @@ typedef enum
 	//SETTING MODE
 	BTN_SETTING_BACKHOME = 1,
 	BTN_SETTING_VOL_CHECK = 2,
-
+	BTN_SETTING_VIBE_ON = 3,
+	BTN_SETTING_VIBE_OFF = 4,
 
 	//ENGINER MODE
 	BTN_EG_INFOMATION = 1,
@@ -887,6 +893,14 @@ typedef enum
 
 	KEY_DEVICE_BACKHOME =1,
 
+	MAX_ENERGY = 50,
+	MIN_ENERGY = 20,
+	MAX_PULSE_DURATION = 50,
+	MIN_PULSE_DURATION = 30,
+	MAX_POST_COOLING = 30,
+	MIN_POST_COOLING = 0,
+	MAX_INTERVAL = 30,
+	MIN_INTERVAL = 0,
 } BUTTON_E;
 
 
@@ -927,6 +941,7 @@ typedef enum
 	CMD_PELTIER_DUTY =9,
 	CMD_REMIND_SHOT_MAX = 10,
 
+	CMD_VIBE_ON = 11,
 
 	CMD_WATT_CH0	= 17,
 	CMD_WATT_CH1,
@@ -1343,8 +1358,8 @@ typedef enum
 	ICON_AREA3 = 97,
 	ICON_AREA4 = 98,
 	ICON_AREA5 = 99,
+	ICON_AREA_BLK = 100,
 
-	ICON_HAND = 100,
 	ICON_FOOT = 101,
 
 	ICON_MSG_BLK = 102,
@@ -1647,7 +1662,7 @@ void lcon_Printf(u16 addr, u16 icon)
 	sys_write_vp(addr, (u8*)&icon,2);
 }
 
-void TX_Rx_Msg(u16 txCmd, u16 txData , u16* rxValue, u16 wateTime)
+void TX_Rx_Msg_org(u16 txCmd, u16 txData , u16* rxValue, u16 wateTime)
 {
 	u16 rxCmd = 0;
 	u32 value=0;
@@ -2833,9 +2848,7 @@ void RX_Parssing_Config()
 		}
 
 
-//		TX_Msg(197, cmdRxRingCnt);//
-//		TX_Msg(198, cmdPassingRingCnt);//
-//		TX_Msg(199, uartRxFlag);//
+
 		if(cmdRxRingCnt > cmdPassingRingCnt)
 		{
 			cmdPassingRingCnt++;
@@ -2845,9 +2858,7 @@ void RX_Parssing_Config()
 				cmdRxRingCnt = 0;
 			}
 		}
-//		TX_Msg(210, cmdRxRingCnt);//
-//		TX_Msg(211, cmdPassingRingCnt);//
-//		TX_Msg(212, uartRxFlag);//
+
 	}
 
 }
@@ -3018,10 +3029,13 @@ void Aging_Button()
 	}
 }
 
-void Main_LongKey(u16 keyAddr, u16 cmd, u16 upDn, u16 agingTrg)
+void Main_LongKey(u16 keyAddr, u16 cmd, u16 upDn, u16 agingTrg, u8 max, u8 min, u32 valueData)
 {
 	u16 key = 0;
 	if(errEvent) return;
+	if(upDn == BUTTON_UP && max <= valueData)return;
+	if(upDn == BUTTON_DN && min >= valueData)return;
+
 	sys_read_vp(keyAddr,(u8*)&key,1);
 //	Aging_Up_Button();
 	if(key || agingLongFlag == agingTrg)
@@ -3037,11 +3051,17 @@ void Main_LongKey(u16 keyAddr, u16 cmd, u16 upDn, u16 agingTrg)
 
 void Area_Move(u8 row, u8 hideEn)
 {
+	u16 areaAddr;
+	u16 areaIcon;
 	if (hideEn)
 	{
 		XY_Change(XY_SP_CURRENT_SHOT1_ADD +(row*0x20) , HIDE_NUM_X, yPointBuff[row]);
 		XY_Change(XY_SP_TOTAL_ENERGY1_ADD +(row*0x20) , HIDE_NUM_X + 20, yPointBuff[row]);
 		XY_Change(XY_SP_AGV_ENERGY1_ADD +(row*0x20) , HIDE_NUM_X + 40, yPointBuff[row]);
+
+		areaAddr = (u16)(AREA1_ICON_ADDR + row*0x02);
+		areaIcon = ICON_AREA_BLK;
+		sys_write_vp(areaAddr,(u8*)&areaIcon,2);
 
 	}
 	else
@@ -3049,6 +3069,10 @@ void Area_Move(u8 row, u8 hideEn)
 		XY_Change(XY_SP_CURRENT_SHOT1_ADD +(row*0x20) , CURRENT_SHOT_POS_X, yPointBuff[row]);
 		XY_Change(XY_SP_TOTAL_ENERGY1_ADD +(row*0x20) , TOTAL_ENERGY_POS_X, yPointBuff[row]);
 		XY_Change(XY_SP_AGV_ENERGY1_ADD +(row*0x20) , AGV_ENERGY_POS_X, yPointBuff[row]);
+
+		areaAddr = (u16)(AREA1_ICON_ADDR + row*0x02);
+		areaIcon = ICON_AREA1+row;
+		sys_write_vp(areaAddr,(u8*)&areaIcon,2);
 	}
 }
 
@@ -3688,12 +3712,12 @@ u8 Main_Config()
 	}
 
 
-	Main_LongKey(ENERGY_UP_LONG_BTN_ADDR, CMD_ENERGY, BUTTON_UP, 31);
-	Main_LongKey(ENERGY_DN_LONG_BTN_ADDR, CMD_ENERGY, BUTTON_DN, 32);
-	Main_LongKey(DURATION_UP_LONG_BTN_ADDR, CMD_PULSE_DURATION, BUTTON_UP, 33);
-	Main_LongKey(DURATION_DN_LONG_BTN_ADDR, CMD_PULSE_DURATION, BUTTON_DN, 34);
-	Main_LongKey(POST_UP_LONG_BTN_ADDR, CMD_POST_COOLING, BUTTON_UP, 35);
-	Main_LongKey(POST_DN_LONG_BTN_ADDR, CMD_POST_COOLING, BUTTON_DN, 36);
+	Main_LongKey(ENERGY_UP_LONG_BTN_ADDR, CMD_ENERGY, BUTTON_UP, 31, MAX_ENERGY, MIN_ENERGY, energy);
+	Main_LongKey(ENERGY_DN_LONG_BTN_ADDR, CMD_ENERGY, BUTTON_DN, 32, MAX_ENERGY, MIN_ENERGY, energy);
+	Main_LongKey(DURATION_UP_LONG_BTN_ADDR, CMD_PULSE_DURATION, BUTTON_UP, 33, MAX_PULSE_DURATION, MIN_PULSE_DURATION, pulseDuration);
+	Main_LongKey(DURATION_DN_LONG_BTN_ADDR, CMD_PULSE_DURATION, BUTTON_DN, 34, MAX_PULSE_DURATION, MIN_PULSE_DURATION, pulseDuration);
+	Main_LongKey(POST_UP_LONG_BTN_ADDR, CMD_POST_COOLING, BUTTON_UP, 35, MAX_POST_COOLING, MIN_POST_COOLING, postCooling);
+	Main_LongKey(POST_DN_LONG_BTN_ADDR, CMD_POST_COOLING, BUTTON_DN, 36, MAX_POST_COOLING, MIN_POST_COOLING, postCooling);
 
 	EXP_FreeCool_Motion();
 
@@ -3711,6 +3735,7 @@ u8 Setting_Config()
 	int ccpy = 0;
 	u16 add = 0;
 	u8 returnValue = 0;
+	u16 iconVibeLv = 0;
 
 	returnValue = LCD_MODE_SETTING;
 	sys_read_vp(SETTING_BUTTON_ADDR,(u8*)&btnSetting,1);
@@ -3737,6 +3762,18 @@ u8 Setting_Config()
 
 				volumeLevel = (u16)btnVol[0];
 				Volume_Change(3, volumeLevel);
+			break;
+
+			case BTN_SETTING_VIBE_ON:
+				TX_Msg(CMD_VIBE_ON, 1);
+				iconVibeLv = ICON_VIBE_LV1;
+				sys_write_vp(VIBE_LEVEL_ICON_ADDR,(u8*)&iconVibeLv ,2);
+			break;
+
+			case BTN_SETTING_VIBE_OFF:
+				TX_Msg(CMD_VIBE_ON, 0);
+				iconVibeLv = ICON_VIBE_OFF;
+				sys_write_vp(VIBE_LEVEL_ICON_ADDR,(u8*)&iconVibeLv ,2);
 			break;
 
 		}
@@ -3891,7 +3928,6 @@ u8 Cartrige_Set_Config()//
 	u16 add = 0,addSub = 0;
 	u16 addIcon = 0;
 	int i = 0;
-	const u16 iconReady = ICON_CALIB_READY, iconStandby = ICON_CALIB_STANDBY, iconDis = ICON_CALIB_DISABLE, iconEn = ICON_CALIB_ENABLE;
 	const u16 iconEmptyPoint = ICON_CALIB_EMPTY_POINT;
 	u16 btn;
 	u16 tempOffsetVal = 0;
