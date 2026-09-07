@@ -1694,6 +1694,101 @@ void TX_Rx_Msg_org(u16 txCmd, u16 txData , u16* rxValue, u16 wateTime)
 
 }
 
+void TX_Rx_Msg(u16 txCmd, u16 txData)
+{
+	u16 add = 0;
+	u32 statusData = 0;
+	u16 cmd = 0;
+	u32 value=0;
+	int i = 0;
+	int frq = 0;
+
+	TX_Msg(txCmd, txData);
+	sys_delay_ms(40);
+
+
+
+		cmd = cmdBuff[cmdPassingRingCnt][0];
+		value = cmdBuff[cmdPassingRingCnt][1];
+		switch(cmd)
+		{
+			case CMD_CART_ID:
+				cartId = value;
+				textCartrigeBuff[CART_IDX_CART_ID] = value;
+				sys_write_vp(CART_VALUE_CART_ID_ADDR,(u8*)&cartId ,2);
+			break;
+
+			case CMD_MANUFAC_YY:
+				manufacYY = value;
+				textCartrigeBuff[CART_IDX_MANUFAC_YY] = manufacYY;
+				sys_write_vp(CART_VALUE_MANUFAC_YY_ADDR,(u8*)&manufacYY ,2);
+			break;
+
+			case CMD_MANUFAC_MM:
+				manufacMM = value;
+				textCartrigeBuff[CART_IDX_MANUFAC_MM] = manufacMM;
+				sys_write_vp(CART_VALUE_MANUFAC_MM_ADDR,(u8*)&manufacMM ,2);
+			break;
+
+			case CMD_MANUFAC_DD:
+				manufacDD = value;
+				textCartrigeBuff[CART_IDX_MANUFAC_DD] = manufacDD;
+				sys_write_vp(CART_VALUE_MANUFAC_DD_ADDR,(u8*)&manufacDD ,2);
+			break;
+
+			case CMD_ISSUED_YY:
+				issuedYY=value;
+				textCartrigeBuff[CART_IDX_ISSUED_YY] = issuedYY;
+				sys_write_vp(CART_VALUE_ISSUED_YY_ADDR,(u8*)&issuedYY ,2);
+			break;
+			case CMD_ISSUED_MM:
+				issuedMM = value;
+				textCartrigeBuff[CART_IDX_ISSUED_MM] = issuedMM;
+				sys_write_vp(CART_VALUE_ISSUED_MM_ADDR,(u8*)&issuedMM ,2);
+			break;
+
+			case CMD_ISSUED_DD:
+				issuedDD = value;
+				textCartrigeBuff[CART_IDX_ISSUED_DD] = issuedDD;
+				sys_write_vp(CART_VALUE_ISSUED_DD_ADDR,(u8*)&issuedDD ,2);
+			break;
+
+
+			case CMD_REMIND_SHOT:
+				remindShot = value;
+				textCartrigeBuff[CART_IDX_REMIND_SHOT] = value;
+				sys_write_vp(REMIND_SHOT_NUM_ADDR,(u8*)&value ,2);
+				sys_write_vp(CART_VALUE_REMIND_SHOT_ADDR,(u8*)&remindShot ,2);
+
+			break;
+
+			case CMD_REMIND_SHOT_MAX:
+				remindShotMax = value;
+				textCartrigeBuff[CART_IDX_REMIND_SHOT_MAX] = value;
+				sys_write_vp(CART_VALUE_MAX_REMIND_SHOT_ADDR,(u8*)&remindShotMax ,2);
+
+			break;
+
+			case CMD_CATRIDGE_STATUS:
+				cartStatus = value;
+				textCartrigeBuff[CART_IDX_STATUS] = value;
+				sys_write_vp(CART_VALUE_STATUS_ADDR,(u8*)&cartStatus ,2);
+			break;
+
+		}
+
+		if(cmdRxRingCnt > cmdPassingRingCnt)
+		{
+			cmdPassingRingCnt++;
+			if(cmdRxRingCnt == cmdPassingRingCnt)
+			{
+				cmdPassingRingCnt = 0;
+				cmdRxRingCnt = 0;
+			}
+		}
+
+
+}
 
 
 void Calv_Tx_Msg()
@@ -2263,7 +2358,7 @@ void SYS_CHK_OK(u16 device)
 		break;
 	}
 }
-void HP_Cmd_Recall(u8 cmd, u32 rxData, u8 status)
+void HP_Cmd_Recall_org(u8 cmd, u32 rxData, u8 status)
 {
 	if (status)
 	{
@@ -2282,34 +2377,61 @@ void HP_Cmd_Recall(u8 cmd, u32 rxData, u8 status)
 		}
 	}
 }
+void HP_Cmd_Recall(u8 cmd, u32 rxData, u8 status)
+{
+	if (status)
+	{
+		if(rxData == 0)
+		{
+			TX_Rx_Msg(cmd, REQ_DATA);
+			catridgeRxErrCnt++;
+		}
+	}
+	else
+	{
+		if(rxData)
+		{
+			TX_Rx_Msg(cmd, REQ_DATA);
+			catridgeRxErrCnt++;
+		}
+	}
+}
+
 void Check_CartAllData(u8 status)
 {
 	int i = 0;
+
+		cmdPassingRingCnt++;
+		if(cmdRxRingCnt == cmdPassingRingCnt)
+		{
+			cmdPassingRingCnt = 0;
+			cmdRxRingCnt = 0;
+		}
 	HP_Cmd_Recall(CMD_CART_ID, cartId, status);
 	HP_Cmd_Recall(CMD_MANUFAC_YY, manufacYY, status);
 	HP_Cmd_Recall(CMD_MANUFAC_MM, manufacMM, status);
 	HP_Cmd_Recall(CMD_MANUFAC_DD, manufacDD, status);
-	HP_Cmd_Recall(CMD_ISSUED_YY, issuedYY, status);
-	HP_Cmd_Recall(CMD_ISSUED_MM, issuedMM, status);
-	HP_Cmd_Recall(CMD_ISSUED_DD, issuedDD, status);
+//	HP_Cmd_Recall(CMD_ISSUED_YY, issuedYY, status);
+//	HP_Cmd_Recall(CMD_ISSUED_MM, issuedMM, status);
+//	HP_Cmd_Recall(CMD_ISSUED_DD, issuedDD, status);
 
-	if(catridgeRxErrCnt >= 6)
-	{
-		catridgeRxErrCnt = 0;
-		return;
-	}
-	for(i =1 ;i <= 7;i++)
-	{
-		HP_Cmd_Recall(CMD_TRANDU_FRQ_BASE + i, textFrqBuff[i], status);
-	}
-	for(i =1 ;i <= 77;i++)
-	{
-		HP_Cmd_Recall(CMD_TRANDU_WATT_BASE + i, textWattBuff[i], status);
-	}
+//	if(catridgeRxErrCnt >= 6)
+//	{
+//		catridgeRxErrCnt = 0;
+//		return;
+//	}
+//	for(i =1 ;i <= 7;i++)
+//	{
+//		HP_Cmd_Recall(CMD_TRANDU_FRQ_BASE + i, textFrqBuff[i], status);
+//	}
+//	for(i =1 ;i <= 77;i++)
+//	{
+//		HP_Cmd_Recall(CMD_TRANDU_WATT_BASE + i, textWattBuff[i], status);
+//	}
 
-	HP_Cmd_Recall(CMD_REMIND_SHOT, remindShot, status);
-	HP_Cmd_Recall(CMD_REMIND_SHOT_MAX, remindShotMax, status);
-	HP_Cmd_Recall(CMD_CATRIDGE_STATUS, cartStatus, status);
+//	HP_Cmd_Recall(CMD_REMIND_SHOT, remindShot, status);
+//	HP_Cmd_Recall(CMD_REMIND_SHOT_MAX, remindShotMax, status);
+//	HP_Cmd_Recall(CMD_CATRIDGE_STATUS, cartStatus, status);
 
 
 
