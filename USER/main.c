@@ -156,6 +156,7 @@
 #define SETTING_BUTTON_ADDR		0x2200
 
 //page2 use icon
+#define SETTING_ICON_VIBE_ADDR		0x2210
 
 //page2 use num
 
@@ -536,7 +537,8 @@
 //page17 un use
 
 //==================================================
-#define OVERLAY_BUTTON_ADDR		0x2D00
+#define OVERLAY_POPUP_ICON_ADDR		0x2D20
+#define OVERLAY_BUTTON_ADDR			0x2D00
 
 //==================================================
 
@@ -1244,18 +1246,21 @@ typedef enum
 	ICON_PASSWARD_4,
 	ICON_PASSWARD_ERR,
 
-	ICON_CALIB_READY = 6,
-	ICON_CALIB_STANDBY,
+	ICON_VIBE_MODE_ON = 6,
+	ICON_VIBE_MODE_OFF,
 
 	ICON_CALIB_DISABLE = 8,
 	ICON_CALIB_ENABLE,
 
 	ICON_NO_USE1,//10
 	ICON_SETTING_BOLL = 11,// 소스내에는 없음
-	ICON_NO_USE2,//12
-	ICON_NO_USE3,
-	ICON_NO_USE4,
-	ICON_EVENT_NUM,//15
+
+
+	ICON_MAIN_POP = 12,
+	ICON_MAIN_POP_SEL = 13,
+	ICON_SYS_POP = 14,
+	ICON_SYS_POP_SEL = 15,
+
 	ICON_SYS_CHK_PER_0 = 16,
 	ICON_SYS_CHK_PER_10,
 	ICON_SYS_CHK_PER_20,
@@ -1296,8 +1301,7 @@ typedef enum
 	ICON_HAND_DIS,
 
 	ICON_MAIN_EMPTY_POP = 46,
-	ICON_MAIN_POP = 47,
-	ICON_MAIN_POP_SELLEC = 48,
+
 
 	ICON_PELTIER_OFF = 49,
 	ICON_PELTIER_ON,
@@ -1391,8 +1395,22 @@ typedef enum
 	ICON_MSG_CATRIGE_UN_DETECT = 128,
 	ICON_MSG_RF_COMU_ERR = 129,
 	ICON_MSG_RF_STATUS_ERR = 130,
-	ICON_CODE_BLK = 131,
-	ICON_ERROR_CODE_1 = 132,
+
+	ICON_MSG_CART_CONNECT = 131,
+	ICON_MSG_CART_DISCONNCET = 132,
+	ICON_MSG_VIBE_DISABLE = 133,
+	ICON_MSG_FOOT_SW_CONNCET = 134,
+	ICON_MSG_FOOT_SW_DISCONNCET = 135,
+	ICON_MSG_FOOT_DISABLE = 136,
+
+	ICON_MSG_DUMY_1 = 137,
+	ICON_MSG_DUMY_2 = 138,
+	ICON_MSG_DUMY_3 = 139,
+	ICON_MSG_DUMY_4 = 140,
+	ICON_MSG_DUMY_5 = 141,
+
+	ICON_CODE_BLK = 142,
+	ICON_ERROR_CODE_1 = 143,
 	ICON_ERROR_CODE_2,
 	ICON_ERROR_CODE_3,
 	ICON_ERROR_CODE_4,
@@ -1418,19 +1436,30 @@ typedef enum
 	ICON_ERROR_CODE_24,
 	ICON_ERROR_CODE_25,
 	ICON_ERROR_CODE_26,
-	ICON_ALRAM_CODE_1 = 158,
+	ICON_ERROR_CODE_DUMY_1,
+	ICON_ERROR_CODE_DUMY_2,
+	ICON_ERROR_CODE_DUMY_3,
+	ICON_ERROR_CODE_DUMY_4,
+	ICON_ALRAM_CODE_1 = 173,
 	ICON_ALRAM_CODE_2,
 	ICON_ALRAM_CODE_3,
 	ICON_ALRAM_CODE_4,
 	ICON_ALRAM_CODE_5,
 	ICON_ALRAM_CODE_6,
-	ICON_INFO_CODE_1 = 164,
+	ICON_ALRAM_CODE_DUMY_1,
+	ICON_ALRAM_CODE_DUMY_2,
+	ICON_INFO_CODE_1 = 181,
 	ICON_INFO_CODE_2,
 	ICON_INFO_CODE_3,
 	ICON_INFO_CODE_4,
 	ICON_INFO_CODE_5,
 	ICON_INFO_CODE_6,
-	ICON_INFO_CODE_7 = 170,
+	ICON_INFO_CODE_7,
+	ICON_INFO_CODE_8,
+	ICON_INFO_CODE_9,
+	ICON_INFO_CODE_10,
+	ICON_INFO_CODE_11,
+	ICON_INFO_CODE_12,
 
 
 } ICON_E;
@@ -1449,33 +1478,36 @@ typedef enum
 	IDX_BATTRY_LIMIT_UNDER =8,//
 	IDX_BATTRY_LIMIT_LOW =9,//
 	IDX_RTC_ERR =10,
-	IDX_MAIN_EVENT_END =11,//~~~~~
+	IDX_FOOT_CONNECT =11,
+	IDX_FOOT_DISCONNECT =12,
+	IDX_FOOT_DISABLE =13,
+	IDX_MAIN_EVENT_END =14,//~~~~~
   //------------------------------
-	IDX_HP_EVENT_START =12,//
+	IDX_HP_EVENT_START = 15,//
 	IDX_PRE_COOL_ERR = IDX_HP_EVENT_START,//
-	IDX_HAND_COMU_ERR =13,//
-	IDX_CATRIGE_I2C_ERR  =14,//
-	IDX_CATRIGE_NEW_DETECT= 15,//
-	IDX_CATRIGE_ID_ERR =16,//
-	IDX_CATRIGE_MANU_ERR =17,//
-	IDX_CATRIGE_MANU_OVER_ERR =18,//
-	IDX_CATRIGE_ISUE_ERR =19,//
-	IDX_CATRIGE_ISUE_OVER_ERR =20,//
-	IDX_CATRIGE_WATT_ERR =21,//
-	IDX_CATRIGE_FRQ_ERR =22,//
-	IDX_CATRIGE_RESHOT_ERR =23,//
-	IDX_CATRIGE_RESHOT_LOW =24,//
-	IDX_CATRIGE_RESHOT_ZERO =25,//
-	IDX_CATRIGE_DETECT =26,
-	IDX_CATRIGE_UN_DETECT =27,//
-	IDX_CATRIGE_DISCONNT_RDY =28,//
-	IDX_HP_EVENT_END = 29,//~~~~~
+	IDX_HAND_COMU_ERR = 16,//
+	IDX_CATRIGE_I2C_ERR  = 17,//
+	IDX_CATRIGE_NEW_DETECT = 18,//
+	IDX_CATRIGE_ID_ERR = 19,//
+	IDX_CATRIGE_MANU_ERR = 20,//
+	IDX_CATRIGE_MANU_OVER_ERR = 21,//
+	IDX_CATRIGE_ISUE_ERR = 22,//
+	IDX_CATRIGE_ISUE_OVER_ERR = 23,//
+	IDX_CATRIGE_WATT_ERR = 24,//
+	IDX_CATRIGE_FRQ_ERR = 25,//
+	IDX_CATRIGE_RESHOT_ERR = 26,//
+	IDX_CATRIGE_RESHOT_LOW = 27,//
+	IDX_CATRIGE_RESHOT_ZERO = 28,//
+	IDX_CATRIGE_DETECT = 29,
+	IDX_CATRIGE_UN_DETECT = 30,//
+	IDX_CATRIGE_DISCONNT_RDY = 31,//
+	IDX_CATRIGE_VIBE_DISABLE = 32,//
+	IDX_HP_EVENT_END = 33,//~~~~~
   //------------------------------
-	IDX_RF_EVENT_START = 30,
+	IDX_RF_EVENT_START = 34,
 	IDX_RF_COMU_ERR = IDX_RF_EVENT_START,
-	IDX_RF_STATUS_ERR =31,//
-	IDX_RF_EVENT_END =32,//~~~~~
-
+	IDX_RF_STATUS_ERR = 35,//
+	IDX_RF_EVENT_END = 36,//~~~~~
 //------------------------------
 
   IDX_LCD_COMU_ERR,
@@ -1963,14 +1995,23 @@ void OverLay_On(u8 pageID)
 	buf[3] = pageID;
  	sys_write_vp(0x00E8,buf,2);
 }
-void OverLay_Off()
+//void OverLay_Off()
+//{
+//	u8 buf[2];
+//	buf[0] = 0x00;
+//	buf[1] = 0x00;
+// 	sys_write_vp(0x00E8,buf,1);
+//}
+
+void OverLay_Off(void)
 {
-	u8 buf[2];
+	u8 buf[4];
 	buf[0] = 0x00;
 	buf[1] = 0x00;
- 	sys_write_vp(0x00E8,buf,1);
+	buf[2] = 0x00;
+	buf[3] = 0x00;
+	sys_write_vp(0x00E8, buf, 2);
 }
-
 
 void Err_Code_Select(u8 errNum)
 {
@@ -2102,11 +2143,15 @@ void Evnt_Msg_Up(u8 num)
 		case IDX_CATRIGE_RESHOT_ERR:	msgIcon = 	ICON_MSG_CATRIGE_RESHOT_ERR;	  break;//124
 		case IDX_CATRIGE_RESHOT_LOW:	msgIcon = 	ICON_MSG_CATRIGE_RESHOT_LOW;	  break;//125
 		case IDX_CATRIGE_RESHOT_ZERO:	msgIcon = 	ICON_MSG_CATRIGE_RESHOT_ZERO;	  break;//126
-		case IDX_CATRIGE_DETECT:		msgIcon = 	ICON_MSG_CATRIGE_DETECT;	  	  break;//127
-		case IDX_CATRIGE_UN_DETECT: 	msgIcon = 	ICON_MSG_CATRIGE_DETECT;	      break;//127
-		case IDX_CATRIGE_DISCONNT_RDY: 	msgIcon =	ICON_MSG_CATRIGE_UN_DETECT;		  break;//127
-		case IDX_RF_COMU_ERR:			msgIcon = 	ICON_MSG_RF_COMU_ERR;	  break;//129
-		case IDX_RF_STATUS_ERR: 		msgIcon = 	ICON_MSG_RF_STATUS_ERR;	  break;//130
+		case IDX_CATRIGE_DISCONNT_RDY: 	msgIcon =	ICON_MSG_CART_DISCONNCET;		  break;//133
+		case IDX_RF_COMU_ERR:			msgIcon = 	ICON_MSG_RF_COMU_ERR;	  		  break;//129
+		case IDX_RF_STATUS_ERR: 		msgIcon = 	ICON_MSG_RF_STATUS_ERR;	  	      break;//130
+		case IDX_CATRIGE_DETECT:		msgIcon =	ICON_MSG_CART_CONNECT;			  break;//131
+		case IDX_CATRIGE_UN_DETECT: 	msgIcon =	ICON_MSG_CART_DISCONNCET;		  break;//132
+		case IDX_CATRIGE_VIBE_DISABLE: 	msgIcon =	ICON_MSG_VIBE_DISABLE;		  	  break;//133
+		case IDX_FOOT_CONNECT: 			msgIcon =	ICON_MSG_FOOT_SW_CONNCET;		  break;//134
+		case IDX_FOOT_DISCONNECT: 		msgIcon =	ICON_MSG_FOOT_SW_DISCONNCET;	  break;//135
+		case IDX_FOOT_DISABLE: 			msgIcon =	ICON_MSG_FOOT_DISABLE;		  	  break;//136
 
 
 	}
@@ -2164,8 +2209,8 @@ void Repair_VarIcon_SP(u16 sp, u16 vp, u16 vmin, u16 vmax)//팝업박스 없어지는 문
 
 void Popup_SP_Check_Repair(void)// 팝업박스 없어지는 문제 생겨서 넣었음
 {
-	if (!Popup_SP_Ok(XY_SP_POPUP_BOX, ERR_POPUP_BOX_ICON_ADDR, ICON_MAIN_POP, ICON_MAIN_POP_SELLEC))
-		Repair_VarIcon_SP(XY_SP_POPUP_BOX, ERR_POPUP_BOX_ICON_ADDR, ICON_MAIN_POP, ICON_MAIN_POP_SELLEC);
+	if (!Popup_SP_Ok(XY_SP_POPUP_BOX, ERR_POPUP_BOX_ICON_ADDR, ICON_MAIN_POP, ICON_SYS_POP))
+		Repair_VarIcon_SP(XY_SP_POPUP_BOX, ERR_POPUP_BOX_ICON_ADDR, ICON_MAIN_POP, ICON_SYS_POP);
 
 	if (!Popup_SP_Ok(XY_SP_POPUP_ICON, EVENT_ICON_ADDR, ICON_EVENT_INFO_BLK, ICON_EVENT_INFO))
 		Repair_VarIcon_SP(XY_SP_POPUP_ICON, EVENT_ICON_ADDR, ICON_EVENT_INFO_BLK, ICON_EVENT_INFO);
@@ -2305,14 +2350,34 @@ void Event_PopUp(u16 eventData)
 	if(rdyStnbyMode!=STATUS_STNBY) TX_Msg(CMD_LCD_STATUS, STATUS_STNBY);
 
 
-	XY_Pop(1);
-//	Popup_Touch_Mask(1);
+//	XY_Pop(1);
+	OverLay_On(17);
+	if (lcdPage == LCD_MODE_MAIN)
+	{
+		if (errData==IDX_CATRIGE_NEW_DETECT) lcon_Printf(ERR_POPUP_BOX_ICON_ADDR, ICON_MAIN_POP_SEL);
+		else lcon_Printf(ERR_POPUP_BOX_ICON_ADDR, ICON_MAIN_POP);
+
+	}
+	else if (lcdPage == LCD_MODE_SYS_CHK)
+	{
+		if (errData==IDX_CATRIGE_NEW_DETECT) lcon_Printf(ERR_POPUP_BOX_ICON_ADDR, ICON_SYS_POP_SEL);
+		else lcon_Printf(ERR_POPUP_BOX_ICON_ADDR, ICON_SYS_POP);
+	}
 
 
 
-	if (errData==IDX_CATRIGE_NEW_DETECT) popUpMode = POPUP_MODE_2;
-	else popUpMode = POPUP_MODE_1;
 
+
+
+	if (errData==IDX_CATRIGE_NEW_DETECT)
+	{
+		popUpMode = POPUP_MODE_2;
+	}
+	else
+	{
+		popUpMode = POPUP_MODE_1;
+//		lcon_Printf(EVENT_OK_ADDR, ICON_OK_IDLE);
+	}
 
 	Evnt_Msg_Up(errData);
 	Err_Code_Select(errData);
@@ -2327,8 +2392,8 @@ void Event_PopDown_Ok()
 		if(errEvent==IDX_CATRIGE_NEW_DETECT) TX_Msg(CMD_CART_ALLOW, 1);
 
 		errEvent = 0;
-		XY_Pop(0);
-//		Popup_Touch_Mask(0);
+//		XY_Pop(0);
+		OverLay_Off();
 
 		Evnt_Msg_Up(0);
 		Err_Code_Clear();
@@ -3329,44 +3394,74 @@ void System_Circle_Icon(u16 icon)
 	sys_write_vp(SYSTEM_ICON_ADDR, (u8*)&icon,2);
 }
 
-u8 Test_Config()
+//u8 Test_Config()
+//{
+//	u8 returnValue = 0;
+//	u16 btn =0;
+
+
+
+//		returnValue = LCD_MODE_TEST;
+//#if 0
+//		if(delay_tickMy-timeStampQ >= 3000)
+//		{
+//			TX_Msg(444, Tu32);
+//			timeStampQ = delay_tickMy;
+//		}
+
+//#endif
+
+
+//	sys_read_vp(TEST_BUTTON_ADDR,(u8*)&btn,1);
+//	if(btn)
+//	{
+//		switch (btn)
+//		{
+//			case 1:
+//				OverLay_On(17);
+//			break;
+//		}
+//		btn= 0;
+//		sys_write_vp(TEST_BUTTON_ADDR,(u8*)&btn,2);
+//	}
+
+
+//	sys_read_vp(OVERLAY_BUTTON_ADDR,(u8*)&btn,1);
+//	if(btn)
+//	{
+//		switch (btn)
+//		{
+//			case 1:
+//				OverLay_Off();
+//			break;
+//		}
+//		btn= 0;
+//		sys_write_vp(OVERLAY_BUTTON_ADDR,(u8*)&btn,2);
+//	}
+//	return LCD_MODE_TEST;
+//}
+
+
+u8 Test_Config(void)
 {
-	u8 returnValue = 0;
-	u16 btn =0;
+	u16 btn = 0;
+	u16 ovOk = 0;
 
-
-
-		returnValue = LCD_MODE_TEST;
-#if 0
-		if(delay_tickMy-timeStampQ >= 3000)
-		{
-			TX_Msg(444, Tu32);
-			timeStampQ = delay_tickMy;
-		}
-
-#endif
-
-
-	sys_read_vp(TEST_BUTTON_ADDR,(u8*)&btn,1);
-	if(btn)
+	sys_read_vp(TEST_BUTTON_ADDR, (u8*)&btn, 1);
+	if (btn)
 	{
-		switch (btn)
-		{
-			case 1:
-				XY_Change(XY_SP_TEST_ADD1 , POPUP_POS_X, POPUP_POS_Y);
-				OverLay_On(17);
-			break;
-
-			case 2:
-				XY_Change(XY_SP_TEST_ADD1 , HIDE_NUM_X, POPUP_POS_Y);
-			break;
-		}
-		btn= 0;
-		sys_write_vp(TEST_BUTTON_ADDR,(u8*)&btn,2);
+		if (btn == 1) OverLay_On(17);
+		btn = 0;
+		sys_write_vp(TEST_BUTTON_ADDR, (u8*)&btn, 1);
 	}
 
-
-
+	sys_read_vp(OVERLAY_BUTTON_ADDR, (u8*)&ovOk, 1);
+	if (ovOk)
+	{
+		ovOk = 0;
+		sys_write_vp(OVERLAY_BUTTON_ADDR, (u8*)&ovOk, 1);
+		OverLay_Off();
+	}
 
 	return LCD_MODE_TEST;
 }
@@ -3545,7 +3640,6 @@ u8 System_Check_Config()
 					TX_Msg(CMD_TEMP_DUTY_ON, 1);
 					TX_Msg(CMD_SYS_CHK, 1);
 					popupYpos = 282;
-					lcon_Printf(ERR_POPUP_BOX_ICON_ADDR,ICON_MAIN_POP);
 
 					Page_Change(LCD_MODE_MAIN);
 					Area_Reset(1);
@@ -3560,12 +3654,16 @@ u8 System_Check_Config()
 	}
 
 
-	sys_read_vp(SYSTEM_BUTTON_ADDR,(u8*)&btn,1);
+//	sys_read_vp(SYSTEM_BUTTON_ADDR,(u8*)&btn,1);
+	sys_read_vp(MAIN_BUTTON_ADDR,(u8*)&btn,1);
+
 	if(btn)
 	{
 		switch (btn)
 		{
-			case BTN_SYSTEM_ERR_OK:
+//			case BTN_SYSTEM_ERR_OK:
+			case BTN_MAIN_ERR_OK_CENTER:
+
 				if(errEvent && popUpMode == POPUP_MODE_1)
 				{
 					sysChkFlag = 1;
@@ -3575,7 +3673,9 @@ u8 System_Check_Config()
 		}
 
 		btn= 0;
-		sys_write_vp(SYSTEM_BUTTON_ADDR,(u8*)&btn,2);
+//		sys_write_vp(SYSTEM_BUTTON_ADDR,(u8*)&btn,2);
+	sys_write_vp(MAIN_BUTTON_ADDR,(u8*)&btn,2);
+
 	}
 
 
@@ -3607,7 +3707,6 @@ u8 Init_Config()
 				Page_Change(LCD_MODE_MAIN);
 				engineerKey = 1;
 				popupYpos = 282;
-				lcon_Printf(ERR_POPUP_BOX_ICON_ADDR,ICON_MAIN_POP);
 
 				Area_Reset(1);
 				returnValue = LCD_MODE_MAIN;
@@ -3767,16 +3866,16 @@ u8 Main_Config()
 			break;
 
 
-			case BTN_MAIN_ERR_OK_CENTER:
-				if(popUpMode == POPUP_MODE_1) Event_PopDown_Ok();
-				else mute = 1;
-			break;
 
 			case BTN_MAIN_ERR_OK_LEFT:
 				if(popUpMode == POPUP_MODE_2) Event_PopDown_Ok();
 				else mute = 1;
 			break;
 
+			case BTN_MAIN_ERR_OK_CENTER:
+				if(popUpMode == POPUP_MODE_1) Event_PopDown_Ok();
+				else mute = 1;
+			break;
 
 			case BTN_MAIN_ERR_CANCEL_RIGHT:
 				if(popUpMode == POPUP_MODE_2)Event_PopDown_Ok();
@@ -3858,6 +3957,7 @@ u8 Setting_Config()
 	u16 add = 0;
 	u8 returnValue = 0;
 	u16 iconVibeLv = 0;
+	u16 iconVibeOnOff = 0;
 
 	returnValue = LCD_MODE_SETTING;
 	sys_read_vp(SETTING_BUTTON_ADDR,(u8*)&btnSetting,1);
@@ -3890,12 +3990,16 @@ u8 Setting_Config()
 				TX_Msg(CMD_VIBE_ON, 1);
 				iconVibeLv = ICON_VIBE_LV1;
 				sys_write_vp(VIBE_LEVEL_ICON_ADDR,(u8*)&iconVibeLv ,2);
+				iconVibeOnOff = ICON_VIBE_MODE_ON;
+				sys_write_vp(SETTING_ICON_VIBE_ADDR,(u8*)&iconVibeOnOff ,2);
 			break;
 
 			case BTN_SETTING_VIBE_OFF:
 				TX_Msg(CMD_VIBE_ON, 0);
 				iconVibeLv = ICON_VIBE_OFF;
 				sys_write_vp(VIBE_LEVEL_ICON_ADDR,(u8*)&iconVibeLv ,2);
+				iconVibeOnOff = ICON_VIBE_MODE_OFF;
+				sys_write_vp(SETTING_ICON_VIBE_ADDR,(u8*)&iconVibeOnOff ,2);
 			break;
 
 		}
@@ -4491,7 +4595,7 @@ void Mode_Config()//
 
 
 		case LCD_MODE_OVERLAY:
-			lcdPage = Overay_Config();
+//			lcdPage = Overay_Config();
 		break;
 
 //		case LCD_MODE_SYS_CHK_POPUP:
@@ -4609,8 +4713,8 @@ void Lcd_Init()//
 
 	onTimeCalv = 7;
 	sys_write_vp(CALIV_PULSETIME_NUM_NUM_ADDR,(u8*)&onTimeCalv ,4);
-	XY_Pop(0);
-	lcon_Printf(ERR_POPUP_BOX_ICON_ADDR,ICON_MAIN_POP_SELLEC);
+
+//	XY_Pop(1);
 //	Popup_Touch_Mask(0);
 
 
