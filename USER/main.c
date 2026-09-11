@@ -2341,6 +2341,7 @@ void Event_PopUp(u16 eventData)
 	u16 iconErrMsg= 0;
 	u16 errData;//errEnDis;
 
+	if ((lcdPage != LCD_MODE_MAIN)&&(lcdPage != LCD_MODE_SYS_CHK)) return;
 
 
 	errEvent = eventData;
@@ -3562,7 +3563,7 @@ u8 System_Check_Config()
 					}
 					else
 					{
-						Event_PopUp(IDX_HAND_COMU_ERR);
+						Event_PopUp(IDX_CATRIGE_I2C_ERR);
 						TX_Msg(CMD_SYS_CHK_OK, 13);
 					}
 
@@ -3654,7 +3655,6 @@ u8 System_Check_Config()
 	}
 
 
-//	sys_read_vp(SYSTEM_BUTTON_ADDR,(u8*)&btn,1);
 	sys_read_vp(MAIN_BUTTON_ADDR,(u8*)&btn,1);
 
 	if(btn)
@@ -3664,7 +3664,7 @@ u8 System_Check_Config()
 //			case BTN_SYSTEM_ERR_OK:
 			case BTN_MAIN_ERR_OK_CENTER:
 
-				if(errEvent && popUpMode == POPUP_MODE_1)
+				if(popUpMode == POPUP_MODE_1)
 				{
 					sysChkFlag = 1;
 					Event_PopDown_Ok();
@@ -3673,8 +3673,7 @@ u8 System_Check_Config()
 		}
 
 		btn= 0;
-//		sys_write_vp(SYSTEM_BUTTON_ADDR,(u8*)&btn,2);
-	sys_write_vp(MAIN_BUTTON_ADDR,(u8*)&btn,2);
+		sys_write_vp(MAIN_BUTTON_ADDR,(u8*)&btn,1);
 
 	}
 
@@ -3715,7 +3714,7 @@ u8 Init_Config()
 		}
 
 		btn= 0;
-		sys_write_vp(INITIAL_BUTTON_ADDR,(u8*)&btn,2);
+		sys_write_vp(INITIAL_BUTTON_ADDR,(u8*)&btn,1);
 	}
 
 	return returnValue;
@@ -3801,7 +3800,7 @@ u8 PassWard_Config()
 		}
 
 		btn= 0;
-		sys_write_vp(PW_NUM_BUTTON_ADDR,(u8*)&btn,2);
+		sys_write_vp(PW_NUM_BUTTON_ADDR,(u8*)&btn,1);
 
 	}
 
@@ -3929,7 +3928,7 @@ u8 Main_Config()
 		  if(!mute) Volume_Change(15, volumeLevel);
 
 		btnMain= 0;
-		sys_write_vp(MAIN_BUTTON_ADDR,(u8*)&btnMain,2);
+		sys_write_vp(MAIN_BUTTON_ADDR,(u8*)&btnMain,1);
 	}
 
 
@@ -4008,7 +4007,7 @@ u8 Setting_Config()
 
 
 		btnSetting= 0;
-		sys_write_vp(SETTING_BUTTON_ADDR,(u8*)&btnSetting,2);
+		sys_write_vp(SETTING_BUTTON_ADDR,(u8*)&btnSetting,1);
 	}
 
 
@@ -4134,7 +4133,7 @@ u8 Calibration_Config()//
 
 		}
 		btn= 0;
-		sys_write_vp(START_TOUCH_BTN_ADDR,(u8*)&btn,2);
+		sys_write_vp(START_TOUCH_BTN_ADDR,(u8*)&btn,1);
 
 	}
 
@@ -4300,7 +4299,7 @@ u8 Cartrige_Set_Config()//
 
 		}
 		btn= 0;
-		sys_write_vp(CARTRIGE_KEYPAD_ADDR,(u8*)&btn,2);
+		sys_write_vp(CARTRIGE_KEYPAD_ADDR,(u8*)&btn,1);
 	}
 
 	Cartrige_Parts();
@@ -4399,7 +4398,7 @@ u8 Information_Config()//
 				break;
 			}
 			btn= 0;
-			sys_write_vp(INFOMATION_BUTTON_ADDR,(u8*)&btn,2);
+			sys_write_vp(INFOMATION_BUTTON_ADDR,(u8*)&btn,1);
 		}
 
 		Info_Parts();
@@ -4426,7 +4425,7 @@ u8 Device_Status_Config()
 		}
 
 		btn= 0;
-		sys_write_vp(DEVICE_STATUS_BUTTON_ADDR,(u8*)&btn,2);
+		sys_write_vp(DEVICE_STATUS_BUTTON_ADDR,(u8*)&btn,1);
 	}
 
 	return returnValue;
@@ -4447,7 +4446,7 @@ u8 Error_Event_Config()
 		returnValue = LCD_MODE_ENGINIEER;
 
 		btn= 0;
-		sys_write_vp(ERROR_EVENT_BUTTON_ADDR,(u8*)&btn,2);
+		sys_write_vp(ERROR_EVENT_BUTTON_ADDR,(u8*)&btn,1);
 	}
 
 	return returnValue;
@@ -4509,7 +4508,7 @@ u8 Engineer_Config()//
 
 		}
 		btn= 0;
-		sys_write_vp(ENGINEER_BUTTON_ADDR,(u8*)&btn,2);
+		sys_write_vp(ENGINEER_BUTTON_ADDR,(u8*)&btn,1);
 
 	}
 
