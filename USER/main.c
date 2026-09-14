@@ -725,8 +725,9 @@ typedef enum
 	IDX_DEBUG_PUMP_STATUS 	= 15,
 	IDX_DEBUG_CHIL_STATUS 	= 16,
 
-	SWITCH_HAND = 0,
-	SWITCH_FOOT = 1,
+	SWITCH_HAND_FOOT_NO = 0,
+	SWITCH_HAND = 1,
+	SWITCH_FOOT = 2,
 
 	LIVE_HP = 10,
 	LIVE_RF = 1,
@@ -1283,9 +1284,10 @@ typedef enum
 	ICON_SYS_CHK_COOL_DIS = 33,
 	ICON_SYS_CHK_COOL_EN,
 
-	ICON_MAIN_COOLING2,
-	ICON_MAIN_COOLING3,
-	ICON_MAIN_TREAT = 37,
+	ICON_HAND_BLK = 35,
+	ICON_HAND_EN = 36,
+	ICON_FOOT_EN = 37,
+
 
 	ICON_EVENT_INFO_BLK = 38,//38
 	ICON_EVENT_ERR,
@@ -1297,8 +1299,7 @@ typedef enum
 	ICON_CALIB_EMPTY_POINT = 42,
 	ICON_CALIB_POINT = 43,
 
-	ICON_HAND_EN = 44,
-	ICON_HAND_DIS,
+
 
 	ICON_MAIN_EMPTY_POP = 46,
 
@@ -2365,20 +2366,8 @@ void Event_PopUp(u16 eventData)
 		else lcon_Printf(ERR_POPUP_BOX_ICON_ADDR, ICON_SYS_POP);
 	}
 
-
-
-
-
-
-	if (errData==IDX_CATRIGE_NEW_DETECT)
-	{
-		popUpMode = POPUP_MODE_2;
-	}
-	else
-	{
-		popUpMode = POPUP_MODE_1;
-//		lcon_Printf(EVENT_OK_ADDR, ICON_OK_IDLE);
-	}
+	if (errData==IDX_CATRIGE_NEW_DETECT) popUpMode = POPUP_MODE_2;
+	else popUpMode = POPUP_MODE_1;
 
 	Evnt_Msg_Up(errData);
 	Err_Code_Select(errData);
@@ -2635,7 +2624,8 @@ void RX_Parssing_Config()
 	const u16 iconCalEmptyPoint = ICON_CALIB_EMPTY_POINT;
 	const u16 iconStandby = ICON_STANDBY_BOX, iconReady = ICON_READY_BOX;
 	const u16 iconHandEn = ICON_HAND_EN;
-	const u16 iconHandDis = ICON_HAND_DIS;
+	const u16 iconFootEn = ICON_FOOT_EN;
+	const u16 iconHandFootNo = ICON_HAND_BLK;
 
 	u16 iconVibeLv = ICON_VIBE_OFF;
 	u16 ToffsetAdd = 0;
@@ -2977,14 +2967,17 @@ void RX_Parssing_Config()
 
 
 			case CMD_HAND_FOOT:
-				if (value == SWITCH_HAND)
+				switch (value)
 				{
-					sys_write_vp(HAND_EN_ADDR,(u8*)&iconHandEn ,2);
-
-				}
-				else if (value == SWITCH_FOOT)
-				{
-					sys_write_vp(HAND_EN_ADDR,(u8*)&iconHandDis ,2);
+					case SWITCH_HAND_FOOT_NO:
+						sys_write_vp(HAND_EN_ADDR,(u8*)&iconHandFootNo ,2);
+					break;
+					case SWITCH_HAND:
+						sys_write_vp(HAND_EN_ADDR,(u8*)&iconHandEn ,2);
+					break;
+					case SWITCH_FOOT:
+						sys_write_vp(HAND_EN_ADDR,(u8*)&iconFootEn ,2);
+					break;
 				}
 			break;
 
@@ -3386,6 +3379,10 @@ void ErrCode_Init()
 	errCodeBuff[IDX_CATRIGE_DISCONNT_RDY] = INFO_ADDER + 6;//I
 	errCodeBuff[IDX_RF_COMU_ERR] = 2;
 	errCodeBuff[IDX_RF_STATUS_ERR] = 1;
+	errCodeBuff[IDX_FOOT_CONNECT] = INFO_ADDER + 7;//I
+	errCodeBuff[IDX_FOOT_DISCONNECT] = INFO_ADDER + 8;//I
+	errCodeBuff[IDX_FOOT_DISABLE] = INFO_ADDER + 12;//I
+	errCodeBuff[IDX_CATRIGE_VIBE_DISABLE] = INFO_ADDER + 11;//I
 
 
 }
