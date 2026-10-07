@@ -1307,10 +1307,10 @@ typedef enum
 	ICON_MODE_ON = 6,
 	ICON_MODE_OFF,
 
-	ICON_CALIB_DISABLE = 8,
-	ICON_CALIB_ENABLE,
+	ICON_AREA_FULL = 8,
+	ICON_AREA_3 = 9,
+	ICON_AREA_4 = 10,
 
-	ICON_NO_USE1,//10
 	ICON_SETTING_BOLL = 11,// 소스내에는 없음
 
 
@@ -3107,15 +3107,15 @@ void RX_Parssing_Config()
 				switch (value)
 				{
 					case IDX_RF_AREA_ALL:
-						lcon_Printf(RF_AREA_ADDR ,ICON_AREA1);
+						lcon_Printf(RF_AREA_ADDR ,ICON_AREA_FULL);
 					break;
 
 					case IDX_RF_AREA_3:
-						lcon_Printf(RF_AREA_ADDR ,ICON_AREA3);
+						lcon_Printf(RF_AREA_ADDR ,ICON_AREA_3);
 					break;
 
 					case IDX_RF_AREA_4:
-						lcon_Printf(RF_AREA_ADDR ,ICON_AREA4);
+						lcon_Printf(RF_AREA_ADDR ,ICON_AREA_4);
 					break;
 				}
 				rfAreaNo = value;
